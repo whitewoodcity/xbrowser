@@ -33,9 +33,7 @@ public class MainTab extends Tab {
         vBox.getChildren().addAll(textField);
 
         vBox.prefHeightProperty()
-                .bind(tabPane.heightProperty()
-                        .subtract(textField.heightProperty())
-                        .subtract(vBox.spacingProperty().multiply(3)));
+                .bind(tabPane.heightProperty());
 
         textField.setOnKeyPressed(value -> {
             String url = textField.getText();
@@ -50,6 +48,7 @@ public class MainTab extends Tab {
                                     if (ar.succeeded()) {
                                         // Obtain response
                                         WebView webView = new WebView();
+                                        webView.prefHeightProperty().bind(vBox.heightProperty().subtract(textField.heightProperty()));
                                         webView.getEngine().loadContent(ar.result().bodyAsString());
                                         vBox.getChildren().removeAll(errorMessage, content);
                                         content = webView;
