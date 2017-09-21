@@ -1,5 +1,7 @@
 package com.whitewoodcity;
 
+import io.vertx.core.Vertx;
+import io.vertx.ext.web.client.WebClient;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -12,9 +14,11 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    Vertx vertx = Vertx.vertx();
+    WebClient client = WebClient.create(vertx);
+
     @Override
     public void start(Stage primaryStage) throws Exception{
-//        ObjectMapper mapper = new ObjectMapper();
 
         Group root = new Group();
         Button button = new Button("+");
@@ -27,7 +31,10 @@ public class Main extends Application {
 //        scene.getStylesheets().add(ClassLoader.getSystemResource("css/main.css").toExternalForm());
         primaryStage.show();
 
-        Tab tab0 = new Tab("New Tab");
+        tabPane.prefWidthProperty().bind(scene.widthProperty());
+        tabPane.prefHeightProperty().bind(scene.heightProperty());
+
+        Tab tab0 = new MainTab("New Tab", tabPane, client);
         tab0.setClosable(false);
         tabPane.getTabs().add(tab0);
         tab0.setClosable(true);
@@ -41,11 +48,16 @@ public class Main extends Application {
 
         button.setLayoutX(insets.getLeft()-button.getWidth());
         button.setLayoutY(insets.getTop());
+    }
 
-
+    @Override
+    public void stop() throws Exception {
+        vertx.close();
+        super.stop();
     }
 
     public static void main(String[] args) {
+        System.getProperties().setProperty("vertx.disableDnsResolver","true");
         launch(args);
     }
 }
