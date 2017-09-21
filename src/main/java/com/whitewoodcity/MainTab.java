@@ -12,9 +12,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class MainTab extends Tab {
     TextField textField = new TextField("http://");
     VBox vBox = new VBox();
@@ -26,9 +23,9 @@ public class MainTab extends Tab {
         this("New Tab", tabPane, client);
     }
 
-    public MainTab(String title, TabPane tabPane, WebClient client) {
+    public MainTab(String defaultTitle, TabPane tabPane, WebClient client) {
         this.client = client;
-        this.setText(title);
+        this.setText(defaultTitle);
 
         this.setContent(vBox);
         vBox.setSpacing(10);
@@ -41,27 +38,28 @@ public class MainTab extends Tab {
                         .subtract(vBox.spacingProperty().multiply(3)));
 
         textField.setOnKeyPressed(value -> {
+            String url = textField.getText();
+            if (!url.startsWith("http"))
+                url = "http://" + url;
             if (value.getCode() == KeyCode.ENTER) {
                 try {
-                    client.getAbs(textField.getText())
+                    final String immutableUrl = url;
+                    client.getAbs(immutableUrl)
                             .send(ar -> {
                                 Platform.runLater(() -> {
                                     if (ar.succeeded()) {
                                         // Obtain response
-                                        vBox.getChildren().removeAll(errorMessage, content);
                                         WebView webView = new WebView();
-                                        webView.getEngine().load(textField.getText());
-                                        textField.setText(webView.getEngine().getLocation());
+                                        webView.getEngine().loadContent(ar.result().bodyAsString());
+                                        vBox.getChildren().removeAll(errorMessage, content);
                                         content = webView;
                                         vBox.getChildren().add(content);
 
                                         //get title from html string
-                                        String body = ar.result().bodyAsString().replaceAll("\\s+", " ");
-                                        Pattern p = Pattern.compile("<title>(.*?)</title>");
-                                        Matcher m = p.matcher(body);
-                                        if (m.find()) {
-                                            this.setText(m.group(1));
-                                        }
+                                        textProperty().unbind();
+                                        textProperty().bind(webView.getEngine().titleProperty());
+
+                                        webView.getEngine().load(immutableUrl);
                                     } else {
                                         handleErrorMessage(ar.cause().getMessage());
                                     }
