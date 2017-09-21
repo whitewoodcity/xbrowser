@@ -21,14 +21,14 @@ public class MainTab extends Tab {
     VBox vBox = new VBox();
     TextArea errorMessage = new TextArea();
     Parent content;
-    Vertx vertx = Vertx.vertx();
-    WebClient client = WebClient.create(vertx);
+    WebClient client;
 
-    public MainTab(TabPane tabPane) {
-        this("New Tab", tabPane);
+    public MainTab(TabPane tabPane, WebClient client) {
+        this("New Tab", tabPane, client);
     }
 
-    public MainTab(String title, TabPane tabPane) {
+    public MainTab(String title, TabPane tabPane, WebClient client) {
+        this.client = client;
         this.setText(title);
 
         this.setContent(vBox);
