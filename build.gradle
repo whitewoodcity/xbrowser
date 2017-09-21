@@ -10,8 +10,8 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.1'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.1'
+    compile 'io.vertx:vertx-core:3.4.2'
+    compile 'io.vertx:vertx-web-client:3.4.2'
     compile group: 'cglib', name: 'cglib-nodep', version: '3.2.5'
     compile group: 'org.jruby', name: 'jruby-complete', version: '9.1.13.0'
     compile 'org.codehaus.groovy:groovy-all:2.3.11'

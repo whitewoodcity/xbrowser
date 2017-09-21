@@ -14,7 +14,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-//        ObjectMapper mapper = new ObjectMapper();
+
+        System.getProperties().setProperty("vertx.disableDnsResolver","true");
 
         Group root = new Group();
         Button button = new Button("+");
@@ -27,7 +28,10 @@ public class Main extends Application {
 //        scene.getStylesheets().add(ClassLoader.getSystemResource("css/main.css").toExternalForm());
         primaryStage.show();
 
-        Tab tab0 = new Tab("New Tab");
+        tabPane.prefWidthProperty().bind(scene.widthProperty());
+        tabPane.prefHeightProperty().bind(scene.heightProperty());
+
+        Tab tab0 = new MainTab("New Tab", tabPane);
         tab0.setClosable(false);
         tabPane.getTabs().add(tab0);
 
