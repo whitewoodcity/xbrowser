@@ -1,6 +1,5 @@
 package com.whitewoodcity;
 
-import io.vertx.core.Vertx;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -17,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainTab extends Tab {
-    TextField textField = new TextField();
+    TextField textField = new TextField("http://");
     VBox vBox = new VBox();
     TextArea errorMessage = new TextArea();
     Parent content;
