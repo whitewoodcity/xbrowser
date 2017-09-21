@@ -1,18 +1,18 @@
 package com.whitewoodcity;
 
-import com.whitewoodcity.core.bean.CSS;
 import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.VXml;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.List;
 
-public class Test {
+@RunWith(VertxUnitRunner.class)
+public class MyTest {
 
     private static String vxml="<script type=\"ruby\"\n" +
             "            href=\"\"\n" +
@@ -27,7 +27,8 @@ public class Test {
             "    </script>";
 
 
-    public static void main(String[] args) {
+    @Test
+    public void test() {
         try {
             JAXBContext jaxbContext=JAXBContext.newInstance(VXml.class);
             Unmarshaller us=jaxbContext.createUnmarshaller();

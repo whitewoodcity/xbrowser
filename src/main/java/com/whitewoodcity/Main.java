@@ -34,7 +34,7 @@ public class Main extends Application {
         tabPane.prefWidthProperty().bind(scene.widthProperty());
         tabPane.prefHeightProperty().bind(scene.heightProperty());
         tabPane.setTabMaxWidth(100);
-        tabPane.setTabMinWidth(20);
+        tabPane.setTabMinWidth(100);
 
         Tab tab0 = new MainTab("New Tab", tabPane, client);
         tab0.setClosable(false);
