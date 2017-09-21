@@ -30,6 +30,7 @@ public class Main extends Application {
         Tab tab0 = new Tab("New Tab");
         tab0.setClosable(false);
         tabPane.getTabs().add(tab0);
+        tab0.setClosable(true);
 
         tabPane.prefWidthProperty().bind(scene.widthProperty());
         StackPane headerArea = (StackPane) tabPane.lookup(".tab-header-area");
