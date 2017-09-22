@@ -46,8 +46,7 @@ public class MainTab extends Tab {
 
         addressBar.setOnKeyPressed(value -> {
             String url = addressBar.getText();
-            if (!url.startsWith("http"))
-                url = "http://" + url;
+            if (!url.startsWith("http")) url = "http://" + url;
             if (value.getCode() == KeyCode.ENTER) {
                 try {
                     final String immutableUrl = url;
@@ -60,13 +59,13 @@ public class MainTab extends Tab {
                                 vBox.getChildren().removeAll(errorMessage, content);
                                 try {
                                     ParentType type = ParentType.WEB_VIEW;
-                                    if(immutableUrl.endsWith("xmlv")||immutableUrl.endsWith("jsonv")){
+                                    if (immutableUrl.endsWith("xmlv") || immutableUrl.endsWith("jsonv")) {
                                         type = ParentType.GROUP;
                                     }
                                     content = build(type, result,
                                             vBox.heightProperty().subtract(addressBar.heightProperty()), immutableUrl);
                                     vBox.getChildren().add(content);
-                                }catch (Exception e){
+                                } catch (Exception e) {
                                     handleResultAndException(result, e);
                                 }
                             } else {
@@ -81,14 +80,14 @@ public class MainTab extends Tab {
         });
     }
 
-    private void handleResultAndException(String result, Exception e){
+    private void handleResultAndException(String result, Exception e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         handleErrorMessage(result + "\n" + sw.toString());
     }
 
-    private void handleExceptionMessage(Throwable e){
+    private void handleExceptionMessage(Throwable e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
@@ -105,8 +104,8 @@ public class MainTab extends Tab {
 
     XmlMapper xmlMapper = new XmlMapper();
 
-    private Parent build(ParentType type, String result, DoubleBinding height, String immutableUrl) throws Exception{
-        switch (type){
+    private Parent build(ParentType type, String result, DoubleBinding height, String immutableUrl) throws Exception {
+        switch (type) {
             case GROUP:
                 Group group = new Group();
                 XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
@@ -132,6 +131,6 @@ public class MainTab extends Tab {
 
 }
 
-enum ParentType{
+enum ParentType {
     GROUP, REGION, WEB_VIEW
 }

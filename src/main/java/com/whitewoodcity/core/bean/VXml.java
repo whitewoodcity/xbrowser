@@ -19,6 +19,7 @@ public class VXml {
     @XmlElement(name = "fxml")
     private FXml fXml;
 
+    @XmlElement(name = "json")
     private Json json;
 
     public List<CSS> getCsses() {

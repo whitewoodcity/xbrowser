@@ -1,16 +1,17 @@
 package com.whitewoodcity.core.bean;
 
 public class XmlV {
-    private Json Json;
+    private Json json;
     private Script script;
     private CSS css;
+    private JsonFX jsonfx;
 
     public com.whitewoodcity.core.bean.Json getJson() {
-        return Json;
+        return json;
     }
 
     public void setJson(com.whitewoodcity.core.bean.Json json) {
-        Json = json;
+        this.json = json;
     }
 
     public Script getScript() {
@@ -27,5 +28,13 @@ public class XmlV {
 
     public void setCss(CSS css) {
         this.css = css;
+    }
+
+    public JsonFX getJsonfx() {
+        return jsonfx;
+    }
+
+    public void setJsonfx(JsonFX jsonfx) {
+        this.jsonfx = jsonfx;
     }
 }

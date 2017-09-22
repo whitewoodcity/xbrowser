@@ -32,7 +32,20 @@ public class MyTest {
             "        button001.onAction = lambda{|value|\n" +
             "        print \"clicked\"\n" +
             "\n}" +
-            "    </script></xmlv>";
+            "    </script>    <jsonfx>\n" +
+            "        {\n" +
+            "        \"id\":\"group001\",\n" +
+            "        \"type\":\"group\",\n" +
+            "        \"children\":[{\n" +
+            "        \"id\":\"button001\",\n" +
+            "        \"type\":\"button\",\n" +
+            "        \"layoutX\":\"100\"\n" +
+            "        },{\n" +
+            "        \"id\":\"button002\",\n" +
+            "        \"type\":\"button\"\n" +
+            "        }]\n" +
+            "        }\n" +
+            "    </jsonfx></xmlv>";
 
     static Vertx vertx;
     static WebClient client;
@@ -59,7 +72,7 @@ public class MyTest {
                         ObjectMapper xmlMapper = new XmlMapper();
                         try {
                             XmlV xmlV = xmlMapper.readValue(ar.result().bodyAsString(), XmlV.class);
-                            System.out.println(xmlV.getCss());
+                            System.out.println(xmlV.getJson().getJsonObject());
                         }catch (Exception e){
                             e.printStackTrace();
                         }
