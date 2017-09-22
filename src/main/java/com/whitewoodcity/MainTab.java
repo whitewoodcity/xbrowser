@@ -22,7 +22,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class MainTab extends Tab {
-    TextField textField = new TextField("http://");
+    TextField addressBar = new TextField("http://");
     VBox vBox = new VBox();
     TextArea errorMessage = new TextArea();
     Parent content;
@@ -39,13 +39,13 @@ public class MainTab extends Tab {
         this.setContent(vBox);
         vBox.setSpacing(10);
         vBox.setPadding(new Insets(vBox.getSpacing()));
-        vBox.getChildren().addAll(textField);
+        vBox.getChildren().addAll(addressBar);
 
         vBox.prefHeightProperty()
                 .bind(tabPane.heightProperty());
 
-        textField.setOnKeyPressed(value -> {
-            String url = textField.getText();
+        addressBar.setOnKeyPressed(value -> {
+            String url = addressBar.getText();
             if (!url.startsWith("http"))
                 url = "http://" + url;
             if (value.getCode() == KeyCode.ENTER) {
@@ -64,7 +64,7 @@ public class MainTab extends Tab {
                                         type = ParentType.GROUP;
                                     }
                                     content = build(type, result,
-                                            vBox.heightProperty().subtract(textField.heightProperty()), immutableUrl);
+                                            vBox.heightProperty().subtract(addressBar.heightProperty()), immutableUrl);
                                     vBox.getChildren().add(content);
                                 }catch (Exception e){
                                     handleResultAndException(result, e);
@@ -100,7 +100,7 @@ public class MainTab extends Tab {
         errorMessage.appendText(message);
         vBox.getChildren().removeAll(errorMessage, content);
         vBox.getChildren().addAll(errorMessage);
-        errorMessage.prefHeightProperty().bind(vBox.heightProperty().subtract(textField.heightProperty()));
+        errorMessage.prefHeightProperty().bind(vBox.heightProperty().subtract(addressBar.heightProperty()));
     }
 
     XmlMapper xmlMapper = new XmlMapper();
