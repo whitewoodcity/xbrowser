@@ -19,6 +19,8 @@ public class VXml {
     @XmlElement(name = "fxml")
     private FXml fXml;
 
+    private Json json;
+
     public List<CSS> getCsses() {
         return csses;
     }
@@ -41,5 +43,13 @@ public class VXml {
 
     public void setfXml(FXml fXml) {
         this.fXml = fXml;
+    }
+
+    public Json getJson() {
+        return json;
+    }
+
+    public void setJson(Json json) {
+        this.json = json;
     }
 }

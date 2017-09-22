@@ -44,7 +44,9 @@ public class MainTab extends Tab {
                     final String immutableUrl = url;
                     client.getAbs(immutableUrl).send(ar -> {
                         String result;
-                        if(ar.succeeded()) result = ar.result().bodyAsString();
+                        if(ar.succeeded()){
+                            result = ar.result().bodyAsString();
+                        }
                         else result = ar.cause().getMessage();
 
                         Platform.runLater(() -> {

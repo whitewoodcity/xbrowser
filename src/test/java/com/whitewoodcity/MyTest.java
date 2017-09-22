@@ -1,8 +1,16 @@
 package com.whitewoodcity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.VXml;
+import com.whitewoodcity.core.bean.XmlV;
+import io.vertx.core.Vertx;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.ext.web.client.WebClient;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -14,7 +22,7 @@ import java.io.StringReader;
 @RunWith(VertxUnitRunner.class)
 public class MyTest {
 
-    private static String vxml="<script type=\"ruby\"\n" +
+    private static String vxml="<xmlv><script type=\"ruby\"\n" +
             "            href=\"\"\n" +
             "            version=\"9.1.13.0\"\n" +
             "            link=\"http://central.maven.org/maven2/org/jruby/jruby-complete/9.1.13.0/jruby-complete-9.1.13.0.jar\">\n" +
@@ -23,9 +31,44 @@ public class MyTest {
             "        button002.layoutX.bind(button001.layoutX)\n" +
             "        button001.onAction = lambda{|value|\n" +
             "        print \"clicked\"\n" +
-            "\n" +
-            "    </script>";
+            "\n}" +
+            "    </script></xmlv>";
 
+    static Vertx vertx;
+    static WebClient client;
+
+    @BeforeClass
+    public static void start(){
+        vertx = Vertx.vertx();
+        client = WebClient.create(vertx);
+    }
+
+    public static void stop(){
+        vertx.close();
+    }
+
+    @Test
+    public void testVXML(TestContext context) throws Exception{
+        final Async async = context.async();
+        client.getAbs("http://39.108.96.23/static/test.xmlv")
+                .send(ar ->{
+                    if(ar.succeeded()){
+                        System.out.println(ar.result().getHeader("Content-Type"));
+                        System.out.println(ar.result().bodyAsString());
+
+                        ObjectMapper xmlMapper = new XmlMapper();
+                        try {
+                            XmlV xmlV = xmlMapper.readValue(ar.result().bodyAsString(), XmlV.class);
+                            System.out.println(xmlV.getCss());
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }else{
+
+                    }
+                    async.complete();
+                });
+    }
 
     @Test
     public void test() {
