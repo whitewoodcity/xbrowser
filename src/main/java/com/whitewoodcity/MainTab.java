@@ -42,28 +42,31 @@ public class MainTab extends Tab {
             if (value.getCode() == KeyCode.ENTER) {
                 try {
                     final String immutableUrl = url;
-                    client.getAbs(immutableUrl)
-                            .send(ar -> {
-                                Platform.runLater(() -> {
-                                    if (ar.succeeded()) {
-                                        // Obtain response
-                                        WebView webView = new WebView();
-                                        webView.prefHeightProperty().bind(vBox.heightProperty().subtract(textField.heightProperty()));
-                                        webView.getEngine().loadContent(ar.result().bodyAsString());
-                                        vBox.getChildren().removeAll(errorMessage, content);
-                                        content = webView;
-                                        vBox.getChildren().add(content);
+                    client.getAbs(immutableUrl).send(ar -> {
+                        String result;
+                        if(ar.succeeded()) result = ar.result().bodyAsString();
+                        else result = ar.cause().getMessage();
 
-                                        //get title from html string
-                                        textProperty().unbind();
-                                        textProperty().bind(webView.getEngine().titleProperty());
+                        Platform.runLater(() -> {
+                            if (ar.succeeded()) {
+                                // Obtain response
+                                WebView webView = new WebView();
+                                webView.prefHeightProperty().bind(vBox.heightProperty().subtract(textField.heightProperty()));
+                                webView.getEngine().loadContent(result);
+                                vBox.getChildren().removeAll(errorMessage, content);
+                                content = webView;
+                                vBox.getChildren().add(content);
 
-                                        webView.getEngine().load(immutableUrl);
-                                    } else {
-                                        handleErrorMessage(ar.cause().getMessage());
-                                    }
-                                });
-                            });
+                                //get title from html string
+                                textProperty().unbind();
+                                textProperty().bind(webView.getEngine().titleProperty());
+
+                                webView.getEngine().load(immutableUrl);
+                            } else {
+                                handleErrorMessage(result);
+                            }
+                        });
+                    });
                 } catch (Exception e) {
                     handleErrorMessage(e.getMessage());
                 }
