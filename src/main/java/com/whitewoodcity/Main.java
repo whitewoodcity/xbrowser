@@ -1,6 +1,5 @@
 package com.whitewoodcity;
 
-import com.whitewoodcity.ui.Page;
 import com.whitewoodcity.ui.PagePane;
 import io.vertx.core.Vertx;
 import javafx.application.Application;
@@ -8,7 +7,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TabPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 

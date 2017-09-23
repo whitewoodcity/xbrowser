@@ -198,6 +198,7 @@ public class TabContent implements Initializable {
                 container.setPadding(new Insets(10));
                 container.getChildren().add(errorMsg);
                 parent = errorMsg;
+                tab.textProperty().unbind();
                 tab.setText(urlOrMsg);
                 break;
             default:
