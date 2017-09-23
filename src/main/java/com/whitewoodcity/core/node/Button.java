@@ -2,9 +2,8 @@ package com.whitewoodcity.core.node;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.scene.Node;
 
-public class Button implements com.whitewoodcity.core.node.Node{
+public class Button implements Node{
 
     private javafx.scene.control.Button body;
 
@@ -16,7 +15,7 @@ public class Button implements com.whitewoodcity.core.node.Node{
         body = new javafx.scene.control.Button(text);
     }
 
-    public Button(String text, Node graphic) {
+    public Button(String text, javafx.scene.Node graphic) {
         body = new javafx.scene.control.Button(text, graphic);
     }
 
@@ -89,7 +88,7 @@ public class Button implements com.whitewoodcity.core.node.Node{
     }
 
     @Override
-    public Node getNode() {
+    public javafx.scene.Node getNode() {
         return body;
     }
 }

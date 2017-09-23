@@ -1,10 +1,18 @@
 package com.whitewoodcity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.core.bean.CSS;
 import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.VXml;
+import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.parse.PageParser;
+import io.vertx.core.Vertx;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.ext.web.client.WebClient;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,6 +35,42 @@ public class MyTest {
             "\n" +
             "    </script>";
 
+
+    static Vertx vertx;
+    static WebClient client;
+
+    @BeforeClass
+    public static void start(){
+        vertx = Vertx.vertx();
+        client = WebClient.create(vertx);
+    }
+
+    public static void stop(){
+        vertx.close();
+    }
+
+    @Test
+    public void testVXML(TestContext context) throws Exception{
+        final Async async = context.async();
+        client.getAbs("http://39.108.96.23/static/test.xmlv")
+                .send(ar ->{
+                    if(ar.succeeded()){
+                        System.out.println(ar.result().getHeader("Content-Type"));
+                        System.out.println(ar.result().bodyAsString());
+
+                        ObjectMapper xmlMapper = new XmlMapper();
+                        try {
+                            XmlV xmlV = xmlMapper.readValue(ar.result().bodyAsString(), XmlV.class);
+                            System.out.println(xmlV.getJson().getJsonObject());
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }else{
+
+                    }
+                    async.complete();
+                });
+    }
 
     @Test
     public void test() {
