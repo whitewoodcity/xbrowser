@@ -63,31 +63,33 @@ public class TabContent implements Initializable{
     private void loadWeb(String url){
         try {
             client.getAbs(url).send(ar -> {
-                String result;
-                if(ar.succeeded()) result = ar.result().bodyAsString();
-                else result = ar.cause().getMessage();
+                if(ar.succeeded()){
+                    Platform.runLater(() -> {
 
-                Platform.runLater(() -> {
-                    if (ar.succeeded()) {
-                        // Obtain response
-                        WebView webView = new WebView();
-                        webView.prefHeightProperty().bind(vBox.heightProperty().subtract(urlInput.heightProperty()));
-                        webView.getEngine().loadContent(result);
-                        webView.getEngine().loadContent(result);
-                        container.getChildren().removeAll(errorMessage);
-                        vBox.getChildren().add(webView);
+                            // Obtain response
+                            WebView webView = new WebView();
+                            webView.prefHeightProperty().bind(vBox.heightProperty().subtract(urlInput.heightProperty()));
+                            webView.getEngine().loadContent(ar.result().bodyAsString());
+                            container.getChildren().removeAll(errorMessage);
+                            vBox.getChildren().add(webView);
 
-                        //get title from html string
-                        tab.textProperty().unbind();
-                        tab.textProperty().bind(webView.getEngine().titleProperty());
+                            //get title from html string
+                            tab.textProperty().unbind();
+                            tab.textProperty().bind(webView.getEngine().titleProperty());
 
-                        webView.getEngine().load(url);
-                    } else {
-                        handleErrorMessage(result);
-                    }
-                });
+                            webView.getEngine().load(url);
+
+                    });
+                } else {
+                    Platform.runLater(()->{
+                        handleExceptionMessage(ar.cause());
+                    });
+                }
+
+
             });
         }catch (Exception e){
+            handleExceptionMessage(e);
             e.printStackTrace();
         }
     }
