@@ -3,45 +3,45 @@ package com.whitewoodcity.core.node;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Node;
-import javafx.scene.layout.Region;
 
-public class Button extends javafx.scene.control.Button{
+public class Button implements com.whitewoodcity.core.node.Node{
+
+    private javafx.scene.control.Button body;
 
     public Button() {
-        super();
+        body = new javafx.scene.control.Button();
     }
 
     public Button(String text) {
-        super(text);
+        body = new javafx.scene.control.Button(text);
     }
 
     public Button(String text, Node graphic) {
-        super(text, graphic);
+        body = new javafx.scene.control.Button(text, graphic);
     }
 
     public void setX(double x) {
-        setLayoutX(x);
+        body.setLayoutX(x);
     }
 
     public void setY(double y){
-        setLayoutY(y);
+        body.setLayoutY(y);
     }
 
     public double getX(){
-        return getLayoutX();
+        return body.getLayoutX();
     }
 
     public double getY(){
-
-        return getLayoutY();
+        return body.getLayoutY();
     }
 
     public DoubleProperty xProperty(){
-        return layoutXProperty();
+        return body.layoutXProperty();
     }
 
     public DoubleProperty yProperty(){
-        return layoutYProperty();
+        return body.layoutYProperty();
     }
 
     public DoubleProperty x_property(){
@@ -61,26 +61,35 @@ public class Button extends javafx.scene.control.Button{
     }
 
     public ReadOnlyDoubleProperty width_property(){
-        return widthProperty();
+        return body.widthProperty();
     }
 
     public ReadOnlyDoubleProperty height_property(){
-        return heightProperty();
+        return body.heightProperty();
     }
 
     public ReadOnlyDoubleProperty widthproperty(){
-        return widthProperty();
+        return body.widthProperty();
     }
 
     public ReadOnlyDoubleProperty heightproperty(){
-        return heightProperty();
+        return body.heightProperty();
     }
 
-    public void setW(double w){
-        setPrefWidth(w);
+    public void setWidth(int width){
+        body.setPrefWidth(width);
     }
 
-    public double getW(){
-        return getWidth();
+    public double getWidth(){
+        return body.getPrefWidth();
+    }
+
+    public javafx.scene.control.Button getBody() {
+        return body;
+    }
+
+    @Override
+    public Node getNode() {
+        return body;
     }
 }
