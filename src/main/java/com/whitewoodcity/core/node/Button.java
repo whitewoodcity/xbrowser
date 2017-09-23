@@ -1,7 +1,6 @@
 package com.whitewoodcity.core.node;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
 
 public class Button implements Node{
 
@@ -59,28 +58,44 @@ public class Button implements Node{
         return yProperty();
     }
 
-    public ReadOnlyDoubleProperty width_property(){
-        return body.widthProperty();
+    public DoubleProperty widthProperty(){
+        return body.prefWidthProperty();
     }
 
-    public ReadOnlyDoubleProperty height_property(){
-        return body.heightProperty();
+    public DoubleProperty heightProperty(){
+        return body.prefHeightProperty();
     }
 
-    public ReadOnlyDoubleProperty widthproperty(){
-        return body.widthProperty();
+    public DoubleProperty width_property(){
+        return widthProperty();
     }
 
-    public ReadOnlyDoubleProperty heightproperty(){
-        return body.heightProperty();
+    public DoubleProperty height_property(){
+        return heightProperty();
     }
 
-    public void setWidth(int width){
+    public DoubleProperty widthproperty(){
+        return widthProperty();
+    }
+
+    public DoubleProperty heightproperty(){
+        return heightProperty();
+    }
+
+    public void setWidth(double width){
         body.setPrefWidth(width);
     }
 
     public double getWidth(){
         return body.getPrefWidth();
+    }
+
+    public void setHeight(double height){
+        body.setPrefHeight(height);
+    }
+
+    public double getHeight(){
+        return body.getPrefHeight();
     }
 
     public javafx.scene.control.Button getBody() {
