@@ -46,7 +46,6 @@ public class TabContent implements Initializable {
     @FXML
     private StackPane imgIcn;
 
-
     private Tab tab;
 
     private WebClient client;
@@ -54,7 +53,6 @@ public class TabContent implements Initializable {
     private Parent parent;
     private WebView webView;
     private PageParser pageParser;
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -181,6 +179,7 @@ public class TabContent implements Initializable {
 
     private void processParent(ParentType type, String result, String url) {
         removeParent();
+        StackPane headerArea = (StackPane) tab.getTabPane().lookup(".tab-header-area");
         switch (type) {
             case GROUP:
                 Group group = new Group();
@@ -199,16 +198,22 @@ public class TabContent implements Initializable {
             case ERROR_MESSAGE:
                 TextArea errorMsg = new TextArea();
                 errorMsg.setText(result);
-                errorMsg.setLayoutY(header.getLayoutY()+header.getHeight());
+                errorMsg.setLayoutY(header.getHeight());
                 errorMsg.prefWidthProperty().bind(tab.getTabPane().widthProperty());
+                errorMsg.prefHeightProperty().bind(tab.getTabPane().heightProperty()
+                        .subtract(headerArea.heightProperty())
+                        .subtract(header.getHeight()));
                 this.group.getChildren().add(errorMsg);
                 parent = errorMsg;
                 break;
             default:
                 if(webView==null){
                     webView = new WebView();
-                    webView.setLayoutY(header.getLayoutY()+header.getHeight());
+                    webView.setLayoutY(header.getHeight());
                     webView.prefWidthProperty().bind(tab.getTabPane().widthProperty());
+                    webView.prefHeightProperty().bind(tab.getTabPane().heightProperty()
+                            .subtract(headerArea.heightProperty())
+                            .subtract(header.getHeight()));
                 }
                 webView.getEngine().loadContent(result);
                 tab.textProperty().unbind();
