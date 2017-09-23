@@ -1,8 +1,6 @@
 package com.whitewoodcity.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.FXml;
 import com.whitewoodcity.core.bean.VXml;
@@ -54,7 +52,7 @@ public class TabContent implements Initializable {
 
     private WebView webView;
 
-    private ParentType lastParent=ParentType.NONE;
+    private ParentType lastParent = ParentType.NONE;
 
     private PageParser pageParser;
 
@@ -62,8 +60,9 @@ public class TabContent implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         client = WebClient.create(Main.vertx);
         container.prefHeightProperty().bind(vBox.heightProperty().subtract(header.getHeight()));
-        pageParser=new PageParser();
 
+        pageParser=new PageParser();
+        container.setMaxWidth(500);
     }
 
     public void setTab(Tab tab) {
@@ -85,6 +84,7 @@ public class TabContent implements Initializable {
         }else if (url.startsWith("http://") || url.startsWith("https://")) {
             loadWeb(url);
         }
+
     }
 
     private void loadFxml(String url) {
@@ -124,17 +124,20 @@ public class TabContent implements Initializable {
         try {
             client.getAbs(url).send(ar -> {
                 if (ar.succeeded()) {
+                    ParentType type;
+                    if(url.endsWith("xmlv")||ar.result().getHeader("Content-Type").endsWith("xmlv")){
+                        type = ParentType.GROUP;
+                    }else{
+                        type = ParentType.WEB_VIEW;
+                    }
                     Platform.runLater(() -> {
-                        buildParent(ParentType.WEB_VIEW,ar.result().bodyAsString(),url);
-
+                        buildParent(type, ar.result().bodyAsString(), url);
                     });
                 } else {
                     Platform.runLater(() -> {
                         handleExceptionMessage(ar.cause());
                     });
                 }
-
-
             });
         } catch (Exception e) {
             handleExceptionMessage(e.getCause());
@@ -145,14 +148,12 @@ public class TabContent implements Initializable {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        buildParent(ParentType.ERROR_MESSAGE,sw.toString(),null);
-
+        buildParent(ParentType.ERROR_MESSAGE, sw.toString(), null);
     }
-
 
     XmlMapper xmlMapper = new XmlMapper();
 
-    private void buildParent(ParentType type, String result, String immutableUrl){
+    private void buildParent(ParentType type, String result, String immutableUrl) {
         removeNode(type);
         switch (type) {
             case GROUP:
@@ -160,62 +161,62 @@ public class TabContent implements Initializable {
                 try {
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
                     Rectangle rectangle = new Rectangle();
-                    rectangle.setFill(Color.RED);
-                    rectangle.setWidth(100);
+                    rectangle.setFill(Color.GREEN);
+                    rectangle.setLayoutX(2000);
+                    rectangle.setWidth(3000);
                     rectangle.setHeight(100);
                     group.getChildren().add(rectangle);
+                    addNode(group);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             case FXML:
-
                 break;
             case ERROR_MESSAGE:
-                TextArea errorMsg=new TextArea();
+                TextArea errorMsg = new TextArea();
                 errorMsg.setText(result);
                 addNode(errorMsg);
                 break;
-                default:
-                    if(webView==null){
-                        webView=new WebView();
-                        addNode(webView);
-                    }
-                    webView.getEngine().loadContent(result);
-                    tab.textProperty().unbind();
-                    tab.textProperty().bind(webView.getEngine().titleProperty());
-                    webView.getEngine().load(immutableUrl);
-                    break;
+            default:
+                if (webView == null) {
+                    webView = new WebView();
+                    addNode(webView);
+                }
+                webView.getEngine().loadContent(result);
+                tab.textProperty().unbind();
+                tab.textProperty().bind(webView.getEngine().titleProperty());
+                webView.getEngine().load(immutableUrl);
+                break;
         }
     }
 
 
-    public void addNode(Node node){
+    public void addNode(Node node) {
         container.getChildren().add(node);
     }
 
-    public void removeNode(ParentType current){
-        switch (lastParent){
+    public void removeNode(ParentType current) {
+        switch (lastParent) {
             case WEB_VIEW:
-                if(current!=ParentType.WEB_VIEW){
+                if (current != ParentType.WEB_VIEW) {
                     container.getChildren().removeAll(webView);
-                    webView=null;
+                    webView = null;
                 }
                 break;
-                default:
-                    clearAll();
+            default:
+                clearAll();
 //            case REGION:
 //            case GROUP:
 //            case ERROR_MESSAGE:
 //                break;
         }
-        lastParent=current;
+        lastParent = current;
     }
 
-    private void clearAll(){
-        ObservableList<Node> nodes=container.getChildren();
-        if(nodes.size()>0){
-            nodes.remove(0,nodes.size());
-
+    private void clearAll() {
+        ObservableList<Node> nodes = container.getChildren();
+        if (nodes.size() > 0) {
+            nodes.remove(0, nodes.size());
         }
     }
 

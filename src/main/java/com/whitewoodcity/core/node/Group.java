@@ -2,6 +2,8 @@ package com.whitewoodcity.core.node;
 
 
 import javafx.beans.property.DoubleProperty;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class Group implements Node{
@@ -13,7 +15,13 @@ public class Group implements Node{
         body = new javafx.scene.Group();
 
         background = new Rectangle();
-        body.getChildren().add(body);
+        body.getChildren().add(background);
+    }
+
+    public Group(Scene scene){
+        this();
+        background.widthProperty().bind(scene.widthProperty());
+        background.heightProperty().bind(scene.heightProperty());
     }
 
     @Override

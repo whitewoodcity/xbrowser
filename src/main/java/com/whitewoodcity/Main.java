@@ -44,7 +44,6 @@ public class Main extends Application {
         insets = new Insets(0,insets.getRight(),insets.getBottom(),insets.getLeft()+button.getWidth());
         headerArea.setPadding(insets);
 
-
         button.setLayoutX(insets.getLeft()-button.getWidth());
         button.setLayoutY(insets.getTop());
         button.setOnAction(event -> {

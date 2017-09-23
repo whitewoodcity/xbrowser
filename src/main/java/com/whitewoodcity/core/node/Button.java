@@ -1,6 +1,8 @@
 package com.whitewoodcity.core.node;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 public class Button implements Node{
 
@@ -87,7 +89,7 @@ public class Button implements Node{
     }
 
     public double getWidth(){
-        return body.getPrefWidth();
+        return body.getWidth();
     }
 
     public void setHeight(double height){
@@ -95,7 +97,7 @@ public class Button implements Node{
     }
 
     public double getHeight(){
-        return body.getPrefHeight();
+        return body.getHeight();
     }
 
     public javafx.scene.control.Button getBody() {
@@ -105,5 +107,17 @@ public class Button implements Node{
     @Override
     public javafx.scene.Node getNode() {
         return body;
+    }
+
+    public void setAction(EventHandler<ActionEvent> value){
+        body.setOnAction(value);
+    }
+
+    public void setaction(EventHandler<ActionEvent> value){
+        setAction(value);
+    }
+
+    public void set_action(EventHandler<ActionEvent> value){
+        setAction(value);
     }
 }
