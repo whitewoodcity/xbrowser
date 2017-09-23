@@ -26,6 +26,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.io.*;
 import java.net.URL;
 import java.util.List;
@@ -181,6 +183,16 @@ public class TabContent implements Initializable {
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
                     Button button = new Button("test");
                     button.setWidth(100);
+                    button.setHeight(50);
+                    button.setX(50);
+                    button.setY(50);
+
+                    ScriptEngineManager manager = new ScriptEngineManager();
+                    ScriptEngine engine = manager.getEngineByName("JavaScript");
+
+                    engine.put("button", button);
+                    engine.eval("button.id = 'abc';button.action = function (value){print(button.id);print(button.disable);}");
+
                     group.add(button);
                     parent = (Parent)group.getNode();
                     container.getChildren().add(group.getNode());
