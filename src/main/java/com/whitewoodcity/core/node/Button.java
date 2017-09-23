@@ -89,7 +89,8 @@ public class Button implements Node{
     }
 
     public double getWidth(){
-        return body.getWidth();
+        if(body.getWidth() > 0.000001) return body.getWidth();
+        else return body.getPrefWidth();
     }
 
     public void setHeight(double height){
@@ -97,7 +98,8 @@ public class Button implements Node{
     }
 
     public double getHeight(){
-        return body.getHeight();
+        if(body.getHeight() > 0.000001) return body.getHeight();
+        else return body.getPrefHeight();
     }
 
     public javafx.scene.control.Button getBody() {

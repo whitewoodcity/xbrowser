@@ -5,6 +5,7 @@ import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.CSS;
 import com.whitewoodcity.core.bean.VXml;
 import com.whitewoodcity.core.bean.XmlV;
+import com.whitewoodcity.core.node.Button;
 import com.whitewoodcity.core.parse.PageParser;
 import com.whitewoodcity.util.Res;
 import io.vertx.ext.web.client.WebClient;
@@ -79,14 +80,10 @@ public class TabContent implements Initializable {
     @FXML
     private void loadUrl(Event event) {
         String url = urlInput.getText();
-        if(url.startsWith("http")&&url.endsWith(".xmlv")){
-            loadFxml(url);
-        }else {
-            if (!url.startsWith("http")) {
-                url = "http://" + url;
-            }
-            loadWeb(url);
+        if (!url.startsWith("http")) {
+            url = "http://" + url;
         }
+        loadWeb(url);
 
     }
 
@@ -177,22 +174,28 @@ public class TabContent implements Initializable {
 
     XmlMapper xmlMapper = new XmlMapper();
 
-    private void processParent(ParentType type, String result, String url) {
+    private void processParent(ParentType type, String result, String url){
         removeParent();
         StackPane headerArea = (StackPane) tab.getTabPane().lookup(".tab-header-area");
         switch (type) {
             case GROUP:
-                Group group = new Group();
+                StackPane stackPane = new StackPane();
+                com.whitewoodcity.core.node.Group group = new com.whitewoodcity.core.node.Group();
                 try {
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
-                    Rectangle rectangle = new Rectangle();
-                    rectangle.setFill(Color.GREEN);
-                    rectangle.setLayoutX(2000);
-                    rectangle.setWidth(3000);
-                    rectangle.setHeight(100);
-                    group.getChildren().add(rectangle);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    Button button = new Button("test");
+                    button.setWidth(100);
+                    button.setX(100-button.getWidth()/2);
+                    System.out.println(button.getWidth());
+                    System.out.println(button.getX());
+                    button.setY(500);
+                    group.add(button);
+                    parent = stackPane;
+                    stackPane.layoutYProperty().bind(header.heightProperty());
+                    stackPane.getChildren().add(group.getNode());
+                    this.group.getChildren().add(stackPane);
+                } catch (Exception e) {
+                    handleExceptionMessage(e);
                 }
                 break;
             case ERROR_MESSAGE:
