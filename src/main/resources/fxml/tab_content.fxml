@@ -32,6 +32,5 @@
             </ImageView>
         </StackPane>
     </HBox>
-    <Separator />
-
+    <StackPane fx:id="container" alignment="TOP_LEFT" style="-fx-background-color:red"/>
 </Group>
