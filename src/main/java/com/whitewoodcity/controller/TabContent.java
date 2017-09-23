@@ -5,33 +5,37 @@ import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
-import javafx.beans.binding.DoubleBinding;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.Parent;
+import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.regex.Pattern;
 
-public class TabContent implements Initializable{
+public class TabContent implements Initializable {
 
     @FXML
     private VBox vBox;
+
+    @FXML
+    private HBox header;
 
     @FXML
     private TextField urlInput;
@@ -41,13 +45,17 @@ public class TabContent implements Initializable{
 
     private Tab tab;
 
-    private TextArea errorMessage = new TextArea();
-
     private WebClient client;
+
+    private WebView webView;
+
+    private ParentType lastParent=ParentType.NONE;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        client=WebClient.create(Main.vertx) ;
+        client = WebClient.create(Main.vertx);
+        container.prefHeightProperty().bind(vBox.heightProperty().subtract(header.getHeight()));
+
     }
 
     public void setTab(Tab tab) {
@@ -56,50 +64,37 @@ public class TabContent implements Initializable{
 
     @FXML
     public void loadEntry(KeyEvent keyEvent) {
-        if(keyEvent.getCode()== KeyCode.ENTER){
+        if (keyEvent.getCode() == KeyCode.ENTER) {
             loadUrl(keyEvent);
         }
     }
 
     @FXML
-    private void loadUrl(Event event){
+    private void loadUrl(Event event) {
         String url = urlInput.getText();
-        if(url.startsWith("http://")||url.startsWith("https://")){
+        if (url.startsWith("http://") || url.startsWith("https://")) {
             loadWeb(url);
         }
     }
 
-    private void loadWeb(String url){
+    private void loadWeb(String url) {
         try {
             client.getAbs(url).send(ar -> {
-                if(ar.succeeded()){
+                if (ar.succeeded()) {
                     Platform.runLater(() -> {
-
-                            // Obtain response
-                            WebView webView = new WebView();
-                            webView.prefHeightProperty().bind(vBox.heightProperty().subtract(urlInput.heightProperty()));
-                            webView.getEngine().loadContent(ar.result().bodyAsString());
-                            container.getChildren().removeAll(errorMessage);
-                            vBox.getChildren().add(webView);
-
-                            //get title from html string
-                            tab.textProperty().unbind();
-                            tab.textProperty().bind(webView.getEngine().titleProperty());
-
-                            webView.getEngine().load(url);
+                        buildParent(ParentType.WEB_VIEW,ar.result().bodyAsString(),url);
 
                     });
                 } else {
-                    Platform.runLater(()->{
+                    Platform.runLater(() -> {
                         handleExceptionMessage(ar.cause());
                     });
                 }
 
 
             });
-        }catch (Exception e){
-            handleExceptionMessage(e);
-            e.printStackTrace();
+        } catch (Exception e) {
+            handleExceptionMessage(e.getCause());
         }
     }
 
@@ -107,43 +102,75 @@ public class TabContent implements Initializable{
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        handleErrorMessage(sw.toString());
+        buildParent(ParentType.ERROR_MESSAGE,sw.toString(),null);
+
     }
 
-    private void handleErrorMessage(String message) {
-        errorMessage.clear();
-        errorMessage.appendText(message);
-        vBox.getChildren().removeAll(errorMessage);
-        vBox.getChildren().addAll(errorMessage);
-        errorMessage.prefHeightProperty().bind(vBox.heightProperty().subtract(urlInput.heightProperty()));
-    }
 
     XmlMapper xmlMapper = new XmlMapper();
 
-    private Parent build(ParentType type, String result, DoubleBinding height, String immutableUrl) throws Exception {
+    private void buildParent(ParentType type, String result, String immutableUrl){
+        removeNode(type);
         switch (type) {
             case GROUP:
                 Group group = new Group();
-                XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
-                Rectangle rectangle = new Rectangle();
-                rectangle.setFill(Color.RED);
-                rectangle.setWidth(100);
-                rectangle.setHeight(100);
-                group.getChildren().add(rectangle);
-                return group;
-            default:
-                WebView webView = new WebView();
-                webView.getEngine().loadContent(result);
-                webView.prefHeightProperty().bind(height);
-
-                //get title from html string
-                tab.textProperty().unbind();
-                tab.textProperty().bind(webView.getEngine().titleProperty());
-
-                webView.getEngine().load(immutableUrl);
-                return webView;
+                try {
+                    XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
+                    Rectangle rectangle = new Rectangle();
+                    rectangle.setFill(Color.RED);
+                    rectangle.setWidth(100);
+                    rectangle.setHeight(100);
+                    group.getChildren().add(rectangle);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            case ERROR_MESSAGE:
+                TextArea errorMsg=new TextArea();
+                errorMsg.setText(result);
+                addNode(errorMsg);
+                break;
+                default:
+                    if(webView==null){
+                        webView=new WebView();
+                        addNode(webView);
+                    }
+                    webView.getEngine().loadContent(result);
+                    tab.textProperty().unbind();
+                    tab.textProperty().bind(webView.getEngine().titleProperty());
+                    webView.getEngine().load(immutableUrl);
+                    return ;
         }
     }
 
+
+    public void addNode(Node node){
+        container.getChildren().add(node);
+    }
+
+    public void removeNode(ParentType current){
+        switch (lastParent){
+            case WEB_VIEW:
+                if(current!=ParentType.WEB_VIEW){
+                    container.getChildren().removeAll(webView);
+                    webView=null;
+                }
+                break;
+                default:
+                    clearAll();
+//            case REGION:
+//            case GROUP:
+//            case ERROR_MESSAGE:
+//                break;
+        }
+        lastParent=current;
+    }
+
+    private void clearAll(){
+        ObservableList<Node> nodes=container.getChildren();
+        if(nodes.size()>0){
+            nodes.remove(0,nodes.size());
+
+        }
+    }
 
 }

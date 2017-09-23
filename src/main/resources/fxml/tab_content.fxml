@@ -18,7 +18,7 @@
     <stylesheets>
         <URL value="@/css/tab_content"/>
     </stylesheets>
-    <HBox alignment="CENTER">
+    <HBox fx:id="header" alignment="CENTER">
         <padding><Insets topRightBottomLeft="10"/></padding>
         <TextField fx:id="urlInput" prefWidth="${vBox.width}" onKeyPressed="#loadEntry">
             <text>http://</text>
@@ -34,7 +34,7 @@
         </StackPane>
     </HBox>
     <Separator />
-    <StackPane fx:id="container">
+    <StackPane fx:id="container"  style="-fx-background-color:red">
         <!--<WebView fx:id="webView"/>
 
         <TextArea fx:id="errorMessage"/>-->
