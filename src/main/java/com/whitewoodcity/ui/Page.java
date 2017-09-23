@@ -1,13 +1,12 @@
 package com.whitewoodcity.ui;
 
 import com.whitewoodcity.controller.TabContent;
-import com.whitewoodcity.core.parse.PageParser;
 import com.whitewoodcity.util.Res;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.scene.Group;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
@@ -16,10 +15,9 @@ import java.io.IOException;
  */
 public class Page extends Tab{
 
-
     private Tooltip tooltip;
 
-    public Page(String title) {
+    public Page(String title, TabPane tabPane) {
         setText(title);
         setClosable(true);
         tooltip=new Tooltip();
@@ -27,17 +25,14 @@ public class Page extends Tab{
         setTooltip(tooltip);
         try {
             FXMLLoader fxmlLoader=new FXMLLoader(Res.getFxmlRes("tab_content"));
-            Parent parent=fxmlLoader.load();
+            Group parent=fxmlLoader.load();
             setContent(parent);
             TabContent controller=fxmlLoader.getController();
+            controller.getHeader().prefWidthProperty().bind(tabPane.widthProperty());
             controller.setTab(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
     }
-
-
-
 }
