@@ -1,5 +1,8 @@
 package com.whitewoodcity.core.bean;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
+
 import javax.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -7,19 +10,24 @@ import javax.xml.bind.annotation.*;
 public class Script {
 
     @XmlAttribute(name = "type")
-    private String type;
+    @JacksonXmlProperty(isAttribute = true)
+    public String type;
 
     @XmlAttribute(name="link")
-    private String link;
+    @JacksonXmlProperty(isAttribute = true)
+    public String link;
 
     @XmlAttribute(name = "href")
-    private String href;
+    @JacksonXmlProperty(isAttribute = true)
+    public String href;
 
     @XmlAttribute(name = "version")
-    private String version;
+    @JacksonXmlProperty(isAttribute = true)
+    public String version;
 
     @XmlValue
-    private String script;
+    @JacksonXmlText
+    public String script;
 
     public String getType() {
         return type;
