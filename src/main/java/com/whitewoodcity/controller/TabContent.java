@@ -14,6 +14,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -50,6 +52,13 @@ public class TabContent implements Initializable{
 
     public void setTab(Tab tab) {
         this.tab = tab;
+    }
+
+    @FXML
+    public void loadEntry(KeyEvent keyEvent) {
+        if(keyEvent.getCode()== KeyCode.ENTER){
+            loadUrl(keyEvent);
+        }
     }
 
     @FXML
@@ -135,5 +144,6 @@ public class TabContent implements Initializable{
                 return webView;
         }
     }
+
 
 }
