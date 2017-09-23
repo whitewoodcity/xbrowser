@@ -1,6 +1,7 @@
 package com.whitewoodcity;
 
 import com.whitewoodcity.ui.Page;
+import com.whitewoodcity.ui.PagePane;
 import io.vertx.core.Vertx;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -21,7 +22,7 @@ public class Main extends Application {
 
         Group root = new Group();
         Button button = new Button("+");
-        TabPane tabPane = new TabPane();
+        PagePane tabPane = new PagePane();
 
         Scene scene = new Scene(root, 960, 540);
         root.getChildren().addAll(tabPane,button);
@@ -34,20 +35,20 @@ public class Main extends Application {
         tabPane.setTabMaxWidth(100);
         tabPane.setTabMinWidth(100);
 
-        tabPane.getTabs().add(new Page("新标签页"));
+        tabPane.buildPane();
 
         tabPane.prefWidthProperty().bind(scene.widthProperty());
         StackPane headerArea = (StackPane) tabPane.lookup(".tab-header-area");
 //        StackPane backPane= (StackPane) tabPane.lookup(".tab-header-background");
 //        backPane.setStyle("-fx-background-color:#F4F4F4");
         Insets insets = headerArea.getInsets();
-        insets = new Insets(0,insets.getRight(),insets.getBottom(),insets.getLeft()+button.getWidth());
+        insets = new Insets(insets.getTop(),insets.getRight(),insets.getBottom(),insets.getLeft()+button.getWidth());
         headerArea.setPadding(insets);
 
         button.setLayoutX(insets.getLeft()-button.getWidth());
         button.setLayoutY(insets.getTop());
         button.setOnAction(event -> {
-            tabPane.getTabs().add(new Page("新标签页"));
+            tabPane.buildPane();
         });
     }
 

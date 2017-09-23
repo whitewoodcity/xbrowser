@@ -10,20 +10,19 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 <?import java.net.URL?>
-<?import javafx.scene.web.WebView?>
-<VBox xmlns="http://javafx.com/javafx"
+<Group xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.whitewoodcity.controller.TabContent"
-      fx:id="vBox">
+      fx:id="group">
     <stylesheets>
         <URL value="@/css/tab_content"/>
     </stylesheets>
     <HBox fx:id="header" alignment="CENTER">
         <padding><Insets topRightBottomLeft="10"/></padding>
-        <TextField fx:id="urlInput" prefWidth="${vBox.width}" onKeyPressed="#loadEntry">
+        <TextField fx:id="urlInput" onKeyPressed="#loadEntry">
             <text>http://</text>
         </TextField>
-        <StackPane styleClass="stack_icon" onMouseClicked="#loadUrl" >
+        <StackPane fx:id="imgIcn" styleClass="stack_icon" onMouseClicked="#loadUrl" >
             <padding><Insets left="4" right="4"/></padding>
             <HBox.margin>
                 <Insets left="10"/>
@@ -34,9 +33,5 @@
         </StackPane>
     </HBox>
     <Separator />
-    <StackPane fx:id="container"  style="-fx-background-color:red" alignment="TOP_LEFT">
-        <!--<WebView fx:id="webView"/>
 
-        <TextArea fx:id="errorMessage"/>-->
-    </StackPane>
-</VBox>
+</Group>

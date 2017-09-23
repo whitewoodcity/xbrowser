@@ -10,11 +10,11 @@ import com.whitewoodcity.core.parse.PageParser;
 import com.whitewoodcity.util.Res;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -25,7 +25,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
@@ -38,7 +37,7 @@ import java.util.ResourceBundle;
 public class TabContent implements Initializable {
 
     @FXML
-    private VBox vBox;
+    private Group group;
 
     @FXML
     private HBox header;
@@ -47,25 +46,27 @@ public class TabContent implements Initializable {
     private TextField urlInput;
 
     @FXML
-    private StackPane container;
+    private StackPane imgIcn;
+
 
     private Tab tab;
 
     private WebClient client;
 
+    private Parent parent;
     private WebView webView;
-
-    private ParentType lastParent = ParentType.NONE;
-
     private PageParser pageParser;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         client = WebClient.create(Main.vertx);
-        container.prefHeightProperty().bind(vBox.heightProperty().subtract(header.getHeight()));
-
+        header.setSpacing(0);
+        header.setPadding(new Insets(10));
+        urlInput.prefWidthProperty().bind(header.widthProperty().subtract(20).subtract(imgIcn.widthProperty()));
         pageParser=new PageParser();
-        container.setMaxWidth(500);
+//        container.prefWidthProperty().bind(tab.getTabPane().widthProperty());
+//        container.prefHeightProperty().bind(vBox.heightProperty().subtract(header.getHeight()));
     }
 
     public void setTab(Tab tab) {
@@ -82,9 +83,12 @@ public class TabContent implements Initializable {
     @FXML
     private void loadUrl(Event event) {
         String url = urlInput.getText();
-        if(url.startsWith("http://")&&url.endsWith(".xmlv")){
+        if(url.startsWith("http")&&url.endsWith(".xmlv")){
             loadFxml(url);
-        }else if (url.startsWith("http://") || url.startsWith("https://")) {
+        }else {
+            if (!url.startsWith("http")) {
+                url = "http://" + url;
+            }
             loadWeb(url);
         }
 
@@ -95,30 +99,28 @@ public class TabContent implements Initializable {
                 .send(ar ->{
                     if(ar.succeeded()){
                         //System.out.println(ar.result().getHeader("Content-Type"));
-                        System.out.println(ar.result().bodyAsString());
+                        //System.out.println(ar.result().bodyAsString());
                         String content=ar.result().bodyAsString();
-
                         StringReader reader=new StringReader(content);
                         VXml vXml=pageParser.paresReader(reader, VXml.class);
 
                         //渲染第一步，载入fxml
-                        FXml fXml=vXml.getfXml();
-                        System.out.println(fXml.getFxml());
                         List<CSS> css=vXml.getCsses();
                         BufferedWriter fos = null;
+                        InputStream is=null;
                         try {
-                            File file=Res.getTempFile();
-                            fos=new BufferedWriter(new FileWriter(file));
+                            File cssFile=Res.getTempFile();
+                            fos=new BufferedWriter(new FileWriter(cssFile));
                             fos.write(css.get(0).getCss());
                             fos.flush();
                             fos.close();
                             String f=content.substring(content.indexOf("<fxml>")+6,content.lastIndexOf("</fxml>"));
-                            InputStream is=new ByteArrayInputStream(f.getBytes());
+                            is=new ByteArrayInputStream(f.getBytes());
                             FXMLLoader loader=new FXMLLoader();
                             Parent parent=loader.load(is);
-                            parent.getStylesheets().add(file.toURI().toURL().toExternalForm());
+                            parent.getStylesheets().add(cssFile.toURI().toURL().toExternalForm());
                             Platform.runLater(()->{
-                                buildParent(ParentType.FXML,null,null);
+                                processParent(ParentType.FXML,null,null);
                                 addNode(parent);
                             });
                         } catch (IOException e) {
@@ -127,6 +129,9 @@ public class TabContent implements Initializable {
                             try {
                                 if(fos!=null){
                                     fos.close();
+                                }
+                                if (is != null) {
+                                    is.close();
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -146,22 +151,24 @@ public class TabContent implements Initializable {
             client.getAbs(url).send(ar -> {
                 if (ar.succeeded()) {
                     ParentType type;
-                    if(url.endsWith("xmlv")||ar.result().getHeader("Content-Type").endsWith("xmlv")){
+                    if (url.endsWith("xmlv") || ar.result().getHeader("Content-Type").endsWith("xmlv")) {
                         type = ParentType.GROUP;
-                    }else{
+                    } else {
                         type = ParentType.WEB_VIEW;
                     }
+                    String result = ar.result().bodyAsString();
                     Platform.runLater(() -> {
-                        buildParent(type, ar.result().bodyAsString(), url);
+                        processParent(type, result, url);
                     });
                 } else {
+                    Throwable throwable = ar.cause();
                     Platform.runLater(() -> {
-                        handleExceptionMessage(ar.cause());
+                        handleExceptionMessage(throwable);
                     });
                 }
             });
         } catch (Exception e) {
-            handleExceptionMessage(e.getCause());
+            handleExceptionMessage(e);
         }
     }
 
@@ -169,13 +176,13 @@ public class TabContent implements Initializable {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        buildParent(ParentType.ERROR_MESSAGE, sw.toString(), null);
+        processParent(ParentType.ERROR_MESSAGE, sw.toString(), null);
     }
 
     XmlMapper xmlMapper = new XmlMapper();
 
-    private void buildParent(ParentType type, String result, String immutableUrl) {
-        removeNode(type);
+    private void processParent(ParentType type, String result, String url) {
+        removeParent();
         switch (type) {
             case GROUP:
                 Group group = new Group();
@@ -187,58 +194,46 @@ public class TabContent implements Initializable {
                     rectangle.setWidth(3000);
                     rectangle.setHeight(100);
                     group.getChildren().add(rectangle);
-                    addNode(group);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            case FXML:
                 break;
             case ERROR_MESSAGE:
                 TextArea errorMsg = new TextArea();
                 errorMsg.setText(result);
-                addNode(errorMsg);
+                errorMsg.setLayoutY(header.getLayoutY()+header.getHeight());
+                errorMsg.prefWidthProperty().bind(tab.getTabPane().widthProperty());
+                this.group.getChildren().add(errorMsg);
+                parent = errorMsg;
                 break;
             default:
-                if (webView == null) {
+                if(webView==null){
                     webView = new WebView();
-                    addNode(webView);
+                    webView.setLayoutY(header.getLayoutY()+header.getHeight());
+                    webView.prefWidthProperty().bind(tab.getTabPane().widthProperty());
                 }
                 webView.getEngine().loadContent(result);
                 tab.textProperty().unbind();
                 tab.textProperty().bind(webView.getEngine().titleProperty());
-                webView.getEngine().load(immutableUrl);
+                webView.getEngine().load(url);
+
+                this.group.getChildren().add(webView);
+                parent = webView;
                 break;
         }
     }
 
-
-    public void addNode(Node node) {
-        container.getChildren().add(node);
+    public void removeParent() {
+        group.getChildren().remove(parent);
     }
 
-    public void removeNode(ParentType current) {
-        switch (lastParent) {
-            case WEB_VIEW:
-                if (current != ParentType.WEB_VIEW) {
-                    container.getChildren().removeAll(webView);
-                    webView = null;
-                }
-                break;
-            default:
-                clearAll();
-//            case REGION:
-//            case GROUP:
-//            case ERROR_MESSAGE:
-//                break;
-        }
-        lastParent = current;
+    public HBox getHeader() {
+        return header;
     }
 
-    private void clearAll() {
-        ObservableList<Node> nodes = container.getChildren();
-        if (nodes.size() > 0) {
-            nodes.remove(0, nodes.size());
-        }
+    public void addNode(Parent node){
+        parent=node;
+        node.setLayoutY(header.getLayoutY()+header.getHeight());
+        group.getChildren().add(node);
     }
-
 }
