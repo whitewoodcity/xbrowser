@@ -16,11 +16,10 @@ import java.io.IOException;
  */
 public class Page extends Tab{
 
-    private PageParser parser;
+
     private Tooltip tooltip;
 
     public Page(String title) {
-        parser=new PageParser();
         setText(title);
         setClosable(true);
         tooltip=new Tooltip();
