@@ -1,15 +1,14 @@
 package com.whitewoodcity.core.bean;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
+
+import javax.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "fxml")
 public class FXml {
 
-    @XmlValue
+    @XmlMixed
     private String fxml;
 
     public String getFxml() {

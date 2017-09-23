@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "xmlv")
+@XmlRootElement(name = "vxml")
 public class VXml {
 
     @XmlElement(name = "css")

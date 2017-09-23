@@ -2,10 +2,12 @@ package com.whitewoodcity.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
+import com.whitewoodcity.core.bean.CSS;
 import com.whitewoodcity.core.bean.FXml;
 import com.whitewoodcity.core.bean.VXml;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.parse.PageParser;
+import com.whitewoodcity.util.Res;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -30,6 +32,7 @@ import javafx.scene.web.WebView;
 
 import java.io.*;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class TabContent implements Initializable {
@@ -91,22 +94,40 @@ public class TabContent implements Initializable {
         client.getAbs(url)
                 .send(ar ->{
                     if(ar.succeeded()){
-                        System.out.println(ar.result().getHeader("Content-Type"));
+                        //System.out.println(ar.result().getHeader("Content-Type"));
                         System.out.println(ar.result().bodyAsString());
-                        StringReader reader=new StringReader(ar.result().bodyAsString());
+                        String content=ar.result().bodyAsString();
+
+                        StringReader reader=new StringReader(content);
                         VXml vXml=pageParser.paresReader(reader, VXml.class);
+
                         //渲染第一步，载入fxml
                         FXml fXml=vXml.getfXml();
-                        InputStream is=new ByteArrayInputStream(fXml.getFxml().getBytes());
-                        FXMLLoader loader=new FXMLLoader();
+                        System.out.println(fXml.getFxml());
+                        List<CSS> css=vXml.getCsses();
+                        BufferedWriter fos = null;
                         try {
+                            File file=Res.getTempFile();
+                            fos=new BufferedWriter(new FileWriter(file));
+                            fos.write(css.get(0).getCss());
+                            fos.flush();
+                            fos.close();
+                            String f=content.substring(content.indexOf("<fxml>")+6,content.lastIndexOf("</fxml>"));
+                            InputStream is=new ByteArrayInputStream(f.getBytes());
+                            FXMLLoader loader=new FXMLLoader();
                             Parent parent=loader.load(is);
-
+                            parent.getStylesheets().add(file.toURI().toURL().toExternalForm());
+                            Platform.runLater(()->{
+                                buildParent(ParentType.FXML,null,null);
+                                addNode(parent);
+                            });
                         } catch (IOException e) {
                             e.printStackTrace();
                         }finally {
                             try {
-                                is.close();
+                                if(fos!=null){
+                                    fos.close();
+                                }
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
