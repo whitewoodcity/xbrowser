@@ -198,11 +198,14 @@ public class TabContent implements Initializable {
             case ERROR_MESSAGE:
                 TextArea errorMsg = new TextArea();
                 errorMsg.setText(result);
+                errorMsg.setEditable(false);
+                errorMsg.setFocusTraversable(false);
                 errorMsg.setLayoutY(header.getHeight());
-                errorMsg.prefWidthProperty().bind(tab.getTabPane().widthProperty());
+                errorMsg.setLayoutX(3);
+                errorMsg.prefWidthProperty().bind(tab.getTabPane().widthProperty().subtract(6));
                 errorMsg.prefHeightProperty().bind(tab.getTabPane().heightProperty()
                         .subtract(headerArea.heightProperty())
-                        .subtract(header.getHeight()));
+                        .subtract(header.getHeight()).subtract(3));
                 this.group.getChildren().add(errorMsg);
                 parent = errorMsg;
                 break;
