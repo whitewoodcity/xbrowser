@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    public  static Vertx vertx = Vertx.vertx();
+    public static Vertx vertx;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -61,6 +61,7 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         System.getProperties().setProperty("vertx.disableDnsResolver","true");
+        vertx = Vertx.vertx();
         launch(args);
     }
 }
