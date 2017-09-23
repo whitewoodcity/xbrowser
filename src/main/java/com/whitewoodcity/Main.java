@@ -1,30 +1,28 @@
 package com.whitewoodcity;
 
+import com.whitewoodcity.ui.Page;
 import io.vertx.core.Vertx;
-import io.vertx.ext.web.client.WebClient;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    Vertx vertx = Vertx.vertx();
-    WebClient client = WebClient.create(vertx);
+    public  static Vertx vertx = Vertx.vertx();
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        primaryStage.setTitle("XBrowser");
 
         Group root = new Group();
         Button button = new Button("+");
         TabPane tabPane = new TabPane();
 
-        primaryStage.setTitle("XBrowser");
         Scene scene = new Scene(root, 960, 540);
         root.getChildren().addAll(tabPane,button);
         primaryStage.setScene(scene);
@@ -36,20 +34,22 @@ public class Main extends Application {
         tabPane.setTabMaxWidth(100);
         tabPane.setTabMinWidth(100);
 
-        Tab tab0 = new MainTab("New Tab", tabPane, client);
-        tab0.setClosable(false);
-        tabPane.getTabs().add(tab0);
-        tab0.setClosable(true);
+        tabPane.getTabs().add(new Page("新标签页"));
 
         tabPane.prefWidthProperty().bind(scene.widthProperty());
         StackPane headerArea = (StackPane) tabPane.lookup(".tab-header-area");
-
+//        StackPane backPane= (StackPane) tabPane.lookup(".tab-header-background");
+//        backPane.setStyle("-fx-background-color:#F4F4F4");
         Insets insets = headerArea.getInsets();
-        insets = new Insets(insets.getTop(),insets.getRight(),insets.getBottom(),insets.getLeft()+button.getWidth());
+        insets = new Insets(0,insets.getRight(),insets.getBottom(),insets.getLeft()+button.getWidth());
         headerArea.setPadding(insets);
+
 
         button.setLayoutX(insets.getLeft()-button.getWidth());
         button.setLayoutY(insets.getTop());
+        button.setOnAction(event -> {
+            tabPane.getTabs().add(new Page("新标签页"));
+        });
     }
 
     @Override
@@ -57,6 +57,7 @@ public class Main extends Application {
         vertx.close();
         super.stop();
     }
+
 
     public static void main(String[] args) {
         System.getProperties().setProperty("vertx.disableDnsResolver","true");
