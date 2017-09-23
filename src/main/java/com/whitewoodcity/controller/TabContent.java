@@ -1,16 +1,23 @@
 package com.whitewoodcity.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import com.whitewoodcity.Main;
+import com.whitewoodcity.core.bean.FXml;
+import com.whitewoodcity.core.bean.VXml;
 import com.whitewoodcity.core.bean.XmlV;
+import com.whitewoodcity.core.parse.PageParser;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -23,9 +30,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -51,10 +56,13 @@ public class TabContent implements Initializable {
 
     private ParentType lastParent=ParentType.NONE;
 
+    private PageParser pageParser;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         client = WebClient.create(Main.vertx);
         container.prefHeightProperty().bind(vBox.heightProperty().subtract(header.getHeight()));
+        pageParser=new PageParser();
 
     }
 
@@ -72,9 +80,44 @@ public class TabContent implements Initializable {
     @FXML
     private void loadUrl(Event event) {
         String url = urlInput.getText();
-        if (url.startsWith("http://") || url.startsWith("https://")) {
+        if(url.startsWith("http://")&&url.endsWith(".xmlv")){
+            loadFxml(url);
+        }else if (url.startsWith("http://") || url.startsWith("https://")) {
             loadWeb(url);
         }
+    }
+
+    private void loadFxml(String url) {
+        client.getAbs(url)
+                .send(ar ->{
+                    if(ar.succeeded()){
+                        System.out.println(ar.result().getHeader("Content-Type"));
+                        System.out.println(ar.result().bodyAsString());
+                        StringReader reader=new StringReader(ar.result().bodyAsString());
+                        VXml vXml=pageParser.paresReader(reader, VXml.class);
+                        //渲染第一步，载入fxml
+                        FXml fXml=vXml.getfXml();
+                        InputStream is=new ByteArrayInputStream(fXml.getFxml().getBytes());
+                        FXMLLoader loader=new FXMLLoader();
+                        try {
+                            Parent parent=loader.load(is);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }finally {
+                            try {
+                                is.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }else{
+                        Platform.runLater(() -> {
+                            handleExceptionMessage(ar.cause());
+                        });
+                    }
+                });
     }
 
     private void loadWeb(String url) {
@@ -124,6 +167,9 @@ public class TabContent implements Initializable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            case FXML:
+
+                break;
             case ERROR_MESSAGE:
                 TextArea errorMsg=new TextArea();
                 errorMsg.setText(result);
@@ -138,7 +184,7 @@ public class TabContent implements Initializable {
                     tab.textProperty().unbind();
                     tab.textProperty().bind(webView.getEngine().titleProperty());
                     webView.getEngine().load(immutableUrl);
-                    return ;
+                    break;
         }
     }
 

@@ -1,27 +1,11 @@
 <vxml>
-    <json>
-        {
-        "id":"group001",
-        "type":"group",
-        "children":[{
-        "id":"button001",
-        "type":"button",
-        "layoutX":"100"
-        },{
-        "id":"button002",
-        "type":"button"
-        }]
-        }
-    </json>
-    <script type="ruby"
-            href=""
-            version="9.1.13.0"
-            link="http://central.maven.org/maven2/org/jruby/jruby-complete/9.1.13.0/jruby-complete-9.1.13.0.jar">
-        button001 = $button001
-        button002 = $button002
-        button002.layoutX.bind(button001.layoutX)
-        button001.onAction = lambda{|value|
-        print "clicked"
+
+    <fxml>
+
+    </fxml>
+
+    <script type="js" >
+
 
     </script>
     <css href="http://www.baidu.com">

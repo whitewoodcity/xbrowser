@@ -34,7 +34,7 @@
         </StackPane>
     </HBox>
     <Separator />
-    <StackPane fx:id="container"  style="-fx-background-color:red">
+    <StackPane fx:id="container"  style="-fx-background-color:red" alignment="TOP_LEFT">
         <!--<WebView fx:id="webView"/>
 
         <TextArea fx:id="errorMessage"/>-->
