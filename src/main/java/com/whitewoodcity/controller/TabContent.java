@@ -84,7 +84,6 @@ public class TabContent implements Initializable {
             url = "http://" + url;
         }
         loadWeb(url);
-
     }
 
     private void loadFxml(String url) {
@@ -139,25 +138,23 @@ public class TabContent implements Initializable {
                 });
     }
 
-    private void loadWeb(String url) {
+    private void loadWeb(final String url) {
         try {
             client.getAbs(url).send(ar -> {
                 if (ar.succeeded()) {
                     ParentType type;
-                    if (url.endsWith("xmlv") || ar.result().getHeader("Content-Type").endsWith("xmlv")) {
+                    if (url.endsWith("xmlv") ||
+                            (ar.result().getHeader("Content-Type")!=null&&
+                                    ar.result().getHeader("Content-Type").endsWith("xmlv"))) {
                         type = ParentType.GROUP;
                     } else {
                         type = ParentType.WEB_VIEW;
                     }
                     String result = ar.result().bodyAsString();
-                    Platform.runLater(() -> {
-                        processParent(type, result, url);
-                    });
+                    Platform.runLater(() -> processParent(type, result, url));
                 } else {
                     Throwable throwable = ar.cause();
-                    Platform.runLater(() -> {
-                        handleExceptionMessage(throwable);
-                    });
+                    Platform.runLater(() -> handleExceptionMessage(throwable));
                 }
             });
         } catch (Exception e) {
