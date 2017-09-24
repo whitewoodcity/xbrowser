@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "fxml")
 public class FXml {
 
-    @XmlMixed
+    @XmlValue
     private String fxml;
 
     public String getFxml() {

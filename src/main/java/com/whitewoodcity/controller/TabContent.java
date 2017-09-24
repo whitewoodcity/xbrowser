@@ -2,12 +2,15 @@ package com.whitewoodcity.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
+import com.whitewoodcity.core.api.JsApi;
 import com.whitewoodcity.core.bean.CSS;
+import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.VXml;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.Button;
 import com.whitewoodcity.core.parse.PageParser;
 import com.whitewoodcity.util.Res;
+import com.whitewoodcity.util.StringUtil;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -30,6 +33,7 @@ import javafx.scene.web.WebView;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.*;
 import java.net.URL;
 import java.util.List;
@@ -89,6 +93,7 @@ public class TabContent implements Initializable {
     @FXML
     private void loadUrl(Event event) {
         String url = urlInput.getText();
+//        loadFxml(url);
         if (!url.startsWith("http")) {
             url = "http://" + url;
         }
@@ -99,34 +104,58 @@ public class TabContent implements Initializable {
         client.getAbs(url)
                 .send(ar ->{
                     if(ar.succeeded()){
-                        //System.out.println(ar.result().getHeader("Content-Type"));
-                        //System.out.println(ar.result().bodyAsString());
                         String content=ar.result().bodyAsString();
                         StringReader reader=new StringReader(content);
                         VXml vXml=pageParser.paresReader(reader, VXml.class);
-
-                        //渲染第一步，载入fxml
-                        List<CSS> css=vXml.getCsses();
                         BufferedWriter fos = null;
                         InputStream is=null;
                         try {
-                            File cssFile=Res.getTempFile();
-                            fos=new BufferedWriter(new FileWriter(cssFile));
-                            fos.write(css.get(0).getCss());
-                            fos.flush();
-                            fos.close();
-                            String f=content.substring(content.indexOf("<fxml>")+6,content.lastIndexOf("</fxml>"));
-                            is=new ByteArrayInputStream(f.getBytes());
+                            //第一步 载入fxml
+                            is=new ByteArrayInputStream(vXml.getfXml().getFxml().getBytes());
                             FXMLLoader loader=new FXMLLoader();
                             Parent parent=loader.load(is);
-                            parent.getStylesheets().add(cssFile.toURI().toURL().toExternalForm());
+                            //第二步 载入脚本绑定
+                            ScriptEngineManager manager=new ScriptEngineManager();
+                            ScriptEngine js=manager.getEngineByName("JavaScript");
+                            js.put("fx",new JsApi(parent));
+                            js.eval("function $(selector){return fx.findView(selector)}");
+                            List<Script> scripts=vXml.getScripts();
+                            for (Script script:scripts){
+                                String type=script.type;
+                                if(!StringUtil.isEmpty(type)
+                                        &&!StringUtil.isEmpty(script.script)
+                                        &&type.equalsIgnoreCase("javascript")){
+                                    js.eval(script.script);
+                                }
+                            }
+                            //第三步 应用css
+                            List<CSS> csses=vXml.getCsses();
+                            if(csses.size()>0){
+                                File cssFile=Res.getTempFile("css");
+                                fos=new BufferedWriter(new FileWriter(cssFile));
+                                for (CSS css:csses){
+                                    String cssStr=css.getCss();
+                                    if(StringUtil.isEmpty(cssStr)){
+                                        continue;
+                                    }
+                                    fos.write(cssStr);
+                                    fos.newLine();
+                                }
+                                fos.flush();
+                                fos.close();
+                                parent.getStylesheets().add(cssFile.toURI().toURL().toExternalForm());
+                            }
+
                             Platform.runLater(()->{
-                                processParent(ParentType.FXML,null,null);
+                                removeParent();
                                 addNode(parent);
                             });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }finally {
+                        } catch (IOException | ScriptException e) {
+//                            e.printStackTrace();
+                            Platform.runLater(() -> {
+                                handleExceptionMessage(ar.cause());
+                            });
+                        } finally {
                             try {
                                 if(fos!=null){
                                     fos.close();

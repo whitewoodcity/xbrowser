@@ -1,6 +1,7 @@
 <vxml>
 
     <fxml>
+    <![CDATA[
         <?import java.lang.*?>
         <?import java.util.*?>
         <?import javafx.scene.*?>
@@ -16,10 +17,12 @@
             </center>
 
         </BorderPane>
+        ]]>
     </fxml>
 
-    <script type="js" >
-
+    <script type="javascript" >
+        var btn=$("#testBtn");
+        print(btn.getText());
 
     </script>
     <css>

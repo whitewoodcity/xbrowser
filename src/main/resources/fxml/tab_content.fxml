@@ -18,7 +18,7 @@
     <HBox fx:id="header" alignment="CENTER">
         <padding><Insets topRightBottomLeft="10"/></padding>
         <TextField fx:id="urlInput" onKeyPressed="#loadEntry">
-            <text>http://</text>
+            <text>http://w2v4.com/static/test.xmlv</text>
         </TextField>
         <StackPane fx:id="imgIcn" styleClass="stack_icon" onMouseClicked="#loadUrl" >
             <padding><Insets left="4" right="4"/></padding>
