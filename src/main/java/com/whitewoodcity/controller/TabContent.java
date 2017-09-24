@@ -25,6 +25,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 
 import javax.script.ScriptEngine;
@@ -50,6 +51,7 @@ public class TabContent implements Initializable {
 
     @FXML
     private StackPane container;
+    private Rectangle containerClip = new Rectangle();
 
     private Tab tab;
 
@@ -67,6 +69,10 @@ public class TabContent implements Initializable {
         urlInput.prefWidthProperty().bind(header.widthProperty().subtract(20).subtract(imgIcn.widthProperty()));
         pageParser=new PageParser();
         container.layoutYProperty().bind(header.heightProperty());
+
+        containerClip.widthProperty().bind(container.widthProperty());
+        containerClip.heightProperty().bind(container.heightProperty());
+        container.setClip(containerClip);
     }
 
     public void setTab(Tab tab) {
@@ -176,27 +182,28 @@ public class TabContent implements Initializable {
 
     private void processParent(ParentType type, String result, String urlOrMsg){
         removeParent();
+//        System.out.println(type);
         switch (type) {
             case GROUP:
                 container.setPadding(new Insets(0));
-                com.whitewoodcity.core.node.Group group = new com.whitewoodcity.core.node.Group();
+                com.whitewoodcity.core.node.Pane pane = new com.whitewoodcity.core.node.Pane();
                 try {
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
                     Button button = new Button("test");
                     button.setWidth(100);
                     button.setHeight(50);
                     button.setX(-50);
-                    button.setY(-50);
+                    button.setY(-25);
 
                     ScriptEngineManager manager = new ScriptEngineManager();
                     ScriptEngine engine = manager.getEngineByName("JavaScript");
 
                     engine.put("button", button);
-                    engine.eval("button.id = 'abc';button.action = function (value){print(button.id);print(button.disable);}");
+                    engine.eval("button.id = 'abc';button.action = function (value){print(button.id);button.x = button.x+10;}");
 
-                    group.add(button);
-                    parent = (Parent)group.getNode();
-                    container.getChildren().add(0,group.getNode());
+                    pane.add(button);
+                    parent = (Parent)pane.getNode();
+                    container.getChildren().add(0,pane.getNode());
                 } catch (Exception e) {
                     handleExceptionMessage(e);
                 }
