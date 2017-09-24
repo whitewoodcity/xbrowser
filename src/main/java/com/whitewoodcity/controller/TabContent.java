@@ -87,11 +87,11 @@ public class TabContent implements Initializable {
     @FXML
     private void loadUrl(Event event) {
         String url = urlInput.getText();
-        loadFxml(url);
-//        if (!url.startsWith("http")) {
-//            url = "http://" + url;
-//        }
-//        loadWeb(url);
+//        loadFxml(url);
+        if (!url.startsWith("http")) {
+            url = "http://" + url;
+        }
+        loadWeb(url);
     }
 
     private void loadFxml(String url) {
