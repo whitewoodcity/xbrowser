@@ -185,10 +185,10 @@ public class TabContent implements Initializable {
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
                     Button button = new Button("test");
                     button.setWidth(100);
-                    button.setX(100-button.getWidth()/2);
+                    button.setX(50);
                     System.out.println(button.getWidth());
                     System.out.println(button.getX());
-                    button.setY(500);
+                    button.setY(50);
                     group.add(button);
                     parent = stackPane;
                     stackPane.layoutYProperty().bind(header.heightProperty());
