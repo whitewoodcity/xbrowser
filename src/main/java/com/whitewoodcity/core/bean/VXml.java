@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -23,7 +24,7 @@ public class VXml {
     private Json json;
 
     public List<CSS> getCsses() {
-        return csses;
+        return csses==null?new ArrayList<>():csses;
     }
 
     public void setCsses(List<CSS> csses) {

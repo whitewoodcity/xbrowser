@@ -10,13 +10,13 @@ public class Res {
         return ClassLoader.getSystemResource("fxml"+ File.separator+fxml+".fxml");
     }
 
-    public static File getTempFile(){
+    public static File getTempFile(String suffix){
         File tempDir=new File(ClassLoader.getSystemResource("temp").getPath());
-        System.out.println(tempDir);
+        //System.out.println(tempDir);
         if(!tempDir.exists()){
             tempDir.mkdir();
         }
-        File file=new File(tempDir,System.currentTimeMillis()+".css");
+        File file=new File(tempDir,System.currentTimeMillis()+"."+suffix);
         if(!file.exists()){
             try {
                 file.createNewFile();
