@@ -8,10 +8,10 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 <?import java.net.URL?>
-<Group xmlns="http://javafx.com/javafx"
+<Pane xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.whitewoodcity.controller.TabContent"
-      fx:id="group">
+      fx:id="pane">
     <stylesheets>
         <URL value="@/css/tab_content"/>
     </stylesheets>
@@ -31,4 +31,4 @@
         </StackPane>
     </HBox>
     <StackPane fx:id="container" alignment="TOP_LEFT" style="-fx-background-color:transparent"/>
-</Group>
+</Pane>

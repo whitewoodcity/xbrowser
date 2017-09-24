@@ -26,6 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 
@@ -40,7 +41,7 @@ import java.util.ResourceBundle;
 public class TabContent implements Initializable {
 
     @FXML
-    private Group group;
+    private Pane pane;
 
     @FXML
     private HBox header;
@@ -213,8 +214,8 @@ public class TabContent implements Initializable {
                     Button button = new Button("test");
                     button.setWidth(100);
                     button.setHeight(50);
-                    button.setX(50);
-                    button.setY(50);
+                    button.setX(-50);
+                    button.setY(-50);
 
                     ScriptEngineManager manager = new ScriptEngineManager();
                     ScriptEngine engine = manager.getEngineByName("JavaScript");
@@ -224,7 +225,7 @@ public class TabContent implements Initializable {
 
                     group.add(button);
                     parent = (Parent)group.getNode();
-                    container.getChildren().add(group.getNode());
+                    container.getChildren().add(0,group.getNode());
                 } catch (Exception e) {
                     handleExceptionMessage(e);
                 }
@@ -270,6 +271,6 @@ public class TabContent implements Initializable {
     public void addNode(Parent node){
         parent=node;
         node.setLayoutY(header.getLayoutY()+header.getHeight());
-        group.getChildren().add(node);
+        pane.getChildren().add(node);
     }
 }

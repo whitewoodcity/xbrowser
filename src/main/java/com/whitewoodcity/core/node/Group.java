@@ -2,17 +2,20 @@ package com.whitewoodcity.core.node;
 
 
 import javafx.beans.property.DoubleProperty;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
 public class Group implements Node{
 
-    private javafx.scene.Group body;
+    private Pane body;
     private Rectangle background;
 
     public Group(){
-        body = new javafx.scene.Group();
+        body = new Pane();
 
         background = new Rectangle();
+        background.setWidth(1000);
+        background.setHeight(1000);
         body.getChildren().add(background);
     }
 

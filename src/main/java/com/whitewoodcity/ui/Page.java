@@ -7,6 +7,7 @@ import javafx.scene.Group;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class Page extends Tab{
             StackPane headerArea = (StackPane) tabPane.lookup(".tab-header-area");
 
             FXMLLoader fxmlLoader=new FXMLLoader(Res.getFxmlRes("tab_content"));
-            Group parent=fxmlLoader.load();
+            Pane parent=fxmlLoader.load();
             setContent(parent);
             TabContent controller=fxmlLoader.getController();
             controller.getHeader().prefWidthProperty().bind(tabPane.widthProperty());
