@@ -24,10 +24,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.io.*;
 import java.net.URL;
 import java.util.List;
@@ -47,6 +47,9 @@ public class TabContent implements Initializable {
     @FXML
     private StackPane imgIcn;
 
+    @FXML
+    private StackPane container;
+
     private Tab tab;
 
     private WebClient client;
@@ -62,8 +65,7 @@ public class TabContent implements Initializable {
         header.setPadding(new Insets(10));
         urlInput.prefWidthProperty().bind(header.widthProperty().subtract(20).subtract(imgIcn.widthProperty()));
         pageParser=new PageParser();
-//        container.prefWidthProperty().bind(tab.getTabPane().widthProperty());
-//        container.prefHeightProperty().bind(vBox.heightProperty().subtract(header.getHeight()));
+        container.layoutYProperty().bind(header.heightProperty());
     }
 
     public void setTab(Tab tab) {
@@ -84,7 +86,6 @@ public class TabContent implements Initializable {
             url = "http://" + url;
         }
         loadWeb(url);
-
     }
 
     private void loadFxml(String url) {
@@ -139,25 +140,23 @@ public class TabContent implements Initializable {
                 });
     }
 
-    private void loadWeb(String url) {
+    private void loadWeb(final String url) {
         try {
             client.getAbs(url).send(ar -> {
                 if (ar.succeeded()) {
                     ParentType type;
-                    if (url.endsWith("xmlv") || ar.result().getHeader("Content-Type").endsWith("xmlv")) {
+                    if (url.endsWith("xmlv") ||
+                            (ar.result().getHeader("Content-Type")!=null&&
+                                    ar.result().getHeader("Content-Type").endsWith("xmlv"))) {
                         type = ParentType.GROUP;
                     } else {
                         type = ParentType.WEB_VIEW;
                     }
                     String result = ar.result().bodyAsString();
-                    Platform.runLater(() -> {
-                        processParent(type, result, url);
-                    });
+                    Platform.runLater(() -> processParent(type, result, url));
                 } else {
                     Throwable throwable = ar.cause();
-                    Platform.runLater(() -> {
-                        handleExceptionMessage(throwable);
-                    });
+                    Platform.runLater(() -> handleExceptionMessage(throwable));
                 }
             });
         } catch (Exception e) {
@@ -169,75 +168,74 @@ public class TabContent implements Initializable {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        processParent(ParentType.ERROR_MESSAGE, sw.toString(), null);
+        processParent(ParentType.ERROR_MESSAGE, sw.toString(), e.getMessage());
     }
 
     XmlMapper xmlMapper = new XmlMapper();
 
-    private void processParent(ParentType type, String result, String url){
+    private void processParent(ParentType type, String result, String urlOrMsg){
         removeParent();
-        StackPane headerArea = (StackPane) tab.getTabPane().lookup(".tab-header-area");
         switch (type) {
             case GROUP:
-                StackPane stackPane = new StackPane();
+                container.setPadding(new Insets(0));
                 com.whitewoodcity.core.node.Group group = new com.whitewoodcity.core.node.Group();
                 try {
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
                     Button button = new Button("test");
                     button.setWidth(100);
+                    button.setHeight(50);
                     button.setX(50);
-                    System.out.println(button.getWidth());
-                    System.out.println(button.getX());
                     button.setY(50);
+
+                    ScriptEngineManager manager = new ScriptEngineManager();
+                    ScriptEngine engine = manager.getEngineByName("JavaScript");
+
+                    engine.put("button", button);
+                    engine.eval("button.id = 'abc';button.action = function (value){print(button.id);print(button.disable);}");
+
                     group.add(button);
-                    parent = stackPane;
-                    stackPane.layoutYProperty().bind(header.heightProperty());
-                    stackPane.getChildren().add(group.getNode());
-                    this.group.getChildren().add(stackPane);
+                    parent = (Parent)group.getNode();
+                    container.getChildren().add(group.getNode());
                 } catch (Exception e) {
                     handleExceptionMessage(e);
                 }
                 break;
             case ERROR_MESSAGE:
                 TextArea errorMsg = new TextArea();
+                errorMsg.setPrefHeight(container.getHeight() - 20);
                 errorMsg.setText(result);
-                errorMsg.setEditable(false);
-                errorMsg.setFocusTraversable(false);
-                errorMsg.setLayoutY(header.getHeight());
-                errorMsg.setLayoutX(3);
-                errorMsg.prefWidthProperty().bind(tab.getTabPane().widthProperty().subtract(6));
-                errorMsg.prefHeightProperty().bind(tab.getTabPane().heightProperty()
-                        .subtract(headerArea.heightProperty())
-                        .subtract(header.getHeight()).subtract(3));
-                this.group.getChildren().add(errorMsg);
+                container.setPadding(new Insets(10));
+                container.getChildren().add(errorMsg);
                 parent = errorMsg;
+                tab.textProperty().unbind();
+                tab.setText(urlOrMsg);
                 break;
             default:
+                container.setPadding(new Insets(0));
                 if(webView==null){
                     webView = new WebView();
-                    webView.setLayoutY(header.getHeight());
-                    webView.prefWidthProperty().bind(tab.getTabPane().widthProperty());
-                    webView.prefHeightProperty().bind(tab.getTabPane().heightProperty()
-                            .subtract(headerArea.heightProperty())
-                            .subtract(header.getHeight()));
                 }
                 webView.getEngine().loadContent(result);
                 tab.textProperty().unbind();
                 tab.textProperty().bind(webView.getEngine().titleProperty());
-                webView.getEngine().load(url);
+                webView.getEngine().load(urlOrMsg);
 
-                this.group.getChildren().add(webView);
+                container.getChildren().add(webView);
                 parent = webView;
                 break;
         }
     }
 
     public void removeParent() {
-        group.getChildren().remove(parent);
+        container.getChildren().remove(parent);
     }
 
     public HBox getHeader() {
         return header;
+    }
+
+    public StackPane getContainer() {
+        return container;
     }
 
     public void addNode(Parent node){
