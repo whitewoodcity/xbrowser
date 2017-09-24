@@ -18,4 +18,12 @@ public interface Node {
     default String getId(){
         return getNode().getId();
     }
+
+    default void setRotate(double value){
+        getNode().setRotate(value);
+    }
+
+    default double getRotate(){
+        return getNode().getRotate();
+    }
 }
