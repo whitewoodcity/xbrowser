@@ -31,8 +31,6 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class TabContent implements Initializable {
@@ -68,7 +66,6 @@ public class TabContent implements Initializable {
 
     private Node parent;
     private WebView webView;
-    private PageParser pageParser;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -77,7 +74,6 @@ public class TabContent implements Initializable {
         header.setPadding(new Insets(10));
         urlInput.prefWidthProperty().bind(header.widthProperty().subtract(50)
                 .subtract(fileSelector.widthProperty()).subtract(urlLocator.widthProperty()).subtract(fileSaver.widthProperty()));
-        pageParser = new PageParser();
         container.layoutYProperty().bind(header.heightProperty());
 
         containerClip.widthProperty().bind(container.widthProperty());
@@ -86,7 +82,6 @@ public class TabContent implements Initializable {
 
         container.setOnDragOver(event -> event.acceptTransferModes(TransferMode.ANY));
 
-//        fileSelector.autosize();
     }
 
     public void setTab(Tab tab) {
@@ -282,7 +277,6 @@ public class TabContent implements Initializable {
             URI uri = new URI(url);
             File file = new File(uri);
             if(!(parent instanceof TextArea)) return;
-            List<String> list = new ArrayList<>();
             String content = ((TextArea)parent).getText();
             Res.saveFile(file,content);
         }catch (Exception e){
