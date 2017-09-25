@@ -85,7 +85,7 @@ public class Json {
                 break;
         }
 
-        if(jsonObject.getString("id")!=null){
+        if(jsonObject.getString("id")!=null&&engine!=null){
             node.setId(jsonObject.getString("id"));
             engine.put(jsonObject.getString("id"), node);
         }

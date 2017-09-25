@@ -224,31 +224,36 @@ public class TabContent implements Initializable {
         switch (type) {
             case GROUP:
                 container.setPadding(new Insets(0));
-                com.whitewoodcity.core.node.Pane pane = new com.whitewoodcity.core.node.Pane();
                 try {
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
 
-                    ScriptEngineManager manager = new ScriptEngineManager();
-                    ScriptEngine engine = manager.getEngineByName("JavaScript");
+                    ScriptEngine engine = null;
+                    if(xmlV.getScript()!=null){
+                        ScriptEngineManager manager = new ScriptEngineManager();
+                        String script = xmlV.getScript().getType();
+                        script = script==null ? "javascript":script;
+                        engine = manager.getEngineByName(script);
+                    }
 
                     parent = xmlV.getJson().generateNode(engine);
-                    System.out.println(xmlV.getJson());
 
-                    File cssFile=Res.getTempFile("css");
-                    BufferedWriter fos=new BufferedWriter(new FileWriter(cssFile));
-                    fos.write(xmlV.getCss().getCss());
-                    fos.flush();
-                    fos.close();
-                    ((Pane)parent).getStylesheets().clear();
-                    ((Pane)parent).getStylesheets().add(cssFile.toURI().toString());
+                    if(xmlV.getCss()!=null){
+                        File cssFile=Res.getTempFile("css");
+                        BufferedWriter fos=new BufferedWriter(new FileWriter(cssFile));
+                        fos.write(xmlV.getCss().getCss());
+                        fos.flush();
+                        fos.close();
+                        container.getStylesheets().clear();
+                        container.getStylesheets().add(cssFile.toURI().toString());
 
-                    System.out.println(cssFile.toURI().toString());
-                    Platform.runLater(()->{
-                        parent.applyCss();
-                        cssFile.delete();
-                    });
+                        Platform.runLater(()->{
+                            parent.applyCss();
+                            cssFile.delete();
+                        });
+                    }
 
-                    engine.eval("button001.action = function (value){print(button001.id);button001.x = button001.x+10;}");
+                    if(engine!=null)
+                        engine.eval(xmlV.getScript().getScript());
 
                 } catch (Exception e) {
                     handleExceptionMessage(e, result);
