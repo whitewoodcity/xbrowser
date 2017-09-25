@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
