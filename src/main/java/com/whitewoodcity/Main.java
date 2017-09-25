@@ -16,10 +16,12 @@ public class Main extends Application {
 
     public static Vertx vertx;
 
+    public static Stage main;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("XBrowser");
-
+        main=primaryStage;
         Group root = new Group();
         Button button = new Button("+");
         PagePane tabPane = new PagePane();
