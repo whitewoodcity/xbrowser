@@ -9,15 +9,21 @@ import com.whitewoodcity.core.bean.VXml;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.Button;
 import com.whitewoodcity.core.parse.PageParser;
+import com.whitewoodcity.util.FXCSSUpdater;
 import com.whitewoodcity.util.Res;
 import com.whitewoodcity.util.StringUtil;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
@@ -60,7 +66,7 @@ public class TabContent implements Initializable {
 
     private WebClient client;
 
-    private Parent parent;
+    private Node parent;
     private WebView webView;
     private PageParser pageParser;
 
@@ -130,7 +136,7 @@ public class TabContent implements Initializable {
                             //第三步 应用css
                             List<CSS> csses=vXml.getCsses();
                             if(csses.size()>0){
-                                File cssFile=Res.getTempFile("css");
+                                File cssFile = Res.getTempFile("css");
                                 fos=new BufferedWriter(new FileWriter(cssFile));
                                 for (CSS css:csses){
                                     String cssStr=css.getCss();
@@ -199,11 +205,15 @@ public class TabContent implements Initializable {
         }
     }
 
-    private void handleExceptionMessage(Throwable e) {
+    private void handleExceptionMessage(Throwable e, String message) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        processParent(ParentType.ERROR_MESSAGE, sw.toString(), e.getMessage());
+        processParent(ParentType.ERROR_MESSAGE, sw.toString(), message);
+    }
+
+    private void handleExceptionMessage(Throwable e) {
+        handleExceptionMessage(e, e.getMessage());
     }
 
     XmlMapper xmlMapper = new XmlMapper();
@@ -217,31 +227,39 @@ public class TabContent implements Initializable {
                 com.whitewoodcity.core.node.Pane pane = new com.whitewoodcity.core.node.Pane();
                 try {
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
-                    Button button = new Button("test");
-                    button.setWidth(100);
-                    button.setHeight(50);
-                    button.setX(-50);
-                    button.setY(-25);
 
                     ScriptEngineManager manager = new ScriptEngineManager();
                     ScriptEngine engine = manager.getEngineByName("JavaScript");
 
-                    engine.put("button", button);
-                    engine.eval("button.id = 'abc';button.action = function (value){print(button.id);button.x = button.x+10;}");
+                    parent = xmlV.getJson().generateNode(engine);
+                    System.out.println(xmlV.getJson());
 
-                    pane.add(button);
-                    parent = (Parent)pane.getNode();
-                    container.getChildren().add(0,pane.getNode());
+                    File cssFile=Res.getTempFile("css");
+                    BufferedWriter fos=new BufferedWriter(new FileWriter(cssFile));
+                    fos.write(xmlV.getCss().getCss());
+                    fos.flush();
+                    fos.close();
+                    ((Pane)parent).getStylesheets().clear();
+                    ((Pane)parent).getStylesheets().add(cssFile.toURI().toString());
+
+                    System.out.println(cssFile.toURI().toString());
+                    Platform.runLater(()->{
+                        parent.applyCss();
+                        cssFile.delete();
+                    });
+
+                    engine.eval("button001.action = function (value){print(button001.id);button001.x = button001.x+10;}");
+
                 } catch (Exception e) {
-                    handleExceptionMessage(e);
+                    handleExceptionMessage(e, result);
+                    return;
                 }
                 break;
             case ERROR_MESSAGE:
                 TextArea errorMsg = new TextArea();
                 errorMsg.setPrefHeight(container.getHeight() - 20);
-                errorMsg.setText(result);
+                errorMsg.setText(urlOrMsg+result);
                 container.setPadding(new Insets(10));
-                container.getChildren().add(errorMsg);
                 parent = errorMsg;
                 tab.textProperty().unbind();
                 tab.setText(urlOrMsg);
@@ -256,14 +274,15 @@ public class TabContent implements Initializable {
                 tab.textProperty().bind(webView.getEngine().titleProperty());
                 webView.getEngine().load(urlOrMsg);
 
-                container.getChildren().add(webView);
                 parent = webView;
                 break;
         }
+
+        container.getChildren().add(0,parent);
     }
 
     public void removeParent() {
-        container.getChildren().remove(parent);
+        container.getChildren().clear();
     }
 
     public HBox getHeader() {

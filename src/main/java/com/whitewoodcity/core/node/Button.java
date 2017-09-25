@@ -1,12 +1,14 @@
 package com.whitewoodcity.core.node;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 public class Button implements Node{
 
     private javafx.scene.control.Button body;
+    private StringProperty text;
 
     public Button() {
         body = new javafx.scene.control.Button();
@@ -123,4 +125,23 @@ public class Button implements Node{
         setAction(value);
     }
 
+    public String getText() {
+        return body.getText();
+    }
+
+    public StringProperty textProperty() {
+        return body.textProperty();
+    }
+
+    public void setText(String text) {
+        body.setText(text);
+    }
+
+    public StringProperty text_property() {
+        return textProperty();
+    }
+
+    public StringProperty textproperty() {
+        return textProperty();
+    }
 }
