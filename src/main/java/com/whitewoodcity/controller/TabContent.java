@@ -31,6 +31,8 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class TabContent implements Initializable {
@@ -49,6 +51,9 @@ public class TabContent implements Initializable {
 
     @FXML
     private Button urlLocator;
+
+    @FXML
+    private Button fileSaver;
 
 //    @FXML
 //    private StackPane imgIcn;
@@ -70,8 +75,8 @@ public class TabContent implements Initializable {
         client = WebClient.create(Main.vertx);
         header.setSpacing(10);
         header.setPadding(new Insets(10));
-        urlInput.prefWidthProperty().bind(header.widthProperty().subtract(40)
-                .subtract(fileSelector.widthProperty()).subtract(urlLocator.widthProperty()));
+        urlInput.prefWidthProperty().bind(header.widthProperty().subtract(50)
+                .subtract(fileSelector.widthProperty()).subtract(urlLocator.widthProperty()).subtract(fileSaver.widthProperty()));
         pageParser = new PageParser();
         container.layoutYProperty().bind(header.heightProperty());
 
@@ -195,7 +200,7 @@ public class TabContent implements Initializable {
             case ERROR_MESSAGE:
                 TextArea errorMsg = new TextArea();
                 errorMsg.setPrefHeight(container.getHeight() - 20);
-                errorMsg.setText(urlOrMsg + result);
+                errorMsg.setText(result + "\n" + urlOrMsg);
                 container.setPadding(new Insets(10));
                 parent = errorMsg;
                 tab.textProperty().unbind();
@@ -239,7 +244,7 @@ public class TabContent implements Initializable {
             if (file.getName().endsWith(".xmlv")) {
                 type = ParentType.GROUP;
             }
-            processParent(type, sb.toString(), file.getName());
+            processParent(type, sb.toString(), "");
         } catch (Exception e) {
             handleExceptionMessage(e);
         }
@@ -258,7 +263,7 @@ public class TabContent implements Initializable {
     @FXML
     public void onFileSelector(ActionEvent event) {
         FileChooser chooser=new FileChooser();
-        chooser.setTitle("选择文件");
+//        chooser.setTitle("选择文件");
         FileSystemView fsv=FileSystemView.getFileSystemView();
         chooser.setInitialDirectory(fsv.getHomeDirectory());
 //        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XmlV","*.xmlv"));
@@ -267,5 +272,21 @@ public class TabContent implements Initializable {
             return;
         }
         loadFile(file);
+    }
+
+    @FXML
+    private void saveFile(ActionEvent event){
+        String url = urlInput.getText();
+        try {
+            if(!url.startsWith("file:")) return;
+            URI uri = new URI(url);
+            File file = new File(uri);
+            if(!(parent instanceof TextArea)) return;
+            List<String> list = new ArrayList<>();
+            String content = ((TextArea)parent).getText();
+            Res.saveFile(file,content);
+        }catch (Exception e){
+            handleExceptionMessage(e);
+        }
     }
 }

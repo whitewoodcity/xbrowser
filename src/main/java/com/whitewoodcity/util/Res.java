@@ -1,8 +1,10 @@
 package com.whitewoodcity.util;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.UUID;
 
 public class Res {
@@ -22,5 +24,15 @@ public class Res {
         if(!file.exists())
             file.createNewFile();
         return file;
+    }
+
+    public static void saveFile(File file, String content) throws IOException{
+        file.delete();
+        file.createNewFile();
+
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "utf-8"))) {
+            writer.write(content);
+        }
     }
 }

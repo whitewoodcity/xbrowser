@@ -30,7 +30,8 @@
             <!--</ImageView>-->
         <!--</StackPane>-->
         <Button fx:id="urlLocator" text="↺" onAction="#loadUrl"/>
-        <Button fx:id="fileSelector"  text="☆" onAction="#onFileSelector" />
+        <Button fx:id="fileSelector"  text="⇪" onAction="#onFileSelector" />
+        <Button fx:id="fileSaver" text="↯" onAction="#saveFile"/>
     </HBox>
     <StackPane fx:id="container"
                alignment="CENTER"
