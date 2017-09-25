@@ -1,16 +1,20 @@
 package com.whitewoodcity.core.api;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.input.MouseEvent;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class JsApi {
+public class Api {
 
     private Parent parent;
 
-    public JsApi(Parent parent) {
+    public Api(Parent parent) {
         this.parent = parent;
     }
 
@@ -31,5 +35,9 @@ public class JsApi {
             return new LinkedHashSet<>();
         }
         return parent.lookupAll(selector);
+    }
+
+    public void onClickListener(Node node){
+
     }
 }

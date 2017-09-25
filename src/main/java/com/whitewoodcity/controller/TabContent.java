@@ -2,7 +2,7 @@ package com.whitewoodcity.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
-import com.whitewoodcity.core.api.JsApi;
+import com.whitewoodcity.core.api.Api;
 import com.whitewoodcity.core.bean.CSS;
 import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.VXml;
@@ -18,7 +18,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
@@ -117,7 +116,7 @@ public class TabContent implements Initializable {
                             //第二步 载入脚本绑定
                             ScriptEngineManager manager=new ScriptEngineManager();
                             ScriptEngine js=manager.getEngineByName("JavaScript");
-                            js.put("fx",new JsApi(parent));
+                            js.put("fx",new Api(parent));
                             js.eval("function $(selector){return fx.findView(selector)}");
                             List<Script> scripts=vXml.getScripts();
                             for (Script script:scripts){
