@@ -1,8 +1,10 @@
 package com.whitewoodcity;
 
+import com.whitewoodcity.task.ScriptEnginePreloadTask;
 import com.whitewoodcity.ui.PagePane;
 import io.vertx.core.Vertx;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -59,9 +61,14 @@ public class Main extends Application {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         System.getProperties().setProperty("vertx.disableDnsResolver","true");
         vertx = Vertx.vertx();
+
+        Thread th = new Thread(new ScriptEnginePreloadTask());
+        th.setDaemon(true);
+        th.start();
+
         launch(args);
     }
 }
