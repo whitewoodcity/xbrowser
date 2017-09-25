@@ -16,7 +16,7 @@ public class Res {
         File tempDir=new File(path+"/Whitewoodcity/xbrowser");
         //System.out.println(tempDir);
         if(!tempDir.exists()){
-            tempDir.mkdir();
+            tempDir.mkdirs();
         }
         File file=new File(tempDir, UUID.randomUUID()+"."+suffix);
         if(!file.exists())
