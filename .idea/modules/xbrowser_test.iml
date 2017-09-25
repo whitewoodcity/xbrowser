@@ -14,6 +14,7 @@
     <orderEntry type="library" name="Gradle: io.vertx:vertx-web-client:3.4.2" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.1" level="project" />
     <orderEntry type="library" name="Gradle: cglib:cglib-nodep:3.2.5" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-all:2.4.12" level="project" />
     <orderEntry type="library" name="Gradle: org.jruby:jruby-complete:9.1.13.0" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.12" level="project" />
     <orderEntry type="library" name="Gradle: io.vertx:vertx-unit:3.4.2" level="project" />
