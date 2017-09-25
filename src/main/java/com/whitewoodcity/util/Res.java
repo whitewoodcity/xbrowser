@@ -13,8 +13,7 @@ public class Res {
 
     public static File getTempFile(String suffix) throws IOException{
         String path = System.getProperty("user.home");
-        System.out.println(path);
-        File tempDir=new File(path);
+        File tempDir=new File(path+"/whitewoodcity/xbrowser");
         //System.out.println(tempDir);
         if(!tempDir.exists()){
             tempDir.mkdir();
