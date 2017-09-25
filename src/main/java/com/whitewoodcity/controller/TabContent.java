@@ -12,6 +12,7 @@ import com.whitewoodcity.util.Res;
 import com.whitewoodcity.util.StringUtil;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -28,12 +30,16 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
 import java.io.*;
 import java.net.URL;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -47,6 +53,9 @@ public class TabContent implements Initializable {
 
     @FXML
     private TextField urlInput;
+
+    @FXML
+    private Button fileSelector;
 
     @FXML
     private StackPane imgIcn;
@@ -77,6 +86,8 @@ public class TabContent implements Initializable {
         container.setClip(containerClip);
 
         container.setOnDragOver(event -> event.acceptTransferModes(TransferMode.ANY));
+
+        fileSelector.autosize();
     }
 
     public void setTab(Tab tab) {
@@ -390,4 +401,36 @@ public class TabContent implements Initializable {
 
     }
 
+    @FXML
+    public void onFileSelector(ActionEvent actionEvent) {
+        FileChooser chooser=new FileChooser();
+        chooser.setTitle("选择xmlv");
+        FileSystemView fsv=FileSystemView.getFileSystemView();
+        chooser.setInitialDirectory(fsv.getHomeDirectory());
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XmlV","*.xmlv"));
+        File file=chooser.showOpenDialog(Main.main);
+        if(file==null){
+            return;
+        }
+        urlInput.setText(file.toURI().toString());
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            StringBuilder sb = new StringBuilder();
+            reader.lines().forEach(sb::append);
+            System.out.println(sb.toString());
+            buildXmlv(sb.toString());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
 }

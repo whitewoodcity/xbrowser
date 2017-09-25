@@ -29,6 +29,7 @@
                 <Image url="@/img/load.png"/>
             </ImageView>
         </StackPane>
+        <Button fx:id="fileSelector"  text="file selector" onAction="#onFileSelector" />
     </HBox>
     <StackPane fx:id="container"
                alignment="CENTER"
