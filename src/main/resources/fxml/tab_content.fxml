@@ -20,16 +20,17 @@
         <TextField fx:id="urlInput" onKeyPressed="#loadEntry">
             <text>http://w2v4.com/static/test.xmlv</text>
         </TextField>
-        <StackPane fx:id="imgIcn" styleClass="stack_icon" onMouseClicked="#loadUrl" >
-            <padding><Insets left="4" right="4"/></padding>
-            <HBox.margin>
-                <Insets left="10"/>
-            </HBox.margin>
-            <ImageView>
-                <Image url="@/img/load.png"/>
-            </ImageView>
-        </StackPane>
-        <Button fx:id="fileSelector"  text="file selector" onAction="#onFileSelector" />
+        <!--<StackPane fx:id="imgIcn" styleClass="stack_icon" onMouseClicked="#loadUrl" >-->
+            <!--<padding><Insets left="4" right="4"/></padding>-->
+            <!--<HBox.margin>-->
+                <!--<Insets left="10"/>-->
+            <!--</HBox.margin>-->
+            <!--<ImageView>-->
+                <!--<Image url="@/img/load.png"/>-->
+            <!--</ImageView>-->
+        <!--</StackPane>-->
+        <Button fx:id="urlLocator" text="↺" onAction="#loadUrl"/>
+        <Button fx:id="fileSelector"  text="☆" onAction="#onFileSelector" />
     </HBox>
     <StackPane fx:id="container"
                alignment="CENTER"

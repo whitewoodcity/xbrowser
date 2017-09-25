@@ -4,7 +4,6 @@ import com.whitewoodcity.task.ScriptEnginePreloadTask;
 import com.whitewoodcity.ui.PagePane;
 import io.vertx.core.Vertx;
 import javafx.application.Application;
-import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;

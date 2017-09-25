@@ -48,7 +48,10 @@ public class TabContent implements Initializable {
     private Button fileSelector;
 
     @FXML
-    private StackPane imgIcn;
+    private Button urlLocator;
+
+//    @FXML
+//    private StackPane imgIcn;
 
     @FXML
     private StackPane container;
@@ -65,9 +68,10 @@ public class TabContent implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         client = WebClient.create(Main.vertx);
-        header.setSpacing(0);
+        header.setSpacing(10);
         header.setPadding(new Insets(10));
-        urlInput.prefWidthProperty().bind(header.widthProperty().subtract(20).subtract(imgIcn.widthProperty()));
+        urlInput.prefWidthProperty().bind(header.widthProperty().subtract(40)
+                .subtract(fileSelector.widthProperty()).subtract(urlLocator.widthProperty()));
         pageParser = new PageParser();
         container.layoutYProperty().bind(header.heightProperty());
 
@@ -77,7 +81,7 @@ public class TabContent implements Initializable {
 
         container.setOnDragOver(event -> event.acceptTransferModes(TransferMode.ANY));
 
-        fileSelector.autosize();
+//        fileSelector.autosize();
     }
 
     public void setTab(Tab tab) {
