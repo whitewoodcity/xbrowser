@@ -2,34 +2,27 @@ package com.whitewoodcity.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
-import com.whitewoodcity.core.api.JsApi;
+import com.whitewoodcity.core.api.Api;
 import com.whitewoodcity.core.bean.CSS;
 import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.VXml;
 import com.whitewoodcity.core.bean.XmlV;
-import com.whitewoodcity.core.node.Button;
 import com.whitewoodcity.core.parse.PageParser;
-import com.whitewoodcity.util.FXCSSUpdater;
 import com.whitewoodcity.util.Res;
 import com.whitewoodcity.util.StringUtil;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -76,12 +69,14 @@ public class TabContent implements Initializable {
         header.setSpacing(0);
         header.setPadding(new Insets(10));
         urlInput.prefWidthProperty().bind(header.widthProperty().subtract(20).subtract(imgIcn.widthProperty()));
-        pageParser=new PageParser();
+        pageParser = new PageParser();
         container.layoutYProperty().bind(header.heightProperty());
 
         containerClip.widthProperty().bind(container.widthProperty());
         containerClip.heightProperty().bind(container.heightProperty());
         container.setClip(containerClip);
+
+        container.setOnDragOver(event -> event.acceptTransferModes(TransferMode.ANY));
     }
 
     public void setTab(Tab tab) {
@@ -107,40 +102,40 @@ public class TabContent implements Initializable {
 
     private void loadFxml(String url) {
         client.getAbs(url)
-                .send(ar ->{
-                    if(ar.succeeded()){
-                        String content=ar.result().bodyAsString();
-                        StringReader reader=new StringReader(content);
-                        VXml vXml=pageParser.paresReader(reader, VXml.class);
+                .send(ar -> {
+                    if (ar.succeeded()) {
+                        String content = ar.result().bodyAsString();
+                        StringReader reader = new StringReader(content);
+                        VXml vXml = pageParser.paresReader(reader, VXml.class);
                         BufferedWriter fos = null;
-                        InputStream is=null;
+                        InputStream is = null;
                         try {
                             //第一步 载入fxml
-                            is=new ByteArrayInputStream(vXml.getfXml().getFxml().getBytes());
-                            FXMLLoader loader=new FXMLLoader();
-                            Parent parent=loader.load(is);
+                            is = new ByteArrayInputStream(vXml.getfXml().getFxml().getBytes());
+                            FXMLLoader loader = new FXMLLoader();
+                            Parent parent = loader.load(is);
                             //第二步 载入脚本绑定
-                            ScriptEngineManager manager=new ScriptEngineManager();
-                            ScriptEngine js=manager.getEngineByName("JavaScript");
-                            js.put("fx",new JsApi(parent));
+                            ScriptEngineManager manager = new ScriptEngineManager();
+                            ScriptEngine js = manager.getEngineByName("JavaScript");
+                            js.put("fx", new Api(parent));
                             js.eval("function $(selector){return fx.findView(selector)}");
-                            List<Script> scripts=vXml.getScripts();
-                            for (Script script:scripts){
-                                String type=script.type;
-                                if(!StringUtil.isEmpty(type)
-                                        &&!StringUtil.isEmpty(script.script)
-                                        &&type.equalsIgnoreCase("javascript")){
+                            List<Script> scripts = vXml.getScripts();
+                            for (Script script : scripts) {
+                                String type = script.type;
+                                if (!StringUtil.isEmpty(type)
+                                        && !StringUtil.isEmpty(script.script)
+                                        && type.equalsIgnoreCase("javascript")) {
                                     js.eval(script.script);
                                 }
                             }
                             //第三步 应用css
-                            List<CSS> csses=vXml.getCsses();
-                            if(csses.size()>0){
+                            List<CSS> csses = vXml.getCsses();
+                            if (csses.size() > 0) {
                                 File cssFile = Res.getTempFile("css");
-                                fos=new BufferedWriter(new FileWriter(cssFile));
-                                for (CSS css:csses){
-                                    String cssStr=css.getCss();
-                                    if(StringUtil.isEmpty(cssStr)){
+                                fos = new BufferedWriter(new FileWriter(cssFile));
+                                for (CSS css : csses) {
+                                    String cssStr = css.getCss();
+                                    if (StringUtil.isEmpty(cssStr)) {
                                         continue;
                                     }
                                     fos.write(cssStr);
@@ -151,18 +146,16 @@ public class TabContent implements Initializable {
                                 parent.getStylesheets().add(cssFile.toURI().toURL().toExternalForm());
                             }
 
-                            Platform.runLater(()->{
+                            Platform.runLater(() -> {
                                 removeParent();
                                 addNode(parent);
                             });
                         } catch (IOException | ScriptException e) {
 //                            e.printStackTrace();
-                            Platform.runLater(() -> {
-                                handleExceptionMessage(ar.cause());
-                            });
+                            Platform.runLater(() -> handleExceptionMessage(ar.cause()));
                         } finally {
                             try {
-                                if(fos!=null){
+                                if (fos != null) {
                                     fos.close();
                                 }
                                 if (is != null) {
@@ -173,7 +166,7 @@ public class TabContent implements Initializable {
                             }
                         }
 
-                    }else{
+                    } else {
                         Platform.runLater(() -> {
                             handleExceptionMessage(ar.cause());
                         });
@@ -181,13 +174,14 @@ public class TabContent implements Initializable {
                 });
     }
 
+
     private void loadWeb(final String url) {
         try {
             client.getAbs(url).send(ar -> {
                 if (ar.succeeded()) {
                     ParentType type;
                     if (url.endsWith("xmlv") ||
-                            (ar.result().getHeader("Content-Type")!=null&&
+                            (ar.result().getHeader("Content-Type") != null &&
                                     ar.result().getHeader("Content-Type").endsWith("xmlv"))) {
                         type = ParentType.GROUP;
                     } else {
@@ -218,7 +212,7 @@ public class TabContent implements Initializable {
 
     XmlMapper xmlMapper = new XmlMapper();
 
-    private void processParent(ParentType type, String result, String urlOrMsg){
+    private void processParent(ParentType type, String result, String urlOrMsg) {
         removeParent();
 //        System.out.println(type);
         switch (type) {
@@ -228,31 +222,31 @@ public class TabContent implements Initializable {
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
 
                     ScriptEngine engine = null;
-                    if(xmlV.getScript()!=null){
+                    if (xmlV.getScript() != null) {
                         ScriptEngineManager manager = new ScriptEngineManager();
                         String script = xmlV.getScript().getType();
-                        script = script==null ? "javascript":script;
+                        script = script == null ? "javascript" : script;
                         engine = manager.getEngineByName(script);
                     }
 
                     parent = xmlV.getJson().generateNode(engine);
 
-                    if(xmlV.getCss()!=null){
-                        File cssFile=Res.getTempFile("css");
-                        BufferedWriter fos=new BufferedWriter(new FileWriter(cssFile));
+                    if (xmlV.getCss() != null) {
+                        File cssFile = Res.getTempFile("css");
+                        BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
                         fos.write(xmlV.getCss().getCss());
                         fos.flush();
                         fos.close();
                         container.getStylesheets().clear();
                         container.getStylesheets().add(cssFile.toURI().toString());
 
-                        Platform.runLater(()->{
+                        Platform.runLater(() -> {
                             parent.applyCss();
                             cssFile.delete();
                         });
                     }
 
-                    if(engine!=null)
+                    if (engine != null)
                         engine.eval(xmlV.getScript().getScript());
 
                 } catch (Exception e) {
@@ -263,7 +257,7 @@ public class TabContent implements Initializable {
             case ERROR_MESSAGE:
                 TextArea errorMsg = new TextArea();
                 errorMsg.setPrefHeight(container.getHeight() - 20);
-                errorMsg.setText(urlOrMsg+result);
+                errorMsg.setText(urlOrMsg + result);
                 container.setPadding(new Insets(10));
                 parent = errorMsg;
                 tab.textProperty().unbind();
@@ -271,7 +265,7 @@ public class TabContent implements Initializable {
                 break;
             default:
                 container.setPadding(new Insets(0));
-                if(webView==null){
+                if (webView == null) {
                     webView = new WebView();
                 }
                 webView.getEngine().loadContent(result);
@@ -283,7 +277,7 @@ public class TabContent implements Initializable {
                 break;
         }
 
-        container.getChildren().add(0,parent);
+        container.getChildren().add(0, parent);
     }
 
     public void removeParent() {
@@ -298,9 +292,102 @@ public class TabContent implements Initializable {
         return container;
     }
 
-    public void addNode(Parent node){
-        parent=node;
-        node.setLayoutY(header.getLayoutY()+header.getHeight());
+    public void addNode(Parent node) {
+        parent = node;
+        node.setLayoutY(header.getLayoutY() + header.getHeight());
         pane.getChildren().add(node);
     }
+
+    @FXML
+    public void onFileDropped(DragEvent event) {
+        Dragboard dragboard = event.getDragboard();
+        if (dragboard.hasFiles()) {
+            File file = dragboard.getFiles().get(0);
+            if (file.getName().endsWith(".xmlv")) {
+                urlInput.setText(file.toURI().toString());
+                BufferedReader reader = null;
+                try {
+                    reader = new BufferedReader(new FileReader(file));
+                    StringBuilder sb = new StringBuilder();
+                    reader.lines().forEach(sb::append);
+                    System.out.println(sb.toString());
+                    buildXmlv(sb.toString());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void buildXmlv(String content) {
+        StringReader reader = new StringReader(content);
+        VXml vXml = pageParser.paresReader(reader, VXml.class);
+        BufferedWriter fos = null;
+        InputStream is = null;
+        try {
+            //第一步 载入fxml
+            is = new ByteArrayInputStream(vXml.getfXml().getFxml().getBytes());
+            FXMLLoader loader = new FXMLLoader();
+            Parent parent = loader.load(is);
+            //第二步 载入脚本绑定
+            ScriptEngineManager manager = new ScriptEngineManager();
+            ScriptEngine js = manager.getEngineByName("JavaScript");
+            js.put("fx", new Api(parent));
+            js.eval("function $(selector){return fx.findView(selector)}");
+            List<Script> scripts = vXml.getScripts();
+            for (Script script : scripts) {
+                String type = script.type;
+                if (!StringUtil.isEmpty(type)
+                        && !StringUtil.isEmpty(script.script)
+                        && type.equalsIgnoreCase("javascript")) {
+                    js.eval(script.script);
+                }
+            }
+            //第三步 应用css
+            List<CSS> csses = vXml.getCsses();
+            if (csses.size() > 0) {
+                File cssFile = Res.getTempFile("css");
+                fos = new BufferedWriter(new FileWriter(cssFile));
+                for (CSS css : csses) {
+                    String cssStr = css.getCss();
+                    if (StringUtil.isEmpty(cssStr)) {
+                        continue;
+                    }
+                    fos.write(cssStr);
+                    fos.newLine();
+                }
+                fos.flush();
+                fos.close();
+                parent.getStylesheets().add(cssFile.toURI().toURL().toExternalForm());
+            }
+
+            Platform.runLater(() -> {
+                removeParent();
+                addNode(parent);
+            });
+        } catch (IOException | ScriptException e) {
+                            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
 }
