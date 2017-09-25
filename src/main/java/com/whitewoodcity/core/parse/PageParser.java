@@ -14,7 +14,6 @@ import java.io.StringReader;
  */
 public class PageParser {
 
-
     public PageParser() {
 
     }

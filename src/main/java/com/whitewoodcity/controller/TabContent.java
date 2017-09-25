@@ -11,6 +11,7 @@ import com.whitewoodcity.core.node.Button;
 import com.whitewoodcity.core.parse.PageParser;
 import com.whitewoodcity.util.Res;
 import com.whitewoodcity.util.StringUtil;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -19,6 +20,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
@@ -61,7 +63,7 @@ public class TabContent implements Initializable {
 
     private WebClient client;
 
-    private Parent parent;
+    private Node parent;
     private WebView webView;
     private PageParser pageParser;
 
@@ -200,11 +202,15 @@ public class TabContent implements Initializable {
         }
     }
 
-    private void handleExceptionMessage(Throwable e) {
+    private void handleExceptionMessage(Throwable e, String message) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        processParent(ParentType.ERROR_MESSAGE, sw.toString(), e.getMessage());
+        processParent(ParentType.ERROR_MESSAGE, sw.toString(), message);
+    }
+
+    private void handleExceptionMessage(Throwable e) {
+        handleExceptionMessage(e, e.getMessage());
     }
 
     XmlMapper xmlMapper = new XmlMapper();
@@ -218,31 +224,24 @@ public class TabContent implements Initializable {
                 com.whitewoodcity.core.node.Pane pane = new com.whitewoodcity.core.node.Pane();
                 try {
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
-                    Button button = new Button("test");
-                    button.setWidth(100);
-                    button.setHeight(50);
-                    button.setX(-50);
-                    button.setY(-25);
 
                     ScriptEngineManager manager = new ScriptEngineManager();
                     ScriptEngine engine = manager.getEngineByName("JavaScript");
 
-                    engine.put("button", button);
-                    engine.eval("button.id = 'abc';button.action = function (value){print(button.id);button.x = button.x+10;}");
+                    parent = xmlV.getJson().generateNode(engine);
+                    System.out.println(xmlV.getJson());
+                    engine.eval("button001.action = function (value){print(button001.id);button001.x = button001.x+10;}");
 
-                    pane.add(button);
-                    parent = (Parent)pane.getNode();
-                    container.getChildren().add(0,pane.getNode());
                 } catch (Exception e) {
-                    handleExceptionMessage(e);
+                    handleExceptionMessage(e, result);
+                    return;
                 }
                 break;
             case ERROR_MESSAGE:
                 TextArea errorMsg = new TextArea();
                 errorMsg.setPrefHeight(container.getHeight() - 20);
-                errorMsg.setText(result);
+                errorMsg.setText(urlOrMsg+result);
                 container.setPadding(new Insets(10));
-                container.getChildren().add(errorMsg);
                 parent = errorMsg;
                 tab.textProperty().unbind();
                 tab.setText(urlOrMsg);
@@ -257,14 +256,15 @@ public class TabContent implements Initializable {
                 tab.textProperty().bind(webView.getEngine().titleProperty());
                 webView.getEngine().load(urlOrMsg);
 
-                container.getChildren().add(webView);
                 parent = webView;
                 break;
         }
+
+        container.getChildren().add(0,parent);
     }
 
     public void removeParent() {
-        container.getChildren().remove(parent);
+        container.getChildren().clear();
     }
 
     public HBox getHeader() {
