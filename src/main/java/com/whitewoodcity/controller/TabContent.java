@@ -174,7 +174,6 @@ public class TabContent implements Initializable {
                 });
     }
 
-
     private void loadWeb(final String url) {
         try {
             client.getAbs(url).send(ar -> {
@@ -299,30 +298,21 @@ public class TabContent implements Initializable {
     }
 
     @FXML
-    public void onFileDropped(DragEvent event) {
+    public void onFileDropped(DragEvent event){
         Dragboard dragboard = event.getDragboard();
         if (dragboard.hasFiles()) {
             File file = dragboard.getFiles().get(0);
-            if (file.getName().endsWith(".xmlv")) {
-                urlInput.setText(file.toURI().toString());
-                BufferedReader reader = null;
-                try {
-                    reader = new BufferedReader(new FileReader(file));
-                    StringBuilder sb = new StringBuilder();
-                    reader.lines().forEach(sb::append);
-                    System.out.println(sb.toString());
-                    buildXmlv(sb.toString());
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+            urlInput.setText(file.toURI().toString());
+            try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                StringBuilder sb = new StringBuilder();
+                reader.lines().forEach(line -> sb.append(line).append("\n"));
+                ParentType type = ParentType.ERROR_MESSAGE;
+                if (file.getName().endsWith(".xmlv")) {
+                    type = ParentType.GROUP;
                 }
+                processParent(type, sb.toString(), file.getName());
+            } catch (Exception e) {
+                handleExceptionMessage(e);
             }
         }
     }
