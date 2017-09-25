@@ -9,11 +9,14 @@ import com.whitewoodcity.core.bean.VXml;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.Button;
 import com.whitewoodcity.core.parse.PageParser;
+import com.whitewoodcity.util.FXCSSUpdater;
 import com.whitewoodcity.util.Res;
 import com.whitewoodcity.util.StringUtil;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -133,7 +136,7 @@ public class TabContent implements Initializable {
                             //第三步 应用css
                             List<CSS> csses=vXml.getCsses();
                             if(csses.size()>0){
-                                File cssFile=Res.getTempFile("css");
+                                File cssFile = Res.getTempFile("css");
                                 fos=new BufferedWriter(new FileWriter(cssFile));
                                 for (CSS css:csses){
                                     String cssStr=css.getCss();
@@ -230,6 +233,21 @@ public class TabContent implements Initializable {
 
                     parent = xmlV.getJson().generateNode(engine);
                     System.out.println(xmlV.getJson());
+
+                    File cssFile=Res.getTempFile("css");
+                    BufferedWriter fos=new BufferedWriter(new FileWriter(cssFile));
+                    fos.write(xmlV.getCss().getCss());
+                    fos.flush();
+                    fos.close();
+                    ((Pane)parent).getStylesheets().clear();
+                    ((Pane)parent).getStylesheets().add(cssFile.toURI().toString());
+
+                    System.out.println(cssFile.toURI().toString());
+                    Platform.runLater(()->{
+                        parent.applyCss();
+                        cssFile.delete();
+                    });
+
                     engine.eval("button001.action = function (value){print(button001.id);button001.x = button001.x+10;}");
 
                 } catch (Exception e) {
