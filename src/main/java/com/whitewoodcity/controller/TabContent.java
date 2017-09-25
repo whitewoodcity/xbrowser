@@ -28,8 +28,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -82,6 +81,10 @@ public class TabContent implements Initializable {
         containerClip.widthProperty().bind(container.widthProperty());
         containerClip.heightProperty().bind(container.heightProperty());
         container.setClip(containerClip);
+
+        container.setOnDragOver(event -> {
+            event.acceptTransferModes(TransferMode.ANY);
+        });
     }
 
     public void setTab(Tab tab) {
@@ -303,4 +306,16 @@ public class TabContent implements Initializable {
         node.setLayoutY(header.getLayoutY()+header.getHeight());
         pane.getChildren().add(node);
     }
+
+    @FXML
+    public void onFileDropped(DragEvent event) {
+        Dragboard dragboard=event.getDragboard();
+        if (dragboard.hasFiles()){
+            File file=dragboard.getFiles().get(0);
+            if(file.getName().endsWith(".xmlv")){
+
+            }
+        }
+    }
+
 }

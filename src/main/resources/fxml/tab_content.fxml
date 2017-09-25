@@ -30,5 +30,8 @@
             </ImageView>
         </StackPane>
     </HBox>
-    <StackPane fx:id="container" alignment="CENTER" style="-fx-background-color:transparent"/>
+    <StackPane fx:id="container"
+               alignment="CENTER"
+               style="-fx-background-color:transparent"
+                onDragDropped="#onFileDropped"/>
 </Pane>
