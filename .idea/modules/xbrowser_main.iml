@@ -9,12 +9,13 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: io.vertx:vertx-core:3.4.2" level="project" />
-    <orderEntry type="library" name="Gradle: io.vertx:vertx-web-client:3.4.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.vertx:vertx-core:3.5.0.Beta1" level="project" />
+    <orderEntry type="library" name="Gradle: io.vertx:vertx-web-client:3.5.0.Beta1" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.1" level="project" />
     <orderEntry type="library" name="Gradle: cglib:cglib-nodep:3.2.5" level="project" />
-    <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-all:2.4.12" level="project" />
-    <orderEntry type="library" name="Gradle: org.jruby:jruby-complete:9.1.13.0" level="project" />
+    <orderEntry type="library" name="Gradle: io.vertx:vertx-lang-groovy:3.5.0.Beta1" level="project" />
+    <orderEntry type="library" name="Gradle: io.vertx:vertx-lang-js:3.5.0.Beta1" level="project" />
+    <orderEntry type="library" name="Gradle: io.vertx:vertx-lang-ruby:3.5.0.Beta1" level="project" />
     <orderEntry type="library" name="Gradle: io.netty:netty-common:4.1.8.Final" level="project" />
     <orderEntry type="library" name="Gradle: io.netty:netty-buffer:4.1.8.Final" level="project" />
     <orderEntry type="library" name="Gradle: io.netty:netty-transport:4.1.8.Final" level="project" />
@@ -24,11 +25,13 @@
     <orderEntry type="library" name="Gradle: io.netty:netty-codec-http2:4.1.8.Final" level="project" />
     <orderEntry type="library" name="Gradle: io.netty:netty-resolver:4.1.8.Final" level="project" />
     <orderEntry type="library" name="Gradle: io.netty:netty-resolver-dns:4.1.8.Final" level="project" />
-    <orderEntry type="library" name="Gradle: io.vertx:vertx-web-common:3.4.2" level="project" />
+    <orderEntry type="library" name="Gradle: io.vertx:vertx-web-common:3.5.0.Beta1" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.9.0" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.9.1" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.woodstox:woodstox-core:5.0.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-all:2.4.7" level="project" />
+    <orderEntry type="library" name="Gradle: org.jruby:jruby-complete:9.1.7.0" level="project" />
     <orderEntry type="library" name="Gradle: io.netty:netty-codec:4.1.8.Final" level="project" />
     <orderEntry type="library" name="Gradle: io.netty:netty-codec-socks:4.1.8.Final" level="project" />
     <orderEntry type="library" name="Gradle: io.netty:netty-codec-dns:4.1.8.Final" level="project" />

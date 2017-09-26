@@ -3,6 +3,7 @@ package com.whitewoodcity.core.bean;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 import com.whitewoodcity.core.node.Button;
+import com.whitewoodcity.core.node.Label;
 import com.whitewoodcity.core.node.Node;
 import com.whitewoodcity.core.node.Pane;
 import io.vertx.core.json.JsonArray;
@@ -58,13 +59,28 @@ public class Json {
         String type = jsonObject.getString("type");
         Node node;
 
+        Double x, y, width, height;
+
         switch (type==null?"pane":type){
+            case "label":
+                Label label = new Label();
+                x = jsonObject.getDouble("x");
+                y = jsonObject.getDouble("y");
+                width = jsonObject.getDouble("width");
+                height = jsonObject.getDouble("height");
+                label.setX(x==null?0:x);
+                label.setY(y==null?0:y);
+                if(width!=null) label.setWidth(width);
+                if(height!=null) label.setHeight(height);
+                label.setText(jsonObject.getString("text"));
+                node = label;
+                break;
             case "button":
                 Button button = new Button();
-                Double x = jsonObject.getDouble("x");
-                Double y = jsonObject.getDouble("y");
-                Double width = jsonObject.getDouble("width");
-                Double height = jsonObject.getDouble("height");
+                x = jsonObject.getDouble("x");
+                y = jsonObject.getDouble("y");
+                width = jsonObject.getDouble("width");
+                height = jsonObject.getDouble("height");
                 button.setX(x==null?0:x);
                 button.setY(y==null?0:y);
                 if(width!=null) button.setWidth(width);

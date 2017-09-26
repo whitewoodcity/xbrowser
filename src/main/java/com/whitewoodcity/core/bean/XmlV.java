@@ -6,7 +6,6 @@ public class XmlV {
     private CSS css;
     private JsonFX jsonfx;
 
-
     public com.whitewoodcity.core.bean.Json getJson() {
         return json;
     }
@@ -39,4 +38,7 @@ public class XmlV {
         this.jsonfx = jsonfx;
     }
 
+    public boolean isCssEmpty(){
+        return css==null||css.getCss()==null||css.getCss().trim().equals("");
+    }
 }

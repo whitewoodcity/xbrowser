@@ -166,7 +166,7 @@ public class TabContent implements Initializable {
 
                     parent = xmlV.getJson().generateNode(engine).getNode();
 
-                    if (xmlV.getCss() != null) {
+                    if (!xmlV.isCssEmpty()) {
                         File cssFile = Res.getTempFile("css");
                         BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
                         fos.write(xmlV.getCss().getCss());
