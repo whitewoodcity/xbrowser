@@ -1,4 +1,4 @@
-package com.whitewoodcity.core.node;
+package com.whitewoodcity.core.node.conrol;
 
 import javafx.beans.property.StringProperty;
 
