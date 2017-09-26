@@ -3,6 +3,7 @@ package com.whitewoodcity.controller;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
+import com.whitewoodcity.core.parse.ScriptFactory;
 import com.whitewoodcity.util.Res;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
@@ -159,9 +160,10 @@ public class TabContent implements Initializable {
 
                     ScriptEngine engine = null;
                     if (xmlV.getScript() != null) {
-                        String script = xmlV.getScript().getType();
-                        script = script == null ? "javascript" : script;
-                        engine = Main.scriptEngineManager.getEngineByName(script);
+//                        String script = xmlV.getScript().getType();
+//                        script = script == null ? "javascript" : script;
+//                        engine = Main.scriptEngineManager.getEngineByName(script);
+                        engine= ScriptFactory.loadJRubyScript();
                     }
 
                     parent = xmlV.getJson().generateNode(engine).getNode();

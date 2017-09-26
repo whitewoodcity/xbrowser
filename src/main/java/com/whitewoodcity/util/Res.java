@@ -1,6 +1,7 @@
 package com.whitewoodcity.util;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -34,5 +35,17 @@ public class Res {
                 new FileOutputStream(file), "utf-8"))) {
             writer.write(content);
         }
+    }
+
+    public static URL getExternalJar(JarRes jar){
+        try {
+            File file=jar.get();
+            if(file.exists()){
+                return file.toURI().toURL();
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
