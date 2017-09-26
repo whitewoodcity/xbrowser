@@ -3,7 +3,7 @@ package com.whitewoodcity.core.node.conrol;
 import com.whitewoodcity.core.node.Node;
 import javafx.beans.property.DoubleProperty;
 
-public class Control implements Node {
+public abstract class Control implements Node {
 
     javafx.scene.control.Control body;
 

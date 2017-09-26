@@ -3,9 +3,11 @@ package com.whitewoodcity.core.bean;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 import com.whitewoodcity.core.node.conrol.Button;
+import com.whitewoodcity.core.node.conrol.Control;
 import com.whitewoodcity.core.node.conrol.Label;
 import com.whitewoodcity.core.node.Node;
 import com.whitewoodcity.core.node.Pane;
+import com.whitewoodcity.core.node.conrol.TextField;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -61,30 +63,22 @@ public class Json {
 
         Double x, y, width, height;
 
-        switch (type==null?"pane":type){
+        switch (type==null?"pane":type.toLowerCase()){
+            case "textfield":
+                TextField textField = new TextField();
+                decorateControl(textField,jsonObject);
+                textField.setText(jsonObject.getString("text"));
+                node = textField;
+                break;
             case "label":
                 Label label = new Label();
-                x = jsonObject.getDouble("x");
-                y = jsonObject.getDouble("y");
-                width = jsonObject.getDouble("width");
-                height = jsonObject.getDouble("height");
-                label.setX(x==null?0:x);
-                label.setY(y==null?0:y);
-                if(width!=null) label.setWidth(width);
-                if(height!=null) label.setHeight(height);
+                decorateControl(label,jsonObject);
                 label.setText(jsonObject.getString("text"));
                 node = label;
                 break;
             case "button":
                 Button button = new Button();
-                x = jsonObject.getDouble("x");
-                y = jsonObject.getDouble("y");
-                width = jsonObject.getDouble("width");
-                height = jsonObject.getDouble("height");
-                button.setX(x==null?0:x);
-                button.setY(y==null?0:y);
-                if(width!=null) button.setWidth(width);
-                if(height!=null) button.setHeight(height);
+                decorateControl(button,jsonObject);
                 button.setText(jsonObject.getString("text"));
                 node = button;
                 break;
@@ -107,6 +101,18 @@ public class Json {
         }
 
         return node;
+    }
+
+    public void decorateControl(Control node, JsonObject jsonObject){
+        Double x, y, width, height;
+        x = jsonObject.getDouble("x");
+        y = jsonObject.getDouble("y");
+        width = jsonObject.getDouble("width");
+        height = jsonObject.getDouble("height");
+        node.setX(x==null?0:x);
+        node.setY(y==null?0:y);
+        if(width!=null) node.setWidth(width);
+        if(height!=null) node.setHeight(height);
     }
 
 }

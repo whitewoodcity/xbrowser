@@ -26,4 +26,12 @@ public interface Node {
     default double getRotate(){
         return getNode().getRotate();
     }
+
+    default void setVisible(boolean visible){
+        getNode().setVisible(visible);
+    }
+
+    default boolean isVisible(){
+        return getNode().isVisible();
+    }
 }
