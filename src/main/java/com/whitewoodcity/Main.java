@@ -11,16 +11,16 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import javax.script.ScriptEngineManager;
+
 public class Main extends Application {
 
     public static Vertx vertx;
-
-    public static Stage main;
+    public static ScriptEngineManager scriptEngineManager;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("XBrowser");
-        main=primaryStage;
         Group root = new Group();
         Button button = new Button("+");
         PagePane tabPane = new PagePane();
@@ -63,6 +63,7 @@ public class Main extends Application {
     public static void main(String[] args) throws Exception{
         System.getProperties().setProperty("vertx.disableDnsResolver","true");
         vertx = Vertx.vertx();
+        scriptEngineManager = new ScriptEngineManager();
 
         Thread th = new Thread(new ScriptEnginePreloadTask());
         th.setDaemon(true);

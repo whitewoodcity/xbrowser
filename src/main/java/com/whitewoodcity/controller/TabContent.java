@@ -161,10 +161,9 @@ public class TabContent implements Initializable {
 
                     ScriptEngine engine = null;
                     if (xmlV.getScript() != null) {
-                        ScriptEngineManager manager = new ScriptEngineManager();
                         String script = xmlV.getScript().getType();
                         script = script == null ? "javascript" : script;
-                        engine = manager.getEngineByName(script);
+                        engine = Main.scriptEngineManager.getEngineByName(script);
                     }
 
                     parent = xmlV.getJson().generateNode(engine);
@@ -262,7 +261,7 @@ public class TabContent implements Initializable {
         FileSystemView fsv=FileSystemView.getFileSystemView();
         chooser.setInitialDirectory(fsv.getHomeDirectory());
 //        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XmlV","*.xmlv"));
-        File file=chooser.showOpenDialog(Main.main);
+        File file=chooser.showOpenDialog(container.getScene().getWindow());
         if(file==null){
             return;
         }
