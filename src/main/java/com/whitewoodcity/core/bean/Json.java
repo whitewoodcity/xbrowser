@@ -3,11 +3,10 @@ package com.whitewoodcity.core.bean;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 import com.whitewoodcity.core.node.Button;
+import com.whitewoodcity.core.node.Node;
 import com.whitewoodcity.core.node.Pane;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 
 import javax.script.ScriptEngine;
 
@@ -57,7 +56,7 @@ public class Json {
 
     public Node generateNodeByJsonObject(JsonObject jsonObject, ScriptEngine engine) throws Exception{
         String type = jsonObject.getString("type");
-        com.whitewoodcity.core.node.Node node;
+        Node node;
 
         switch (type==null?"pane":type){
             case "button":
@@ -74,14 +73,15 @@ public class Json {
                 node = button;
                 break;
             default:
-                node = new Pane();
+                Pane pane = new Pane();
                 JsonArray jsonArray = jsonObject.getJsonArray("children");
                 if(jsonArray!=null){
                     for(Object jo:jsonArray){
                         Node child = generateNodeByJsonObject((JsonObject)jo, engine);
-                        ((javafx.scene.layout.Pane)node.getNode()).getChildren().add(child);
+                        pane.add(child);
                     }
                 }
+                node = pane;
                 break;
         }
 
@@ -90,7 +90,7 @@ public class Json {
             engine.put(jsonObject.getString("id"), node);
         }
 
-        return node.getNode();
+        return node;
     }
 
 }

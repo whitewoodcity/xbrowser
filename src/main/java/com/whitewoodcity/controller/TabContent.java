@@ -3,7 +3,6 @@ package com.whitewoodcity.controller;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
-import com.whitewoodcity.core.parse.PageParser;
 import com.whitewoodcity.util.Res;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
@@ -26,7 +25,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URI;
@@ -103,10 +101,10 @@ public class TabContent implements Initializable {
                 URI uri = new URI(url);
                 File file = new File(uri);
                 loadFile(file);
-            }catch (Exception e){
+            } catch (Exception e) {
                 handleExceptionMessage(e);
             }
-        }else {
+        } else {
             if (!url.startsWith("http")) {
                 url = "http://" + url;
             }
@@ -166,7 +164,7 @@ public class TabContent implements Initializable {
                         engine = Main.scriptEngineManager.getEngineByName(script);
                     }
 
-                    parent = xmlV.getJson().generateNode(engine);
+                    parent = xmlV.getJson().generateNode(engine).getNode();
 
                     if (xmlV.getCss() != null) {
                         File cssFile = Res.getTempFile("css");
@@ -229,9 +227,9 @@ public class TabContent implements Initializable {
         return container;
     }
 
-    private void loadFile(File file){
+    private void loadFile(File file) {
         urlInput.setText(file.toURI().toString());
-        try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             StringBuilder sb = new StringBuilder();
             reader.lines().forEach(line -> sb.append(line).append("\n"));
             ParentType type = ParentType.ERROR_MESSAGE;
@@ -245,7 +243,7 @@ public class TabContent implements Initializable {
     }
 
     @FXML
-    public void onFileDropped(DragEvent event){
+    public void onFileDropped(DragEvent event) {
         Dragboard dragboard = event.getDragboard();
         if (dragboard.hasFiles()) {
             File file = dragboard.getFiles().get(0);
@@ -256,29 +254,29 @@ public class TabContent implements Initializable {
 
     @FXML
     public void onFileSelector(ActionEvent event) {
-        FileChooser chooser=new FileChooser();
+        FileChooser chooser = new FileChooser();
 //        chooser.setTitle("选择文件");
-        FileSystemView fsv=FileSystemView.getFileSystemView();
+        FileSystemView fsv = FileSystemView.getFileSystemView();
         chooser.setInitialDirectory(fsv.getHomeDirectory());
 //        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XmlV","*.xmlv"));
-        File file=chooser.showOpenDialog(container.getScene().getWindow());
-        if(file==null){
+        File file = chooser.showOpenDialog(container.getScene().getWindow());
+        if (file == null) {
             return;
         }
         loadFile(file);
     }
 
     @FXML
-    private void saveFile(ActionEvent event){
+    private void saveFile(ActionEvent event) {
         String url = urlInput.getText();
         try {
-            if(!url.startsWith("file:")) return;
+            if (!url.startsWith("file:")) return;
             URI uri = new URI(url);
             File file = new File(uri);
-            if(!(parent instanceof TextArea)) return;
-            String content = ((TextArea)parent).getText();
-            Res.saveFile(file,content);
-        }catch (Exception e){
+            if (!(parent instanceof TextArea)) return;
+            String content = ((TextArea) parent).getText();
+            Res.saveFile(file, content);
+        } catch (Exception e) {
             handleExceptionMessage(e);
         }
     }
