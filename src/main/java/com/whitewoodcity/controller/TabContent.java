@@ -226,6 +226,7 @@ public class TabContent implements Initializable {
                 break;
         }
 
+        urlInput.setText(urlOrMsg);
         container.getChildren().add(0, parent);
     }
 
@@ -242,7 +243,6 @@ public class TabContent implements Initializable {
     }
 
     private void loadFile(File file) {
-        urlInput.setText(file.toURI().toString());
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             StringBuilder sb = new StringBuilder();
             reader.lines().forEach(line -> sb.append(line).append("\n"));
@@ -251,6 +251,7 @@ public class TabContent implements Initializable {
                 type = ParentType.GROUP;
             }
             processParent(type, sb.toString(), "");
+            urlInput.setText(file.toURI().toString());
         } catch (Exception e) {
             handleExceptionMessage(e);
         }
