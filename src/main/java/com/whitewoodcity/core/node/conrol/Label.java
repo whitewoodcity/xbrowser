@@ -35,4 +35,8 @@ public class Label extends Control{
     public StringProperty textproperty() {
         return textProperty();
     }
+
+    public String getValue(){
+        return getText();
+    }
 }

@@ -49,4 +49,8 @@ public class Button extends Control{
     public StringProperty textproperty() {
         return textProperty();
     }
+
+    public String getValue(){
+        return getText();
+    }
 }

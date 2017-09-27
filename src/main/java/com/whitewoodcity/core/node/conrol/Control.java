@@ -2,10 +2,14 @@ package com.whitewoodcity.core.node.conrol;
 
 import com.whitewoodcity.core.node.Node;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public abstract class Control implements Node {
 
     javafx.scene.control.Control body;
+
+    StringProperty name = new SimpleStringProperty();
 
     public void setX(double x) {
         body.setLayoutX(x);
@@ -98,4 +102,27 @@ public abstract class Control implements Node {
         return body;
     }
 
+    public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
+
+    public StringProperty name_property() {
+        return name;
+    }
+
+    public StringProperty nameproperty() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    public String getValue(){
+        return name.getValue();
+    }
 }

@@ -3,12 +3,17 @@ package com.whitewoodcity.controller;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
+import com.whitewoodcity.core.node.conrol.Control;
 import com.whitewoodcity.core.parse.ScriptFactory;
 import com.whitewoodcity.util.Res;
+import io.vertx.core.MultiMap;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -62,7 +67,7 @@ public class TabContent implements Initializable {
     private Tab tab;
 
     private WebClient client;
-
+    private ScriptEngine scriptEngine;
     private Node parent;
     private WebView webView;
 
@@ -117,16 +122,7 @@ public class TabContent implements Initializable {
         try {
             client.getAbs(url).send(ar -> {
                 if (ar.succeeded()) {
-                    ParentType type;
-                    if (url.endsWith("xmlv") ||
-                            (ar.result().getHeader("Content-Type") != null &&
-                                    ar.result().getHeader("Content-Type").endsWith("xmlv"))) {
-                        type = ParentType.GROUP;
-                    } else {
-                        type = ParentType.WEB_VIEW;
-                    }
-                    String result = ar.result().bodyAsString();
-                    Platform.runLater(() -> processParent(type, result, url));
+                    handleHttpResponse(url, ar.result());
                 } else {
                     Throwable throwable = ar.cause();
                     Platform.runLater(() -> handleExceptionMessage(throwable));
@@ -135,6 +131,19 @@ public class TabContent implements Initializable {
         } catch (Exception e) {
             handleExceptionMessage(e);
         }
+    }
+
+    private void handleHttpResponse(String url, HttpResponse response){
+        ParentType type;
+        if (url.endsWith("xmlv") ||
+                (response.getHeader("Content-Type") != null &&
+                        response.getHeader("Content-Type").endsWith("xmlv"))) {
+            type = ParentType.GROUP;
+        } else {
+            type = ParentType.WEB_VIEW;
+        }
+        String result = response.bodyAsString();
+        Platform.runLater(() -> processParent(type, result, url));
     }
 
     private void handleExceptionMessage(Throwable e, String message) {
@@ -156,17 +165,18 @@ public class TabContent implements Initializable {
             case GROUP:
                 container.setPadding(new Insets(0));
                 try {
+                    scriptEngine = null;
+
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
 
-                    ScriptEngine engine = null;
                     if (xmlV.getScript() != null) {
-//                        String script = xmlV.getScript().getType();
-//                        script = script == null ? "javascript" : script;
-//                        engine = Main.scriptEngineManager.getEngineByName(script);
-                        engine= ScriptFactory.loadJRubyScript();
+                        String script = xmlV.getScript().getType();
+                        script = script == null ? "javascript" : script;
+                        scriptEngine = Main.scriptEngineManager.getEngineByName(script);
+//                        scriptEngine= ScriptFactory.loadJRubyScript();
                     }
 
-                    parent = xmlV.getJson().generateNode(engine).getNode();
+                    parent = xmlV.generateNode(this).getNode();
 
                     if (!xmlV.isCssEmpty()) {
                         File cssFile = Res.getTempFile("css");
@@ -183,8 +193,10 @@ public class TabContent implements Initializable {
                         });
                     }
 
-                    if (engine != null)
-                        engine.eval(xmlV.getScript().getScript());
+                    if (scriptEngine != null) {
+                        scriptEngine.put("app",this);
+                        scriptEngine.eval(xmlV.getScript().getScript());
+                    }
 
                 } catch (Exception e) {
                     handleExceptionMessage(e, result);
@@ -282,4 +294,58 @@ public class TabContent implements Initializable {
             handleExceptionMessage(e);
         }
     }
+
+    public WebClient getClient() {
+        return client;
+    }
+
+    public ScriptEngine getScriptEngine() {
+        return scriptEngine;
+    }
+
+    public void submit(String[] ids, String method, String action){
+
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+
+        for(String id:ids){
+            Object object = scriptEngine.get(id);
+            if(object!=null && object instanceof Control){
+                Control control = (Control)object;
+                if(control.getName()==null || control.getName().isEmpty())
+                    continue;
+                form.set(control.getName(),control.getValue());
+            }
+        }
+
+        System.out.println(form);
+
+        HttpMethod m = HttpMethod.POST;
+        if(method!=null){
+            switch (method.trim().toLowerCase()) {
+                case "get":
+                    m = HttpMethod.GET;
+                    break;
+                case "delete":
+                    m = HttpMethod.DELETE;
+                    break;
+                case "put":
+                    m = HttpMethod.PUT;
+                    break;
+                default:
+                    break;
+            }
+        }
+        if(action==null||action.isEmpty()) return;
+
+        String url = action.trim().toLowerCase();
+        if(url.startsWith("http")){
+            client.requestAbs(m, action)
+                    .sendForm(form, ar -> handleHttpResponse(url, ar.result()));
+        }else{
+            client.request(m, action)
+                    .sendForm(form, ar -> handleHttpResponse(url, ar.result()));
+        }
+
+    }
+
 }
