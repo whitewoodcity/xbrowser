@@ -3,6 +3,7 @@ package com.whitewoodcity.controller;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
+import com.whitewoodcity.core.node.AnimationTimer;
 import com.whitewoodcity.core.node.conrol.Control;
 import com.whitewoodcity.core.parse.ScriptFactory;
 import com.whitewoodcity.util.Res;
@@ -71,6 +72,8 @@ public class TabContent implements Initializable {
     private Node parent;
     private WebView webView;
 
+    private AnimationTimer timer;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         client = WebClient.create(Main.vertx);
@@ -85,7 +88,6 @@ public class TabContent implements Initializable {
         container.setClip(containerClip);
 
         container.setOnDragOver(event -> event.acceptTransferModes(TransferMode.ANY));
-
     }
 
     public void setTab(Tab tab) {
@@ -194,7 +196,9 @@ public class TabContent implements Initializable {
                     }
 
                     if (scriptEngine != null) {
+                        timer = new AnimationTimer();
                         scriptEngine.put("app",this);
+                        scriptEngine.put("timer",timer);
                         scriptEngine.eval(xmlV.getScript().getScript());
                     }
 
@@ -231,6 +235,7 @@ public class TabContent implements Initializable {
     }
 
     public void removeParent() {
+        if(timer!=null) timer.stop();
         container.getChildren().clear();
     }
 
@@ -266,7 +271,6 @@ public class TabContent implements Initializable {
         }
     }
 
-
     @FXML
     public void onFileSelector(ActionEvent event) {
         FileChooser chooser = new FileChooser();
@@ -294,10 +298,6 @@ public class TabContent implements Initializable {
         } catch (Exception e) {
             handleExceptionMessage(e);
         }
-    }
-
-    public WebClient getClient() {
-        return client;
     }
 
     public ScriptEngine getScriptEngine() {
@@ -347,6 +347,11 @@ public class TabContent implements Initializable {
                     .sendForm(form, ar -> handleHttpResponse(url, ar.result()));
         }
 
+    }
+
+    public void close(){
+        if(client!=null) client.close();
+        if(timer!=null) timer.stop();
     }
 
 }

@@ -37,6 +37,7 @@ public class Page extends Tab{
             controller.getContainer().prefHeightProperty().bind(tabPane.heightProperty()
                     .subtract(headerArea.heightProperty())
                     .subtract(controller.getHeader().heightProperty()));
+            this.setOnClosed((event)->controller.close());
             controller.setTab(this);
         } catch (IOException e) {
             e.printStackTrace();
