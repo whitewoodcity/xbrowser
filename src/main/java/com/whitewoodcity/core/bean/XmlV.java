@@ -73,7 +73,7 @@ public class XmlV {
 
     }
 
-    public Node generateNodeByJsonObject(JsonObject jsonObject, TabContent tabContent) throws Exception{
+    public Node generateNodeByJsonObject(JsonObject jsonObject, TabContent app) throws Exception{
         String type = jsonObject.getString("type");
         Node node;
 
@@ -83,7 +83,8 @@ public class XmlV {
                 node = canvas;
                 break;
             case "form":
-                Form form = new Form(tabContent);
+                Form form = new Form();
+                form.setApp(app);
                 form.setChildren(jsonObject.getJsonArray("children"));
                 form.setAction(jsonObject.getString("action"));
                 form.setMethod(jsonObject.getString("method"));
@@ -101,6 +102,13 @@ public class XmlV {
                 label.setText(jsonObject.getString("text"));
                 node = label;
                 break;
+            case "hyperlink":
+                Hyperlink hyperlink = new Hyperlink();
+                hyperlink.setApp(app);
+                decorateControl(hyperlink,jsonObject);
+                hyperlink.setText(jsonObject.getString("text"));
+                node = hyperlink;
+                break;
             case "button":
                 Button button = new Button();
                 decorateControl(button,jsonObject);
@@ -112,7 +120,7 @@ public class XmlV {
                 JsonArray jsonArray = jsonObject.getJsonArray("children");
                 if(jsonArray!=null){
                     for(Object jo:jsonArray){
-                        Node child = generateNodeByJsonObject((JsonObject)jo, tabContent);
+                        Node child = generateNodeByJsonObject((JsonObject)jo, app);
                         if(child.getNode()!=null) pane.add(child);
                     }
                 }
@@ -120,9 +128,9 @@ public class XmlV {
                 break;
         }
 
-        if(jsonObject.getString("id")!=null&&tabContent.getScriptEngine()!=null){
+        if(jsonObject.getString("id")!=null&&app.getScriptEngine()!=null){
             node.setId(jsonObject.getString("id"));
-            tabContent.getScriptEngine().put(jsonObject.getString("id"), node);
+            app.getScriptEngine().put(jsonObject.getString("id"), node);
         }
 
         return node;

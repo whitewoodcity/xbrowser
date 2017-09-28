@@ -113,18 +113,19 @@ public class TabContent implements Initializable {
                 handleExceptionMessage(e);
             }
         } else {
-            if (!url.startsWith("http")) {
-                url = "http://" + url;
-            }
             loadWeb(url);
         }
     }
 
-    private void loadWeb(final String url) {
+    public void loadWeb(String url) {
+        if (!url.startsWith("http")) {
+            url = "http://" + url;
+        }
+        String immutableUrl = url;
         try {
             client.getAbs(url).send(ar -> {
                 if (ar.succeeded()) {
-                    handleHttpResponse(url, ar.result());
+                    handleHttpResponse(immutableUrl, ar.result());
                 } else {
                     Throwable throwable = ar.cause();
                     handleExceptionMessage(throwable);

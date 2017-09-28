@@ -1,28 +1,29 @@
 package com.whitewoodcity.core.node.conrol;
 
 import com.whitewoodcity.controller.TabContent;
-import com.whitewoodcity.core.node.ActionHandler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.json.JsonArray;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 
 public class Form extends Control{
 
     MultiMap form = MultiMap.caseInsensitiveMultiMap();
 
     StringProperty id = new SimpleStringProperty();
-    TabContent content;
+    TabContent app;
     JsonArray children = new JsonArray();
     String method;
     String action;
     FormHandler handler;
 
-    public Form(TabContent content){
-        this.content = content;
-        handler = ()->{return false;};
+    public Form(){//TabContent content
+//        this.content = content;
+        handler = () -> false;
+    }
+
+    public void setApp(TabContent app) {
+        this.app = app;
     }
 
     public JsonArray getChildren() {
@@ -61,7 +62,7 @@ public class Form extends Control{
         for(int i = 0;i<children.size();i++){
             String id = children.getValue(i).toString();
 
-            Object object = content.getScriptEngine().get(id);
+            Object object = app.getScriptEngine().get(id);
             if(object!=null && object instanceof Control){
                 Control control = (Control)object;
                 if(control.getName()==null || control.getName().isEmpty())
@@ -69,7 +70,7 @@ public class Form extends Control{
                 form.set(control.getName(),control.getValue());
             }
         }
-        content.submit(form,method,action);
+        app.submit(form,method,action);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class Form extends Control{
     public String get(String name){
         for(int i=0;i<children.size();i++){
             String id = children.getValue(i).toString();
-            Object object = content.getScriptEngine().get(id);
+            Object object = app.getScriptEngine().get(id);
             if(object!=null && object instanceof Control){
                 Control control = (Control)object;
                 if(control.getName().equals(name))
