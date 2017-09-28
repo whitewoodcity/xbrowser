@@ -2,9 +2,12 @@ package com.whitewoodcity.core.node.conrol;
 
 import com.whitewoodcity.controller.TabContent;
 import io.vertx.core.json.JsonArray;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class Form extends Control{
 
+    StringProperty id = new SimpleStringProperty();
     TabContent content;
     JsonArray children = new JsonArray();
     String method;
@@ -45,5 +48,18 @@ public class Form extends Control{
             ids[i] = children.getValue(i).toString();
         }
         content.submit(ids,method,action);
+    }
+
+    @Override
+    public String getId() {
+        return id.get();
+    }
+
+    public StringProperty idProperty() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id.set(id);
     }
 }

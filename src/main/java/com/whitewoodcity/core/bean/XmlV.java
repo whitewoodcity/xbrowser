@@ -84,6 +84,9 @@ public class XmlV {
                 break;
             case "form":
                 Form form = new Form(tabContent);
+                form.setChildren(jsonObject.getJsonArray("children"));
+                form.setAction(jsonObject.getString("action"));
+                form.setMethod(jsonObject.getString("method"));
                 node = form;
                 break;
             case "textfield":

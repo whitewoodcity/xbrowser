@@ -127,7 +127,7 @@ public class TabContent implements Initializable {
                     handleHttpResponse(url, ar.result());
                 } else {
                     Throwable throwable = ar.cause();
-                    Platform.runLater(() -> handleExceptionMessage(throwable));
+                    handleExceptionMessage(throwable);
                 }
             });
         } catch (Exception e) {
@@ -152,7 +152,7 @@ public class TabContent implements Initializable {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        processParent(ParentType.ERROR_MESSAGE, sw.toString(), message);
+        Platform.runLater(() -> processParent(ParentType.ERROR_MESSAGE, sw.toString(), message));
     }
 
     private void handleExceptionMessage(Throwable e) {
@@ -318,8 +318,6 @@ public class TabContent implements Initializable {
             }
         }
 
-        System.out.println(form);
-
         HttpMethod m = HttpMethod.POST;
         if(method!=null){
             switch (method.trim().toLowerCase()) {
@@ -336,16 +334,18 @@ public class TabContent implements Initializable {
                     break;
             }
         }
-        if(action==null||action.isEmpty()) return;
+        if(action==null||action.isEmpty()||form.isEmpty()) return;
 
-        String url = action.trim().toLowerCase();
-        if(url.startsWith("http")){
-            client.requestAbs(m, action)
-                    .sendForm(form, ar -> handleHttpResponse(url, ar.result()));
-        }else{
-            client.request(m, action)
-                    .sendForm(form, ar -> handleHttpResponse(url, ar.result()));
+        String url = action.trim();
+        if(!url.startsWith("http")){
+            action = "http://"+action;
+
         }
+        client.requestAbs(m, action)
+                .sendForm(form, ar -> {
+                    if(ar.succeeded()) handleHttpResponse(url, ar.result());
+                    else handleExceptionMessage(ar.cause());
+                });
 
     }
 
