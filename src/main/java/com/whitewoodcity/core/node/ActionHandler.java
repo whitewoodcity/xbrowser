@@ -1,6 +1,6 @@
 package com.whitewoodcity.core.node;
 
 @FunctionalInterface
-public interface Handler<T> {
+public interface ActionHandler<T> {
     void handle(T t);
 }

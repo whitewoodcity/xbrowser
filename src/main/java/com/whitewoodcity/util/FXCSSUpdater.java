@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class FXCSSUpdater {
 
-    // URL Handler to create magic "internal:stylesheet.css" url for our css string
+    // URLHandler to create magic "internal:stylesheet.css" url for our css string
     {
         URL.setURLStreamHandlerFactory(new StringURLStreamHandlerFactory());
     }
@@ -70,7 +70,7 @@ public class FXCSSUpdater {
     }
 
     /**
-     * URL Handler to create magic "internal:stylesheet.css" url for our css string
+     * URLHandler to create magic "internal:stylesheet.css" url for our css string
      */
     private class StringURLStreamHandlerFactory implements URLStreamHandlerFactory {
 

@@ -4,16 +4,16 @@ import javafx.application.Platform;
 
 public class AnimationTimer extends javafx.animation.AnimationTimer{
 
-    Handler<Long> handler;
+    ActionHandler<Long> action;
 
-    public void setHandler(Handler handler) {
-        this.handler = handler;
+    public void setAction(ActionHandler<Long> action) {
+        this.action = action;
     }
 
     @Override
     public void handle(long now) {
         Platform.runLater(()->
-            handler.handle(now)
+            action.handle(now)
         );
     }
 }
