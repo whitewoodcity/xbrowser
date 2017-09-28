@@ -30,7 +30,9 @@ public class Form extends Control{
     }
 
     public void setChildren(JsonArray children) {
-        this.children = children;
+        this.children.clear();
+        if(children!=null)
+            this.children.addAll(children);
     }
 
     public String getMethod() {
@@ -83,16 +85,21 @@ public class Form extends Control{
         this.id.set(id);
     }
 
-    public void set(String id, String value){
-        form.set(id,value);
+    public void set(String name, String value){
+        form.set(name,value);
     }
-    public String get(String id){
-        Object object = content.getScriptEngine().get(id);
-        if(object==null||!(object instanceof Control)){
-            return form.get(id);
-        }else{
-            return ((Control)object).getValue();
+    public String get(String name){
+        for(int i=0;i<children.size();i++){
+            String id = children.getValue(i).toString();
+            Object object = content.getScriptEngine().get(id);
+            if(object!=null && object instanceof Control){
+                Control control = (Control)object;
+                if(control.getName().equals(name))
+                    return control.getValue();
+            }
         }
+
+        return form.get(name);
     }
     public void remove(String id){
         children.remove(id);
@@ -102,5 +109,6 @@ public class Form extends Control{
     }
     public void clear(){
         form.clear();
+        children.clear();
     }
 }
