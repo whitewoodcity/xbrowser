@@ -135,7 +135,7 @@ public class TabContent implements Initializable {
         }
     }
 
-    private void handleHttpResponse(String url, HttpResponse response){
+    private void handleHttpResponse(String url, HttpResponse response) {
         ParentType type;
         if (url.endsWith("xmlv") ||
                 (response.getHeader("Content-Type") != null &&
@@ -197,8 +197,8 @@ public class TabContent implements Initializable {
 
                     if (scriptEngine != null) {
                         timer = new AnimationTimer();
-                        scriptEngine.put("app",this);
-                        scriptEngine.put("timer",timer);
+                        scriptEngine.put("app", this);
+                        scriptEngine.put("timer", timer);
                         scriptEngine.eval(xmlV.getScript().getScript());
                     }
 
@@ -235,7 +235,7 @@ public class TabContent implements Initializable {
     }
 
     public void removeParent() {
-        if(timer!=null) timer.stop();
+        if (timer != null) timer.stop();
         container.getChildren().clear();
     }
 
@@ -304,22 +304,10 @@ public class TabContent implements Initializable {
         return scriptEngine;
     }
 
-    public void submit(String[] ids, String method, String action){
-
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-
-        for(String id:ids){
-            Object object = scriptEngine.get(id);
-            if(object!=null && object instanceof Control){
-                Control control = (Control)object;
-                if(control.getName()==null || control.getName().isEmpty())
-                    continue;
-                form.set(control.getName(),control.getValue());
-            }
-        }
+    public void submit(MultiMap form, String method, String action) {
 
         HttpMethod m = HttpMethod.POST;
-        if(method!=null){
+        if (method != null) {
             switch (method.trim().toLowerCase()) {
                 case "get":
                     m = HttpMethod.GET;
@@ -334,24 +322,31 @@ public class TabContent implements Initializable {
                     break;
             }
         }
-        if(action==null||action.isEmpty()||form.isEmpty()) return;
+        if (action == null || action.isEmpty()) return;
 
         String url = action.trim();
-        if(!url.startsWith("http")){
-            action = "http://"+action;
+        if (!url.startsWith("http")) {
+            action = "http://" + action;
 
         }
-        client.requestAbs(m, action)
-                .sendForm(form, ar -> {
-                    if(ar.succeeded()) handleHttpResponse(url, ar.result());
-                    else handleExceptionMessage(ar.cause());
-                });
-
+        if (form.isEmpty()) {
+            client.requestAbs(m, action)
+                    .send(ar -> {
+                        if (ar.succeeded()) handleHttpResponse(url, ar.result());
+                        else handleExceptionMessage(ar.cause());
+                    });
+        } else {
+            client.requestAbs(m, action)
+                    .sendForm(form, ar -> {
+                        if (ar.succeeded()) handleHttpResponse(url, ar.result());
+                        else handleExceptionMessage(ar.cause());
+                    });
+        }
     }
 
-    public void close(){
-        if(client!=null) client.close();
-        if(timer!=null) timer.stop();
+    public void close() {
+        if (client != null) client.close();
+        if (timer != null) timer.stop();
     }
 
 }
