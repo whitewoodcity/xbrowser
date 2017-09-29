@@ -107,6 +107,7 @@ public class XmlV {
                 hyperlink.setApp(app);
                 decorateControl(hyperlink,jsonObject);
                 hyperlink.setText(jsonObject.getString("text"));
+                hyperlink.setValue(jsonObject.getString("value"));
                 node = hyperlink;
                 break;
             case "button":
@@ -114,6 +115,13 @@ public class XmlV {
                 decorateControl(button,jsonObject);
                 button.setText(jsonObject.getString("text"));
                 node = button;
+                break;
+            case "choicebox":
+                ChoiceBox choiceBox = new ChoiceBox();
+                decorateControl(choiceBox,jsonObject);
+                choiceBox.setItems(jsonObject.getJsonArray("items"));
+                choiceBox.setValue(jsonObject.getString("value"));
+                node = choiceBox;
                 break;
             default:
                 Pane pane = new Pane();

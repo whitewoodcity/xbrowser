@@ -58,9 +58,6 @@ public class TabContent implements Initializable {
     @FXML
     private Button fileSaver;
 
-//    @FXML
-//    private StackPane imgIcn;
-
     @FXML
     private StackPane container;
     private Rectangle containerClip = new Rectangle();
@@ -330,6 +327,7 @@ public class TabContent implements Initializable {
             action = "http://" + action;
 
         }
+        System.out.println(form);
         if (form.isEmpty()) {
             client.requestAbs(m, action)
                     .send(ar -> {

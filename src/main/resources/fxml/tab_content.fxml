@@ -33,7 +33,6 @@
         <Button fx:id="fileSaver" text="↯" onAction="#saveFile"/>
     </HBox>
     <StackPane fx:id="container"
-               alignment="CENTER"
                style="-fx-background-color:transparent"
                 onDragDropped="#onFileDropped"/>
 </Pane>
