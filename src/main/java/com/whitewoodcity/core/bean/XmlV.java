@@ -1,7 +1,7 @@
 package com.whitewoodcity.core.bean;
 
 import com.whitewoodcity.controller.TabContent;
-import com.whitewoodcity.core.node.Canvas;
+import com.whitewoodcity.core.node.canvas.Canvas;
 import com.whitewoodcity.core.node.Node;
 import com.whitewoodcity.core.node.Pane;
 import com.whitewoodcity.core.node.conrol.*;
@@ -9,6 +9,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 public class XmlV {
+    private Preload preload;
     private Json json;
     private Script script;
     private CSS css;
@@ -48,6 +49,14 @@ public class XmlV {
 
     public boolean isCssEmpty(){
         return css==null||css.getCss()==null||css.getCss().trim().equals("");
+    }
+
+    public Preload getPreload() {
+        return preload;
+    }
+
+    public void setPreload(Preload preload) {
+        this.preload = preload;
     }
 
     public Node generateNode(TabContent tabContent) throws Exception{

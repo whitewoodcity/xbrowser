@@ -2,13 +2,6 @@ package com.whitewoodcity.core.bean;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
-import com.whitewoodcity.controller.TabContent;
-import com.whitewoodcity.core.node.Canvas;
-import com.whitewoodcity.core.node.conrol.*;
-import com.whitewoodcity.core.node.Node;
-import com.whitewoodcity.core.node.Pane;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 
 public class Json {
 

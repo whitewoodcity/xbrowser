@@ -23,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -36,6 +37,8 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class TabContent implements Initializable {
@@ -169,7 +172,10 @@ public class TabContent implements Initializable {
 
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
 
-                    if (xmlV.getScript() != null) {
+                    System.out.println(xmlV.getPreload().getPreload());
+
+                    if (xmlV.getScript() != null && xmlV.getScript().getScript()!=null &&
+                            !xmlV.getScript().getScript().replace("\n","").trim().equals("")) {
                         String script = xmlV.getScript().getType();
                         script = script == null ? "javascript" : script;
                         scriptEngine = Main.scriptEngineManager.getEngineByName(script);
@@ -197,6 +203,7 @@ public class TabContent implements Initializable {
                         timer = new AnimationTimer();
                         scriptEngine.put("app", this);
                         scriptEngine.put("timer", timer);
+
                         scriptEngine.eval(xmlV.getScript().getScript());
                     }
 
@@ -272,10 +279,8 @@ public class TabContent implements Initializable {
     @FXML
     public void onFileSelector(ActionEvent event) {
         FileChooser chooser = new FileChooser();
-//        chooser.setTitle("选择文件");
         FileSystemView fsv = FileSystemView.getFileSystemView();
         chooser.setInitialDirectory(fsv.getHomeDirectory());
-//        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XmlV","*.xmlv"));
         File file = chooser.showOpenDialog(container.getScene().getWindow());
         if (file == null) {
             return;
@@ -325,9 +330,8 @@ public class TabContent implements Initializable {
         String url = action.trim();
         if (!url.startsWith("http")) {
             action = "http://" + action;
-
         }
-        System.out.println(form);
+
         if (form.isEmpty()) {
             client.requestAbs(m, action)
                     .send(ar -> {
