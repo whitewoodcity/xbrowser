@@ -7,6 +7,12 @@ import com.whitewoodcity.core.node.Pane;
 import com.whitewoodcity.core.node.conrol.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import javafx.scene.image.Image;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class XmlV {
     private Preload preload;
@@ -57,6 +63,26 @@ public class XmlV {
 
     public void setPreload(Preload preload) {
         this.preload = preload;
+    }
+
+    public Map<String, Object> generateResources(){
+        Map<String, Object> map = new HashMap<>();
+        if(getPreload()!=null && getPreload().getPreload()!=null &&
+                !getPreload().getPreload().replace("\n","").trim().equals("")){
+            String preload = getPreload().getPreload().replace("\n","").trim();
+            String[] elements = preload.split(";");
+            for(String element:elements){
+                String[] res = element.split("=");
+                if(res[1].endsWith("wav")){
+                    map.put(res[0], new AudioClip(res[1]));
+                }else if(res[1].endsWith("mp3")||res[1].endsWith("mp4")){
+                    map.put(res[0], new Media(res[1]));
+                }else{
+                    map.put(res[0], new Image(res[1]));
+                }
+            }
+        }
+        return map;
     }
 
     public Node generateNode(TabContent tabContent) throws Exception{

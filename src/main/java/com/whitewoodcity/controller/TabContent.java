@@ -26,6 +26,9 @@ import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -35,6 +38,7 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class TabContent implements Initializable {
@@ -67,6 +71,7 @@ public class TabContent implements Initializable {
     private ScriptEngine scriptEngine;
     private MouseEventHandler mouseEventHandler = new MouseEventHandler();
     private KeyEventHandler keyEventHandler = new KeyEventHandler();
+    private MediaPlayer mediaPlayer;
     private Node parent;
     private WebView webView;
 
@@ -176,6 +181,8 @@ public class TabContent implements Initializable {
 
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
 
+                    Map preload = xmlV.generateResources();
+
                     if (xmlV.getScript() != null && xmlV.getScript().getScript()!=null &&
                             !xmlV.getScript().getScript().replace("\n","").trim().equals("")) {
                         String script = xmlV.getScript().getType();
@@ -204,6 +211,7 @@ public class TabContent implements Initializable {
                     if (scriptEngine != null) {
                         timer = new AnimationTimer();
                         scriptEngine.put("app", this);
+                        scriptEngine.put("preload", preload);
                         scriptEngine.put("timer", timer);
                         scriptEngine.put("mouse", mouseEventHandler);
                         scriptEngine.put("key", keyEventHandler);
@@ -247,6 +255,7 @@ public class TabContent implements Initializable {
     public void removeParent() {
         scriptEngine = null;
         if (timer != null) timer.stop();
+        if (mediaPlayer !=null) mediaPlayer.stop();
         container.getChildren().clear();
     }
 
@@ -354,11 +363,28 @@ public class TabContent implements Initializable {
     }
 
     public void close() {
+        removeParent();
         if (client != null) client.close();
         if (timer != null) timer.stop();
+        if (mediaPlayer !=null) mediaPlayer.stop();
     }
 
     public void focus(com.whitewoodcity.core.node.Node node){
         node.getNode().requestFocus();
+    }
+
+    public void play(Media media){
+        play(media, Integer.MAX_VALUE);
+    }
+
+    public void play(Media media, int cycle){
+        play(media,cycle,1);
+    }
+
+    public void play(Media media, int cycle, int volume){
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setVolume(volume);
+        mediaPlayer.setCycleCount(cycle);
+        mediaPlayer.play();
     }
 }
