@@ -255,7 +255,7 @@ public class TabContent implements Initializable {
     public void removeParent() {
         scriptEngine = null;
         if (timer != null) timer.stop();
-        if (mediaPlayer !=null) mediaPlayer.stop();
+        if (mediaPlayer !=null) mediaPlayer.dispose();
         container.getChildren().clear();
     }
 
@@ -366,25 +366,33 @@ public class TabContent implements Initializable {
         removeParent();
         if (client != null) client.close();
         if (timer != null) timer.stop();
-        if (mediaPlayer !=null) mediaPlayer.stop();
+        if (mediaPlayer !=null) mediaPlayer.dispose();
     }
 
     public void focus(com.whitewoodcity.core.node.Node node){
         node.getNode().requestFocus();
     }
 
-    public void play(Media media){
-        play(media, Integer.MAX_VALUE);
+    public MediaPlayer play(Media media){
+        return play(media, Integer.MAX_VALUE);
     }
 
-    public void play(Media media, int cycle){
-        play(media,cycle,1);
+    public MediaPlayer play(Media media, int cycle){
+        return play(media,cycle,1);
     }
 
-    public void play(Media media, int cycle, int volume){
+    public MediaPlayer play(Media media, int cycle, int volume){
+        if(mediaPlayer!=null) mediaPlayer.dispose();
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setVolume(volume);
         mediaPlayer.setCycleCount(cycle);
+
+        mediaPlayer.setOnError(()->play(media,cycle,volume));
+        mediaPlayer.setOnStopped(()->play(media,cycle,volume));
+        mediaPlayer.setOnEndOfMedia(()->play(media,cycle,volume));
+
         mediaPlayer.play();
+
+        return mediaPlayer;
     }
 }
