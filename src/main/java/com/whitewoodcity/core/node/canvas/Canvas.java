@@ -74,46 +74,18 @@ public class Canvas implements Node {
         body.getGraphicsContext2D().clearRect(0,0,body.getWidth(),body.getHeight());
     }
 
-    public void drawImage(Image img, double x, double y){
+    public void image(Image img, double x, double y){
         body.getGraphicsContext2D().drawImage(img, x, y);
     }
 
-    public void draw_image(Image img, double x, double y){
-        this.drawImage(img, x, y);
-    }
-
-    public void drawimage(Image img, double x, double y){
-        this.drawImage(img, x, y);
-    }
-
-    public void drawImage(Image img, double x, double y, double w, double h){
+    public void image(Image img, double x, double y, double w, double h){
         body.getGraphicsContext2D().drawImage(img, x, y, w, h);
     }
 
-    public void draw_image(Image img, double x, double y, double w, double h){
-        drawImage(img, x, y, w, h);
-    }
-
-    public void drawimage(Image img, double x, double y, double w, double h){
-        drawImage(img, x, y, w, h);
-    }
-
-    public void drawImage(Image img,
+    public void image(Image img,
                           double sx, double sy, double sw, double sh,
                           double dx, double dy, double dw, double dh){
         body.getGraphicsContext2D().drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-    }
-
-    public void draw_image(Image img,
-                           double sx, double sy, double sw, double sh,
-                           double dx, double dy, double dw, double dh){
-        drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-    }
-
-    public void drawimage(Image img,
-                          double sx, double sy, double sw, double sh,
-                          double dx, double dy, double dw, double dh){
-        drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
     public void text(String text){
