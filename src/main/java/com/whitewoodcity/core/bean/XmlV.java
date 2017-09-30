@@ -72,6 +72,7 @@ public class XmlV {
             String preload = getPreload().getPreload().replace("\n","").trim();
             String[] elements = preload.split(";");
             for(String element:elements){
+                if(element.replace("\n","").trim().equals("")) continue;
                 String[] res = element.split("=");
                 if(res[1].endsWith("wav")){
                     map.put(res[0], new AudioClip(res[1]));

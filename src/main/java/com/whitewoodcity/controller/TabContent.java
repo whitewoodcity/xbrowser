@@ -381,15 +381,16 @@ public class TabContent implements Initializable {
         return play(media,cycle,1);
     }
 
-    public MediaPlayer play(Media media, int cycle, int volume){
-        if(mediaPlayer!=null) mediaPlayer.dispose();
+    public MediaPlayer play(Media media, int cycle, double volume){
+        if (mediaPlayer != null) mediaPlayer.dispose();
+        if (media == null) return null;
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setVolume(volume);
         mediaPlayer.setCycleCount(cycle);
 
-        mediaPlayer.setOnError(()->play(media,cycle,volume));
-        mediaPlayer.setOnStopped(()->play(media,cycle,volume));
-        mediaPlayer.setOnEndOfMedia(()->play(media,cycle,volume));
+        mediaPlayer.setOnError(() -> play(media, cycle, volume));
+        mediaPlayer.setOnStopped(() -> play(media, cycle, volume));
+        mediaPlayer.setOnEndOfMedia(() -> play(media, cycle, volume));
 
         mediaPlayer.play();
 
