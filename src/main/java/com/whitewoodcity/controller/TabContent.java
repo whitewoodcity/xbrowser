@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.AnimationTimer;
+import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
@@ -65,6 +66,7 @@ public class TabContent implements Initializable {
     private WebClient client;
     private ScriptEngine scriptEngine;
     private MouseEventHandler mouseEventHandler = new MouseEventHandler();
+    private KeyEventHandler keyEventHandler = new KeyEventHandler();
     private Node parent;
     private WebView webView;
 
@@ -88,6 +90,9 @@ public class TabContent implements Initializable {
         container.addEventHandler(MouseEvent.MOUSE_PRESSED,mouseEventHandler);
         container.addEventHandler(MouseEvent.MOUSE_RELEASED,mouseEventHandler);
         container.addEventHandler(MouseEvent.MOUSE_MOVED,mouseEventHandler);
+        container.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+        container.addEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
+        container.setFocusTraversable(true);
     }
 
     public void setTab(Tab tab) {
@@ -171,8 +176,6 @@ public class TabContent implements Initializable {
 
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
 
-                    System.out.println(xmlV.getPreload().getPreload());
-
                     if (xmlV.getScript() != null && xmlV.getScript().getScript()!=null &&
                             !xmlV.getScript().getScript().replace("\n","").trim().equals("")) {
                         String script = xmlV.getScript().getType();
@@ -203,6 +206,7 @@ public class TabContent implements Initializable {
                         scriptEngine.put("app", this);
                         scriptEngine.put("timer", timer);
                         scriptEngine.put("mouse", mouseEventHandler);
+                        scriptEngine.put("key", keyEventHandler);
 
                         scriptEngine.eval(xmlV.getScript().getScript());
                     }
@@ -237,6 +241,7 @@ public class TabContent implements Initializable {
 
         urlInput.setText(urlOrMsg);
         container.getChildren().add(0, parent);
+        container.requestFocus();
     }
 
     public void removeParent() {
@@ -353,4 +358,7 @@ public class TabContent implements Initializable {
         if (timer != null) timer.stop();
     }
 
+    public void focus(com.whitewoodcity.core.node.Node node){
+        node.getNode().requestFocus();
+    }
 }
