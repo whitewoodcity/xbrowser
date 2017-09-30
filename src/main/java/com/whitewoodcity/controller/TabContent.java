@@ -4,8 +4,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.AnimationTimer;
-import com.whitewoodcity.core.node.conrol.Control;
-import com.whitewoodcity.core.parse.ScriptFactory;
+import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
@@ -14,7 +13,6 @@ import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -23,7 +21,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -37,8 +34,6 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class TabContent implements Initializable {
@@ -69,6 +64,7 @@ public class TabContent implements Initializable {
 
     private WebClient client;
     private ScriptEngine scriptEngine;
+    private MouseEventHandler mouseEventHandler = new MouseEventHandler();
     private Node parent;
     private WebView webView;
 
@@ -88,6 +84,10 @@ public class TabContent implements Initializable {
         container.setClip(containerClip);
 
         container.setOnDragOver(event -> event.acceptTransferModes(TransferMode.ANY));
+
+        container.addEventHandler(MouseEvent.MOUSE_PRESSED,mouseEventHandler);
+        container.addEventHandler(MouseEvent.MOUSE_RELEASED,mouseEventHandler);
+        container.addEventHandler(MouseEvent.MOUSE_MOVED,mouseEventHandler);
     }
 
     public void setTab(Tab tab) {
@@ -168,7 +168,6 @@ public class TabContent implements Initializable {
             case GROUP:
                 container.setPadding(new Insets(0));
                 try {
-                    scriptEngine = null;
 
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
 
@@ -203,6 +202,7 @@ public class TabContent implements Initializable {
                         timer = new AnimationTimer();
                         scriptEngine.put("app", this);
                         scriptEngine.put("timer", timer);
+                        scriptEngine.put("mouse", mouseEventHandler);
 
                         scriptEngine.eval(xmlV.getScript().getScript());
                     }
@@ -240,6 +240,7 @@ public class TabContent implements Initializable {
     }
 
     public void removeParent() {
+        scriptEngine = null;
         if (timer != null) timer.stop();
         container.getChildren().clear();
     }
