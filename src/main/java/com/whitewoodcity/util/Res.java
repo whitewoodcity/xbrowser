@@ -37,11 +37,12 @@ public class Res {
     }
 
     public static void removeTempDirectory(File dir) throws IOException{
-        String[] entries = dir.list();
-        if(entries==null) return;
-        for(String s: entries){
-            File currentFile = new File(dir.getPath(),s);
-            currentFile.delete();
+        if(dir == null) return;
+        if(dir.list()!=null) {
+            for (String s : dir.list()) {
+                File currentFile = new File(dir.getPath(), s);
+                currentFile.delete();
+            }
         }
         dir.delete();
     }
