@@ -12,16 +12,14 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
@@ -45,7 +43,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class TabContent implements Initializable {
 
@@ -73,7 +70,6 @@ public class TabContent implements Initializable {
 
     private Tab tab;
 
-//    private String directoryName = UUID.randomUUID()+"";
     private File directory;
     private WebClient client;
     private ScriptEngine scriptEngine;
@@ -208,44 +204,75 @@ public class TabContent implements Initializable {
                     Map<String, String> resources = xmlV.generateResources();
                     Map<String, Object> preload = new HashMap<>();
 
-                    for(String key:resources.keySet()){
-                        if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
-                            Path path = Paths.get(resources.get(key));
-                            Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString());
-                            String uri = Paths.get(directory.getAbsolutePath()+File.separator+path.getFileName().toString()).toUri().toString();
-                            preload.put(key, new Media(uri));
-                        }else if(resources.get(key).endsWith("wav")){
-                            preload.put(key, new AudioClip(resources.get(key)));
-                        }else{
-                            preload.put(key, new Image(resources.get(key)));
+                    ProgressBar progressBar = new ProgressBar();
+                    progressBar.prefWidthProperty().bind(container.widthProperty().multiply(0.8));
+                    parent = progressBar;
+
+                    Task loadingTask = new Task() {
+                        @Override
+                        protected Object call() throws Exception {
+                            Platform.runLater(()->{
+                                progressBar.setProgress(0);
+                            });
+                            for(String key:resources.keySet()){
+
+                                if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
+                                    Path path = Paths.get(resources.get(key));
+                                    Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString());
+                                    String uri = Paths.get(directory.getAbsolutePath()+File.separator+path.getFileName().toString()).toUri().toString();
+                                    preload.put(key, new Media(uri));
+                                }else if(resources.get(key).endsWith("wav")){
+                                    preload.put(key, new AudioClip(resources.get(key)));
+                                }else{
+                                    preload.put(key, new Image(resources.get(key)));
+                                }
+                                Platform.runLater(()->{
+                                    progressBar.setProgress(((double)preload.size())/resources.size());
+                                });
+                            }
+
+                            return null;
                         }
-                    }
+                    };
 
-                    if (xmlV.getScript() != null && xmlV.getScript().getScript()!=null &&
-                            !xmlV.getScript().getScript().replace("\n","").trim().equals("")) {
-                        String script = xmlV.getScript().getType();
-                        script = script == null ? "javascript" : script;
-                        scriptEngine = Main.scriptEngineManager.getEngineByName(script);
+                    loadingTask.setOnSucceeded(value ->{
+
+                        if (xmlV.getScript() != null && xmlV.getScript().getScript()!=null &&
+                                !xmlV.getScript().getScript().replace("\n","").trim().equals("")) {
+                            String script = xmlV.getScript().getType();
+                            script = script == null ? "javascript" : script;
+                            scriptEngine = Main.scriptEngineManager.getEngineByName(script);
 //                        scriptEngine= ScriptFactory.loadJRubyScript();
-                    }
+                        }
+                        try {
+                            parent = xmlV.generateNode(this).getNode();
 
-                    parent = xmlV.generateNode(this).getNode();
+                            if (scriptEngine != null) {
+                                timer = new AnimationTimer();
+                                scriptEngine.put("app", this);
+                                scriptEngine.put("preload", preload);
+                                scriptEngine.put("timer", timer);
+                                scriptEngine.put("mouse", mouseEventHandler);
+                                scriptEngine.put("key", keyEventHandler);
 
-                    if (scriptEngine != null) {
-                        timer = new AnimationTimer();
-                        scriptEngine.put("app", this);
-                        scriptEngine.put("preload", preload);
-                        scriptEngine.put("timer", timer);
-                        scriptEngine.put("mouse", mouseEventHandler);
-                        scriptEngine.put("key", keyEventHandler);
+                                scriptEngine.eval(xmlV.getScript().getScript());
+                            }
+                            container.getChildren().clear();
+                            container.getChildren().add(0, parent);
+                            container.requestFocus();
+                        }catch (Exception e){
+                            handleExceptionMessage(e);
+                        }
+                    });
 
-                        scriptEngine.eval(xmlV.getScript().getScript());
-                    }
-
+                    Thread thread = new Thread(loadingTask);
+                    thread.setDaemon(true);
+                    thread.start();
                 } catch (Exception e) {
                     handleExceptionMessage(e, result);
                     return;
                 }
+
                 break;
             case ERROR_MESSAGE:
                 TextArea errorMsg = new TextArea();
@@ -255,6 +282,7 @@ public class TabContent implements Initializable {
                 parent = errorMsg;
                 tab.textProperty().unbind();
                 tab.setText(urlOrMsg);
+
                 break;
             default:
                 container.setPadding(new Insets(0));
@@ -267,6 +295,7 @@ public class TabContent implements Initializable {
                 webView.getEngine().load(urlOrMsg);
 
                 parent = webView;
+
                 break;
         }
 
