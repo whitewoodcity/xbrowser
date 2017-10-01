@@ -1,12 +1,16 @@
 package com.whitewoodcity.controller;
 
 import com.whitewoodcity.core.node.AnimationTimer;
+import com.whitewoodcity.core.node.input.KeyEventHandler;
+import com.whitewoodcity.core.node.input.MouseEventHandler;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class App {
     protected MediaPlayer mediaPlayer;
     protected AnimationTimer timer;
+    protected MouseEventHandler mouseEventHandler = new MouseEventHandler();
+    protected KeyEventHandler keyEventHandler = new KeyEventHandler();
 
     public MediaPlayer play(Media media){
         return play(media, Integer.MAX_VALUE);

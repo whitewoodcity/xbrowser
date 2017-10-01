@@ -3,8 +3,6 @@ package com.whitewoodcity.controller;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
-import com.whitewoodcity.core.node.input.KeyEventHandler;
-import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
@@ -71,10 +69,9 @@ public class TabContent extends App implements Initializable {
     private File directory;
     private WebClient client;
     private ScriptEngine scriptEngine;
-    private MouseEventHandler mouseEventHandler = new MouseEventHandler();
-    private KeyEventHandler keyEventHandler = new KeyEventHandler();
     private Node parent;
     private WebView webView;
+    private Task loadingTask;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -175,8 +172,6 @@ public class TabContent extends App implements Initializable {
         handleExceptionMessage(e, e.getMessage());
     }
 
-    XmlMapper xmlMapper = new XmlMapper();
-
     private void processParent(ParentType type, String result, String urlOrMsg) {
         removeParent();
         switch (type) {
@@ -184,7 +179,7 @@ public class TabContent extends App implements Initializable {
                 container.setPadding(new Insets(0));
                 try {
 
-                    XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
+                    XmlV xmlV = new XmlMapper().readValue(result, XmlV.class);
 
                     if (!xmlV.isCssEmpty()) {
                         File cssFile = Res.getTempFile(directory,"css");
@@ -203,7 +198,7 @@ public class TabContent extends App implements Initializable {
                     progressBar.prefWidthProperty().bind(container.widthProperty().multiply(0.8));
                     parent = progressBar;
 
-                    Task loadingTask = new Task() {
+                    loadingTask = new Task() {
                         @Override
                         protected Object call() throws Exception {
                             Platform.runLater(()->{
@@ -301,6 +296,7 @@ public class TabContent extends App implements Initializable {
 
     public void removeParent() {
         super.dispose();
+        if(loadingTask!=null) loadingTask.cancel();
         scriptEngine = null;
         container.getChildren().clear();
     }
