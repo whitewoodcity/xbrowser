@@ -9,12 +9,15 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -22,6 +25,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.shape.Rectangle;
@@ -192,29 +196,57 @@ public class TabContent extends App implements Initializable {
                     }
 
                     Map<String, String> resources = xmlV.generateResources();
+                    if(xmlV.getScript()!=null&&xmlV.getScript().getLink()!=null&&!xmlV.getScript().getLink().trim().equals("")){
+                        resources.put("scriptEngine", xmlV.getScript().getLink());
+                    }
                     Map<String, Object> preload = new HashMap<>();
 
+                    Group group = new Group();
                     ProgressBar progressBar = new ProgressBar();
+                    Label label = new Label("0");
                     progressBar.prefWidthProperty().bind(container.widthProperty().multiply(0.8));
-                    parent = progressBar;
+                    label.layoutYProperty().bind(progressBar.layoutYProperty().add(progressBar.heightProperty()));
+                    label.layoutXProperty().bind(progressBar.layoutXProperty().add(progressBar.widthProperty()).subtract(label.widthProperty()));
+                    group.getChildren().addAll(progressBar,label);
+                    parent = group;
 
                     loadingTask = new Task() {
+
                         @Override
                         protected Object call() throws Exception {
                             Platform.runLater(()->{
                                 progressBar.setProgress(0);
                             });
                             for(String key:resources.keySet()){
-
-                                if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
+                                if(key.equals("scriptEngine")&&(resources.get(key).endsWith("jar")||resources.get(key).endsWith("zip"))){
                                     Path path = Paths.get(resources.get(key));
-                                    Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString());
+                                    String type, version;
+                                    if(xmlV.getScript().getType()==null ||xmlV.getScript().getType().trim().equals(""))
+                                        type = "javascript";
+                                    else type = xmlV.getScript().getType().trim().toLowerCase();
+                                    if(xmlV.getScript().getVersion()==null || xmlV.getScript().getVersion().trim().equals(""))
+                                        version = "0";
+                                    else version = xmlV.getScript().getVersion().trim().toLowerCase();
+
+                                    File dir = Res.getPluginDirectory(type,version);
+                                    if(!Res.isPluginExisted(type,version,path.getFileName().toString()))
+                                        Res.downLoadFromUrl(resources.get(key),dir, path.getFileName().toString(),label.textProperty());
+
+                                }else if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
+                                    Path path = Paths.get(resources.get(key));
+                                    Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString(),label.textProperty());
                                     String uri = Paths.get(directory.getAbsolutePath()+File.separator+path.getFileName().toString()).toUri().toString();
                                     preload.put(key, new Media(uri));
                                 }else if(resources.get(key).endsWith("wav")){
-                                    preload.put(key, new AudioClip(resources.get(key)));
+                                    Path path = Paths.get(resources.get(key));
+                                    Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString(),label.textProperty());
+                                    String uri = Paths.get(directory.getAbsolutePath()+File.separator+path.getFileName().toString()).toUri().toString();
+                                    preload.put(key, new AudioClip(uri));
                                 }else{
-                                    preload.put(key, new Image(resources.get(key)));
+                                    Path path = Paths.get(resources.get(key));
+                                    Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString(),label.textProperty());
+                                    String uri = Paths.get(directory.getAbsolutePath()+File.separator+path.getFileName().toString()).toUri().toString();
+                                    preload.put(key, new Image(uri));
                                 }
                                 Platform.runLater(()->{
                                     progressBar.setProgress(((double)preload.size())/resources.size());
@@ -231,6 +263,7 @@ public class TabContent extends App implements Initializable {
                                 !xmlV.getScript().getScript().replace("\n","").trim().equals("")) {
                             String script = xmlV.getScript().getType();
                             script = script == null ? "javascript" : script;
+
                             scriptEngine = Main.scriptEngineManager.getEngineByName(script);
 //                        scriptEngine= ScriptFactory.loadJRubyScript();
                         }

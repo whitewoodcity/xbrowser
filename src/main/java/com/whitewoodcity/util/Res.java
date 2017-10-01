@@ -1,5 +1,10 @@
 package com.whitewoodcity.util;
 
+import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.StringProperty;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -24,6 +29,31 @@ public class Res {
             dir.mkdirs();
         }
         return dir;
+    }
+
+    public static File getPluginDirectory() throws IOException{
+        File dir = getDefaultDirectory();
+        File pluginDir = new File(dir.getAbsolutePath()+File.separator+"plugin");
+        if(!pluginDir.exists())
+            pluginDir.mkdir();
+        return pluginDir;
+    }
+
+    public static boolean isPluginExisted(String type, String version, String filename) throws IOException{
+        File dir = getPluginDirectory(type, version);
+        return new File(dir.getAbsolutePath()+File.separator+filename).exists();
+    }
+
+    public static File getPluginDirectory(String type, String version) throws IOException{
+        File dir = getPluginDirectory();
+        File pluginDir = new File(dir.getAbsolutePath()+File.separator+type);
+        if(!pluginDir.exists())
+            pluginDir.mkdir();
+        dir = pluginDir;
+        pluginDir = new File(dir.getAbsolutePath()+File.separator+version);
+        if(!pluginDir.exists())
+            pluginDir.mkdir();
+        return pluginDir;
     }
 
     public static File getTempDirectory(String dirName) throws IOException{
@@ -72,40 +102,37 @@ public class Res {
         }
     }
 
-    public static void  downLoadFromUrl(String urlStr,File dir,String fileName) throws IOException{
-        URL url = new URL(urlStr);
-        URLConnection conn = url.openConnection();
-        //设置超时间为3秒
-        conn.setConnectTimeout(3*1000);
-        //防止屏蔽程序抓取而返回403错误
-        conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
-
-        //得到输入流
-        InputStream inputStream = conn.getInputStream();
-        //获取自己数组
-        byte[] getData = readInputStream(inputStream);
+    public static void downLoadFromUrl(String urlStr, File dir, String fileName,StringProperty progressProperty){
 
         File file = new File(dir+File.separator+fileName);
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(getData);
-        if(fos!=null){
-            fos.close();
-        }
-        if(inputStream!=null){
-            inputStream.close();
-        }
+        int i = Integer.parseInt(progressProperty.get());
+        try {
+            URLConnection conn = new URL(urlStr).openConnection();
+            //设置超时间为3秒
+            conn.setConnectTimeout(3 * 1000);
+            //防止屏蔽程序抓取而返回403错误
+            conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
 
-    }
+            try(InputStream inputStream = conn.getInputStream();
+                FileOutputStream fileOutputStream = new FileOutputStream(file)){
+                int c;
+                while ((c = inputStream.read()) != -1) {
+                    fileOutputStream.write(c);
+                    i++;
+                    if(i%1024==0){
+                        int k = i;
+                        Platform.runLater(()-> {
+                            progressProperty.set(k+"");
+                        });
+                    }
 
-    public static  byte[] readInputStream(InputStream inputStream) throws IOException {
-        byte[] buffer = new byte[1024];
-        int len = 0;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        while((len = inputStream.read(buffer)) != -1) {
-            bos.write(buffer, 0, len);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        bos.close();
-        return bos.toByteArray();
     }
 
 
