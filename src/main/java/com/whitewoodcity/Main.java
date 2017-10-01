@@ -18,12 +18,14 @@ public class Main extends Application {
     public static Vertx vertx;
     public static ScriptEngineManager scriptEngineManager;
 
+    private PagePane tabPane;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("XBrowser");
         Group root = new Group();
         Button button = new Button("+");
-        PagePane tabPane = new PagePane();
+        tabPane = new PagePane();
 
         Scene scene = new Scene(root, 960, 540);
         root.getChildren().addAll(tabPane,button);
@@ -56,6 +58,7 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         vertx.close();
+        tabPane.close();
         super.stop();
     }
 

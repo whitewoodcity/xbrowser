@@ -40,6 +40,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 public class TabContent implements Initializable {
 
@@ -67,6 +68,8 @@ public class TabContent implements Initializable {
 
     private Tab tab;
 
+//    private String directoryName = UUID.randomUUID()+"";
+    private File directory;
     private WebClient client;
     private ScriptEngine scriptEngine;
     private MouseEventHandler mouseEventHandler = new MouseEventHandler();
@@ -98,6 +101,12 @@ public class TabContent implements Initializable {
         container.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
         container.addEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
         container.setFocusTraversable(true);
+
+        try {
+            directory = Res.getTempDirectory(UUID.randomUUID()+"");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void setTab(Tab tab) {
@@ -194,7 +203,7 @@ public class TabContent implements Initializable {
                     parent = xmlV.generateNode(this).getNode();
 
                     if (!xmlV.isCssEmpty()) {
-                        File cssFile = Res.getTempFile("css");
+                        File cssFile = Res.getTempFile(directory,"css");
                         BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
                         fos.write(xmlV.getCss().getCss());
                         fos.flush();
@@ -204,7 +213,7 @@ public class TabContent implements Initializable {
 
                         Platform.runLater(() -> {
                             parent.applyCss();
-                            cssFile.delete();
+//                            cssFile.delete();
                         });
                     }
 
@@ -367,6 +376,11 @@ public class TabContent implements Initializable {
         if (client != null) client.close();
         if (timer != null) timer.stop();
         if (mediaPlayer !=null) mediaPlayer.dispose();
+        try {
+            Res.removeTempDirectory(directory);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void focus(com.whitewoodcity.core.node.Node node){
@@ -384,13 +398,14 @@ public class TabContent implements Initializable {
     public MediaPlayer play(Media media, int cycle, double volume){
         if (mediaPlayer != null) mediaPlayer.dispose();
         if (media == null) return null;
+        if (cycle <= 0 ) return null;
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setVolume(volume);
         mediaPlayer.setCycleCount(cycle);
 
-        mediaPlayer.setOnError(() -> play(media, cycle, volume));
-        mediaPlayer.setOnStopped(() -> play(media, cycle, volume));
-        mediaPlayer.setOnEndOfMedia(() -> play(media, cycle, volume));
+        mediaPlayer.setOnError(() -> play(media, mediaPlayer.getCycleCount() - mediaPlayer.getCurrentCount(), mediaPlayer.getVolume()));
+        mediaPlayer.setOnStopped(() -> play(media, mediaPlayer.getCycleCount() - mediaPlayer.getCurrentCount(), mediaPlayer.getVolume()));
+        mediaPlayer.setOnEndOfMedia(() -> play(media, mediaPlayer.getCycleCount() - mediaPlayer.getCurrentCount(), mediaPlayer.getVolume()));
 
         mediaPlayer.play();
 
