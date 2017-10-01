@@ -3,7 +3,6 @@ package com.whitewoodcity.controller;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
-import com.whitewoodcity.core.node.AnimationTimer;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.util.Res;
@@ -27,7 +26,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -44,7 +42,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
-public class TabContent implements Initializable {
+public class TabContent extends App implements Initializable {
 
     @FXML
     private Pane pane;
@@ -75,11 +73,8 @@ public class TabContent implements Initializable {
     private ScriptEngine scriptEngine;
     private MouseEventHandler mouseEventHandler = new MouseEventHandler();
     private KeyEventHandler keyEventHandler = new KeyEventHandler();
-    private MediaPlayer mediaPlayer;
     private Node parent;
     private WebView webView;
-
-    private AnimationTimer timer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -244,14 +239,14 @@ public class TabContent implements Initializable {
                             scriptEngine = Main.scriptEngineManager.getEngineByName(script);
 //                        scriptEngine= ScriptFactory.loadJRubyScript();
                         }
+
                         try {
                             parent = xmlV.generateNode(this).getNode();
 
                             if (scriptEngine != null) {
-                                timer = new AnimationTimer();
+
                                 scriptEngine.put("app", this);
                                 scriptEngine.put("preload", preload);
-                                scriptEngine.put("timer", timer);
                                 scriptEngine.put("mouse", mouseEventHandler);
                                 scriptEngine.put("key", keyEventHandler);
 
@@ -305,9 +300,8 @@ public class TabContent implements Initializable {
     }
 
     public void removeParent() {
+        super.dispose();
         scriptEngine = null;
-        if (timer != null) timer.stop();
-        if (mediaPlayer !=null) mediaPlayer.dispose();
         container.getChildren().clear();
     }
 
@@ -417,41 +411,10 @@ public class TabContent implements Initializable {
     public void close() {
         removeParent();
         if (client != null) client.close();
-        if (timer != null) timer.stop();
-        if (mediaPlayer !=null) mediaPlayer.dispose();
         try {
             Res.removeTempDirectory(directory);
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-    public void focus(com.whitewoodcity.core.node.Node node){
-        node.getNode().requestFocus();
-    }
-
-    public MediaPlayer play(Media media){
-        return play(media, Integer.MAX_VALUE);
-    }
-
-    public MediaPlayer play(Media media, int cycle){
-        return play(media,cycle,1);
-    }
-
-    public MediaPlayer play(Media media, int cycle, double volume){
-        if (mediaPlayer != null) mediaPlayer.dispose();
-        if (media == null) return null;
-        if (cycle <= 0 ) return null;
-        mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setVolume(volume);
-        mediaPlayer.setCycleCount(cycle);
-
-        mediaPlayer.setOnError(() -> play(media, mediaPlayer.getCycleCount() - mediaPlayer.getCurrentCount(), mediaPlayer.getVolume()));
-        mediaPlayer.setOnStopped(() -> play(media, mediaPlayer.getCycleCount() - mediaPlayer.getCurrentCount(), mediaPlayer.getVolume()));
-        mediaPlayer.setOnEndOfMedia(() -> play(media, mediaPlayer.getCycleCount() - mediaPlayer.getCurrentCount(), mediaPlayer.getVolume()));
-
-        mediaPlayer.play();
-
-        return mediaPlayer;
     }
 }
