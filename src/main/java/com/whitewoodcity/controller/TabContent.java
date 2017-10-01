@@ -22,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -38,9 +39,13 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class TabContent implements Initializable {
 
@@ -190,7 +195,31 @@ public class TabContent implements Initializable {
 
                     XmlV xmlV = xmlMapper.readValue(result, XmlV.class);
 
-                    Map preload = xmlV.generateResources();
+                    if (!xmlV.isCssEmpty()) {
+                        File cssFile = Res.getTempFile(directory,"css");
+                        BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
+                        fos.write(xmlV.getCss().getCss());
+                        fos.flush();
+                        fos.close();
+                        container.getStylesheets().clear();
+                        container.getStylesheets().add(cssFile.toURI().toString());
+                    }
+
+                    Map<String, String> resources = xmlV.generateResources();
+                    Map<String, Object> preload = new HashMap<>();
+
+                    for(String key:resources.keySet()){
+                        if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
+                            Path path = Paths.get(resources.get(key));
+                            Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString());
+                            String uri = Paths.get(directory.getAbsolutePath()+File.separator+path.getFileName().toString()).toUri().toString();
+                            preload.put(key, new Media(uri));
+                        }else if(resources.get(key).endsWith("wav")){
+                            preload.put(key, new AudioClip(resources.get(key)));
+                        }else{
+                            preload.put(key, new Image(resources.get(key)));
+                        }
+                    }
 
                     if (xmlV.getScript() != null && xmlV.getScript().getScript()!=null &&
                             !xmlV.getScript().getScript().replace("\n","").trim().equals("")) {
@@ -201,21 +230,6 @@ public class TabContent implements Initializable {
                     }
 
                     parent = xmlV.generateNode(this).getNode();
-
-                    if (!xmlV.isCssEmpty()) {
-                        File cssFile = Res.getTempFile(directory,"css");
-                        BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
-                        fos.write(xmlV.getCss().getCss());
-                        fos.flush();
-                        fos.close();
-                        container.getStylesheets().clear();
-                        container.getStylesheets().add(cssFile.toURI().toString());
-
-                        Platform.runLater(() -> {
-                            parent.applyCss();
-//                            cssFile.delete();
-                        });
-                    }
 
                     if (scriptEngine != null) {
                         timer = new AnimationTimer();

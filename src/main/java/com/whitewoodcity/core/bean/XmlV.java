@@ -65,8 +65,8 @@ public class XmlV {
         this.preload = preload;
     }
 
-    public Map<String, Object> generateResources(){
-        Map<String, Object> map = new HashMap<>();
+    public Map<String, String> generateResources(){
+        Map<String, String> map = new HashMap<>();
         if(getPreload()!=null && getPreload().getPreload()!=null &&
                 !getPreload().getPreload().replace("\n","").trim().equals("")){
             String preload = getPreload().getPreload().replace("\n","").trim();
@@ -74,13 +74,7 @@ public class XmlV {
             for(String element:elements){
                 if(element.replace("\n","").trim().equals("")) continue;
                 String[] res = element.split("=");
-                if(res[1].endsWith("wav")){
-                    map.put(res[0], new AudioClip(res[1]));
-                }else if(res[1].endsWith("mp3")||res[1].endsWith("mp4")){
-                    map.put(res[0], new Media(res[1]));
-                }else{
-                    map.put(res[0], new Image(res[1]));
-                }
+                map.put(res[0],res[1]);
             }
         }
         return map;

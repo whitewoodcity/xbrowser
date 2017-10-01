@@ -1,8 +1,10 @@
 package com.whitewoodcity.util;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.List;
@@ -16,7 +18,7 @@ public class Res {
 
     public static File getDefaultDirectory() throws IOException{
         String path = System.getProperty("user.home");
-        File dir=new File(path+"/Whitewoodcity/xbrowser");
+        File dir=new File(path+File.separator+"Whitewoodcity"+File.separator+"xbrowser");
         //System.out.println(tempDir);
         if(!dir.exists()){
             dir.mkdirs();
@@ -26,7 +28,7 @@ public class Res {
 
     public static File getTempDirectory(String dirName) throws IOException{
         File dir = getDefaultDirectory();
-        File temp = new File(dir.getAbsolutePath()+"/"+dirName);
+        File temp = new File(dir.getAbsolutePath()+File.separator+dirName);
 
         if(!temp.exists()){
             temp.mkdir();
@@ -68,6 +70,43 @@ public class Res {
             writer.write(content);
         }
     }
+
+    public static void  downLoadFromUrl(String urlStr,File dir,String fileName) throws IOException{
+        URL url = new URL(urlStr);
+        URLConnection conn = url.openConnection();
+        //设置超时间为3秒
+        conn.setConnectTimeout(3*1000);
+        //防止屏蔽程序抓取而返回403错误
+        conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+
+        //得到输入流
+        InputStream inputStream = conn.getInputStream();
+        //获取自己数组
+        byte[] getData = readInputStream(inputStream);
+
+        File file = new File(dir+File.separator+fileName);
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(getData);
+        if(fos!=null){
+            fos.close();
+        }
+        if(inputStream!=null){
+            inputStream.close();
+        }
+
+    }
+
+    public static  byte[] readInputStream(InputStream inputStream) throws IOException {
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        while((len = inputStream.read(buffer)) != -1) {
+            bos.write(buffer, 0, len);
+        }
+        bos.close();
+        return bos.toByteArray();
+    }
+
 
     public static URL getExternalJar(JarRes jar){
         try {
