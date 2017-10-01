@@ -33,16 +33,16 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.swing.filechooser.FileSystemView;
 import java.io.*;
+import java.lang.reflect.Executable;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.UUID;
+import java.util.*;
 
 public class TabContent extends App implements Initializable {
 
@@ -219,6 +219,7 @@ public class TabContent extends App implements Initializable {
                             });
                             for(String key:resources.keySet()){
                                 if(key.equals("scriptEngine")&&(resources.get(key).endsWith("jar")||resources.get(key).endsWith("zip"))){
+
                                     Path path = Paths.get(resources.get(key));
                                     String type, version;
                                     if(xmlV.getScript().getType()==null ||xmlV.getScript().getType().trim().equals(""))
@@ -229,9 +230,27 @@ public class TabContent extends App implements Initializable {
                                     else version = xmlV.getScript().getVersion().trim().toLowerCase();
 
                                     File dir = Res.getPluginDirectory(type,version);
-                                    if(!Res.isPluginExisted(type,version,path.getFileName().toString()))
-                                        Res.downLoadFromUrl(resources.get(key),dir, path.getFileName().toString(),label.textProperty());
+                                    File pluginFile = Res.getPluginFile(type, version, path.getFileName().toString());
+                                    if(!pluginFile.exists())
+                                        pluginFile = Res.downLoadFromUrl(resources.get(key),dir, path.getFileName().toString(),label.textProperty());
 
+                                    try {
+                                        URLClassLoader classLoader = new URLClassLoader(new URL[]{pluginFile.toURI().toURL()}, Thread.currentThread().getContextClassLoader());
+
+                                        Enumeration<URL> urls = classLoader.getResources("META-INF/services/javax.script.ScriptEngineFactory");
+
+                                        while(urls.hasMoreElements()){
+                                            URL url = urls.nextElement();
+                                            if(url.toExternalForm().contains(pluginFile.getName())){
+                                                Class<?> engineFactory=classLoader.loadClass(Res.getUrlContents(url.toExternalForm()).replace("\n","").trim());
+                                                ScriptEngineFactory factory= (ScriptEngineFactory) engineFactory.newInstance();
+                                                Main.scriptEngineManager.registerEngineName(type,factory);
+                                            }
+                                        }
+
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
                                 }else if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
                                     Path path = Paths.get(resources.get(key));
                                     Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString(),label.textProperty());

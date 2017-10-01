@@ -44,6 +44,11 @@ public class Res {
         return new File(dir.getAbsolutePath()+File.separator+filename).exists();
     }
 
+    public static File getPluginFile(String type, String version, String filename) throws IOException{
+        File dir = getPluginDirectory(type, version);
+        return new File(dir.getAbsolutePath()+File.separator+filename);
+    }
+
     public static File getPluginDirectory(String type, String version) throws IOException{
         File dir = getPluginDirectory();
         File pluginDir = new File(dir.getAbsolutePath()+File.separator+type);
@@ -102,7 +107,7 @@ public class Res {
         }
     }
 
-    public static void downLoadFromUrl(String urlStr, File dir, String fileName,StringProperty progressProperty){
+    public static File downLoadFromUrl(String urlStr, File dir, String fileName,StringProperty progressProperty){
 
         File file = new File(dir+File.separator+fileName);
         int i = Integer.parseInt(progressProperty.get());
@@ -133,6 +138,7 @@ public class Res {
         }catch (Exception e){
             e.printStackTrace();
         }
+        return file;
     }
 
 
@@ -146,5 +152,112 @@ public class Res {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String convertStreamToString(java.io.InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
+
+    public static String readFile(String file) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader (file));
+        String         line = null;
+        StringBuilder  stringBuilder = new StringBuilder();
+        String         ls = System.getProperty("line.separator");
+
+        try {
+            while((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+                stringBuilder.append(ls);
+            }
+
+            return stringBuilder.toString();
+        } finally {
+            reader.close();
+        }
+    }
+
+    public static String readFile(File file) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader (file));
+        String         line = null;
+        StringBuilder  stringBuilder = new StringBuilder();
+        String         ls = System.getProperty("line.separator");
+
+        try {
+            while((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+                stringBuilder.append(ls);
+            }
+
+            return stringBuilder.toString();
+        } finally {
+            reader.close();
+        }
+    }
+
+    public static String getUrlContents(String theUrl)
+    {
+        StringBuilder content = new StringBuilder();
+
+        // many of these calls can throw exceptions, so i've just
+        // wrapped them all in one try/catch statement.
+        try
+        {
+            // create a url object
+            URL url = new URL(theUrl);
+
+            // create a urlconnection object
+            URLConnection urlConnection = url.openConnection();
+
+            // wrap the urlconnection in a bufferedreader
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+            String line;
+
+            // read from the urlconnection via the bufferedreader
+            while ((line = bufferedReader.readLine()) != null)
+            {
+                content.append(line + "\n");
+            }
+            bufferedReader.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return content.toString();
+    }
+
+    public static String getUrlContentsWithoutComments(String theUrl)
+    {
+        StringBuilder content = new StringBuilder();
+
+        // many of these calls can throw exceptions, so i've just
+        // wrapped them all in one try/catch statement.
+        try
+        {
+            // create a url object
+            URL url = new URL(theUrl);
+
+            // create a urlconnection object
+            URLConnection urlConnection = url.openConnection();
+
+            // wrap the urlconnection in a bufferedreader
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+            String line;
+
+            // read from the urlconnection via the bufferedreader
+            while ((line = bufferedReader.readLine()) != null)
+            {
+                if(!line.startsWith("#")&&!line.equals("")) content.append(line + "\n");
+            }
+            bufferedReader.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return content.toString();
     }
 }

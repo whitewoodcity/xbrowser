@@ -68,9 +68,9 @@ public class Main extends Application {
         vertx = Vertx.vertx();
         scriptEngineManager = new ScriptEngineManager();
 
-        Thread th = new Thread(new ScriptEnginePreloadTask());
-        th.setDaemon(true);
-        th.start();
+//        Thread th = new Thread(new ScriptEnginePreloadTask());
+//        th.setDaemon(true);
+//        th.start();
 
         launch(args);
     }
