@@ -250,6 +250,7 @@ public class Res {
             // read from the urlconnection via the bufferedreader
             while ((line = bufferedReader.readLine()) != null)
             {
+                line = line.trim();
                 if(!line.startsWith("#")&&!line.equals("")) content.append(line + "\n");
             }
             bufferedReader.close();

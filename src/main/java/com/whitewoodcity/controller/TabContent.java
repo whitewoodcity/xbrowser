@@ -238,9 +238,12 @@ public class TabContent extends App implements Initializable {
 
                                     String url = "jar:"+pluginFile.toURI().toURL()+"!"+"/META-INF/services/javax.script.ScriptEngineFactory";
 
-                                    Class<?> engineFactory=classLoader.loadClass(Res.getUrlContents(url).replace("\n","").trim());
+                                    Class<?> engineFactory=classLoader.loadClass(Res.getUrlContentsWithoutComments(url).replace("\n","").trim());
                                     ScriptEngineFactory factory= (ScriptEngineFactory) engineFactory.newInstance();
-                                    Main.scriptEngineManager.registerEngineName(type,factory);
+                                    List<String> names = factory.getNames();
+                                    for(String name:names){
+                                        Main.scriptEngineManager.registerEngineName(name,factory);
+                                    }
 
                                 }else if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
                                     Path path = Paths.get(resources.get(key));
