@@ -5,6 +5,10 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.StringProperty;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -112,9 +116,30 @@ public class Res {
         File file = new File(dir+File.separator+fileName);
         int i = Integer.parseInt(progressProperty.get());
         try {
+//
+//            // Create a new trust manager that trust all certificates
+//            TrustManager[] trustAllCerts = new TrustManager[]{
+//                    new X509TrustManager() {
+//                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+//                            return null;
+//                        }
+//                        public void checkClientTrusted(
+//                                java.security.cert.X509Certificate[] certs, String authType) {
+//                        }
+//                        public void checkServerTrusted(
+//                                java.security.cert.X509Certificate[] certs, String authType) {
+//                        }
+//                    }
+//            };
+//
+//            // Activate the new trust manager
+//            SSLContext sc = SSLContext.getInstance("SSL");
+//            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+//            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
             URLConnection conn = new URL(urlStr).openConnection();
             //设置超时间为3秒
-            conn.setConnectTimeout(3 * 1000);
+            conn.setConnectTimeout(10 * 1000);
             //防止屏蔽程序抓取而返回403错误
             conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
 

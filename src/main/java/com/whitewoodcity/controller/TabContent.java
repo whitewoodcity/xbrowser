@@ -43,6 +43,8 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class TabContent extends App implements Initializable {
 
@@ -234,7 +236,7 @@ public class TabContent extends App implements Initializable {
                                     if(!pluginFile.exists())
                                         pluginFile = Res.downLoadFromUrl(resources.get(key),dir, path.getFileName().toString(),label.textProperty());
 
-                                    URLClassLoader classLoader = new URLClassLoader(new URL[]{pluginFile.toURI().toURL()}, Thread.currentThread().getContextClassLoader());
+                                    URLClassLoader classLoader = new URLClassLoader(new URL[]{pluginFile.toURI().toURL()},Thread.currentThread().getContextClassLoader());//
 
                                     String url = "jar:"+pluginFile.toURI().toURL()+"!"+"/META-INF/services/javax.script.ScriptEngineFactory";
 
