@@ -234,23 +234,14 @@ public class TabContent extends App implements Initializable {
                                     if(!pluginFile.exists())
                                         pluginFile = Res.downLoadFromUrl(resources.get(key),dir, path.getFileName().toString(),label.textProperty());
 
-                                    try {
-                                        URLClassLoader classLoader = new URLClassLoader(new URL[]{pluginFile.toURI().toURL()}, Thread.currentThread().getContextClassLoader());
+                                    URLClassLoader classLoader = new URLClassLoader(new URL[]{pluginFile.toURI().toURL()}, Thread.currentThread().getContextClassLoader());
 
-                                        Enumeration<URL> urls = classLoader.getResources("META-INF/services/javax.script.ScriptEngineFactory");
+                                    String url = "jar:"+pluginFile.toURI().toURL()+"!"+"/META-INF/services/javax.script.ScriptEngineFactory";
 
-                                        while(urls.hasMoreElements()){
-                                            URL url = urls.nextElement();
-                                            if(url.toExternalForm().contains(pluginFile.getName())){
-                                                Class<?> engineFactory=classLoader.loadClass(Res.getUrlContents(url.toExternalForm()).replace("\n","").trim());
-                                                ScriptEngineFactory factory= (ScriptEngineFactory) engineFactory.newInstance();
-                                                Main.scriptEngineManager.registerEngineName(type,factory);
-                                            }
-                                        }
+                                    Class<?> engineFactory=classLoader.loadClass(Res.getUrlContents(url).replace("\n","").trim());
+                                    ScriptEngineFactory factory= (ScriptEngineFactory) engineFactory.newInstance();
+                                    Main.scriptEngineManager.registerEngineName(type,factory);
 
-                                    }catch (Exception e){
-                                        e.printStackTrace();
-                                    }
                                 }else if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
                                     Path path = Paths.get(resources.get(key));
                                     Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString(),label.textProperty());
