@@ -7,14 +7,14 @@ import com.whitewoodcity.core.node.Pane;
 import com.whitewoodcity.core.node.conrol.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import javafx.scene.image.Image;
-import javafx.scene.media.AudioClip;
-import javafx.scene.media.Media;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class XmlV {
+
     private Preload preload;
     private Json json;
     private Script script;
@@ -65,19 +65,17 @@ public class XmlV {
         this.preload = preload;
     }
 
-    public Map<String, String> generateResources(){
-        Map<String, String> map = new HashMap<>();
+    public List<String> generateResources(){
+        List<String> resources = new ArrayList<>();
         if(getPreload()!=null && getPreload().getPreload()!=null &&
                 !getPreload().getPreload().replace("\n","").trim().equals("")){
             String preload = getPreload().getPreload().replace("\n","").trim();
             String[] elements = preload.split(";");
             for(String element:elements){
-                if(element.replace("\n","").trim().equals("")) continue;
-                String[] res = element.split("=");
-                map.put(res[0],res[1]);
+                resources.add(element);
             }
         }
-        return map;
+        return resources;
     }
 
     public Node generateNode(TabContent tabContent) throws Exception{

@@ -18,6 +18,7 @@ dependencies {
     compile group: 'cglib', name: 'cglib-nodep', version: '3.2.5'
     compile group: 'io.vertx', name: 'vertx-lang-groovy', version: "$vertxVersion"
     compile group: 'io.vertx', name: 'vertx-lang-js', version: "$vertxVersion"
+    compile group: 'io.vertx', name: 'vertx-lang-ruby', version: "$vertxVersion"
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'io.vertx', name: 'vertx-unit', version: "$vertxVersion"
 }

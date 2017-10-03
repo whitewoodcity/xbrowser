@@ -197,10 +197,11 @@ public class TabContent extends App implements Initializable {
                         container.getStylesheets().add(cssFile.toURI().toString());
                     }
 
-                    Map<String, String> resources = xmlV.generateResources();
-                    if(xmlV.getScript()!=null&&xmlV.getScript().getLink()!=null&&!xmlV.getScript().getLink().trim().equals("")){
-                        resources.put("scriptEngine", xmlV.getScript().getLink());
-                    }
+                    Map<String, String> resources = super.parsePreloadString(xmlV.generateResources());
+
+//                    if(xmlV.getScript()!=null&&xmlV.getScript().getLink()!=null&&!xmlV.getScript().getLink().trim().equals("")){
+//                        resources.put("scriptEngine", xmlV.getScript().getLink());
+//                    }
                     Map<String, Object> preload = new HashMap<>();
 
                     Group group = new Group();
@@ -216,55 +217,33 @@ public class TabContent extends App implements Initializable {
 
                         @Override
                         protected Object call() throws Exception {
-                            Platform.runLater(()->{
-                                progressBar.setProgress(0);
-                            });
+                            Platform.runLater(()-> progressBar.setProgress(0));
+
+                            for(int i=0;i<downloadList.size();i++){
+                                String url = downloadList.get(i);
+                                Res.downLoadFromUrl(url,Res.getDefaultDirectory(),
+                                        url.replaceFirst("^(http(s?)://www\\.|http(s?)://|www\\.)",""),label.textProperty());
+                                double progress = i+1;
+                                Platform.runLater(()->{
+                                    progressBar.setProgress(progress/downloadList.size()*0.5);
+                                });
+                            }
+
+                            Platform.runLater(()-> progressBar.setProgress(0.5));
+
                             for(String key:resources.keySet()){
-                                if(key.equals("scriptEngine")&&(resources.get(key).endsWith("jar")||resources.get(key).endsWith("zip"))){
-
-                                    Path path = Paths.get(resources.get(key));
-                                    String type, version;
-                                    if(xmlV.getScript().getType()==null ||xmlV.getScript().getType().trim().equals(""))
-                                        type = "javascript";
-                                    else type = xmlV.getScript().getType().trim().toLowerCase();
-                                    if(xmlV.getScript().getVersion()==null || xmlV.getScript().getVersion().trim().equals(""))
-                                        version = "0";
-                                    else version = xmlV.getScript().getVersion().trim().toLowerCase();
-
-                                    File dir = Res.getPluginDirectory(type,version);
-                                    File pluginFile = Res.getPluginFile(type, version, path.getFileName().toString());
-                                    if(!pluginFile.exists())
-                                        pluginFile = Res.downLoadFromUrl(resources.get(key),dir, path.getFileName().toString(),label.textProperty());
-
-                                    URLClassLoader classLoader = new URLClassLoader(new URL[]{pluginFile.toURI().toURL()},Thread.currentThread().getContextClassLoader());//
-
-                                    String url = "jar:"+pluginFile.toURI().toURL()+"!"+"/META-INF/services/javax.script.ScriptEngineFactory";
-
-                                    Class<?> engineFactory=classLoader.loadClass(Res.getUrlContentsWithoutComments(url).replace("\n","").trim());
-                                    ScriptEngineFactory factory= (ScriptEngineFactory) engineFactory.newInstance();
-                                    List<String> names = factory.getNames();
-                                    for(String name:names){
-                                        Main.scriptEngineManager.registerEngineName(name,factory);
-                                    }
-
-                                }else if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
-                                    Path path = Paths.get(resources.get(key));
-                                    Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString(),label.textProperty());
-                                    String uri = Paths.get(directory.getAbsolutePath()+File.separator+path.getFileName().toString()).toUri().toString();
+                                String value = resources.get(key);
+                                String filename = value.replaceFirst("^(http(s?)://www\\.|http(s?)://|www\\.)","");
+                                String uri = Paths.get(Res.getDefaultDirectory()+File.separator+filename).toUri().toString();
+                                if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
                                     preload.put(key, new Media(uri));
                                 }else if(resources.get(key).endsWith("wav")){
-                                    Path path = Paths.get(resources.get(key));
-                                    Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString(),label.textProperty());
-                                    String uri = Paths.get(directory.getAbsolutePath()+File.separator+path.getFileName().toString()).toUri().toString();
                                     preload.put(key, new AudioClip(uri));
                                 }else{
-                                    Path path = Paths.get(resources.get(key));
-                                    Res.downLoadFromUrl(resources.get(key),directory, path.getFileName().toString(),label.textProperty());
-                                    String uri = Paths.get(directory.getAbsolutePath()+File.separator+path.getFileName().toString()).toUri().toString();
                                     preload.put(key, new Image(uri));
                                 }
                                 Platform.runLater(()->{
-                                    progressBar.setProgress(((double)preload.size())/resources.size());
+                                    progressBar.setProgress(((double)preload.size())/resources.size()*0.5+0.5);
                                 });
                             }
 

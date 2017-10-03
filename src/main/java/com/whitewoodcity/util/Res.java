@@ -1,5 +1,6 @@
 package com.whitewoodcity.util;
 
+import com.whitewoodcity.Main;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -9,11 +10,9 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.script.ScriptEngineFactory;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.List;
@@ -114,6 +113,7 @@ public class Res {
     public static File downLoadFromUrl(String urlStr, File dir, String fileName,StringProperty progressProperty){
 
         File file = new File(dir+File.separator+fileName);
+
         int i = Integer.parseInt(progressProperty.get());
         try {
 //
@@ -137,8 +137,15 @@ public class Res {
 //            sc.init(null, trustAllCerts, new java.security.SecureRandom());
 //            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
+            if(!file.getParentFile().exists()){
+                file.getParentFile().mkdirs();
+            }
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
             URLConnection conn = new URL(urlStr).openConnection();
-            //设置超时间为3秒
+            //设置超时间为10秒
             conn.setConnectTimeout(10 * 1000);
             //防止屏蔽程序抓取而返回403错误
             conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
@@ -285,5 +292,18 @@ public class Res {
             e.printStackTrace();
         }
         return content.toString();
+    }
+
+    public static void loadScriptEngineJar(File pluginFile) throws Exception{
+        URLClassLoader classLoader = new URLClassLoader(new URL[]{pluginFile.toURI().toURL()},ClassLoader.getSystemClassLoader());//Thread.currentThread().getContextClassLoader()
+
+        String url = "jar:"+pluginFile.toURI().toURL()+"!"+"/META-INF/services/javax.script.ScriptEngineFactory";
+
+        Class<?> engineFactory=classLoader.loadClass(Res.getUrlContentsWithoutComments(url).replace("\n","").trim());
+        ScriptEngineFactory factory= (ScriptEngineFactory) engineFactory.newInstance();
+        List<String> names = factory.getNames();
+        for(String name:names){
+            Main.scriptEngineManager.registerEngineName(name,factory);
+        }
     }
 }
