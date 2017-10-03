@@ -5,9 +5,6 @@ import com.whitewoodcity.core.bean.VXml;
 //import javax.xml.bind.JAXBContext;
 //import javax.xml.bind.JAXBException;
 //import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
@@ -33,13 +30,13 @@ public class PageParser {
     }
 
     public <T>T paresReader(Reader reader,Class<T> clazz){
-        try {
-            JAXBContext jaxbContext= JAXBContext.newInstance(clazz);
-            Unmarshaller us=jaxbContext.createUnmarshaller();
-            return (T) us.unmarshal(reader);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            JAXBContext jaxbContext= JAXBContext.newInstance(clazz);
+//            Unmarshaller us=jaxbContext.createUnmarshaller();
+//            return (T) us.unmarshal(reader);
+//        } catch (JAXBException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 }

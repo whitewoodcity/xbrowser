@@ -1,6 +1,5 @@
 package com.whitewoodcity;
 
-import com.whitewoodcity.task.ScriptEnginePreloadTask;
 import com.whitewoodcity.ui.PagePane;
 import io.vertx.core.Vertx;
 import javafx.application.Application;
@@ -67,10 +66,6 @@ public class Main extends Application {
         System.getProperties().setProperty("vertx.disableDnsResolver","true");
         vertx = Vertx.vertx();
         scriptEngineManager = new ScriptEngineManager();
-
-//        Thread th = new Thread(new ScriptEnginePreloadTask());
-//        th.setDaemon(true);
-//        th.start();
 
         launch(args);
     }

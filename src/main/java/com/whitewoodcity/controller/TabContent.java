@@ -94,16 +94,16 @@ public class TabContent extends App implements Initializable {
 
         container.setOnDragOver(event -> event.acceptTransferModes(TransferMode.ANY));
 
-        container.addEventHandler(MouseEvent.MOUSE_PRESSED,mouseEventHandler);
-        container.addEventHandler(MouseEvent.MOUSE_RELEASED,mouseEventHandler);
-        container.addEventHandler(MouseEvent.MOUSE_MOVED,mouseEventHandler);
+        container.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEventHandler);
+        container.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEventHandler);
+        container.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEventHandler);
         container.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
         container.addEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
         container.setFocusTraversable(true);
 
         try {
-            directory = Res.getTempDirectory(UUID.randomUUID()+"");
-        }catch (Exception e){
+            directory = Res.getTempDirectory(UUID.randomUUID() + "");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -188,7 +188,7 @@ public class TabContent extends App implements Initializable {
                     XmlV xmlV = new XmlMapper().readValue(result, XmlV.class);
 
                     if (!xmlV.isCssEmpty()) {
-                        File cssFile = Res.getTempFile(directory,"css");
+                        File cssFile = Res.getTempFile(directory, "css");
                         BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
                         fos.write(xmlV.getCss().getCss());
                         fos.flush();
@@ -210,40 +210,40 @@ public class TabContent extends App implements Initializable {
                     progressBar.prefWidthProperty().bind(container.widthProperty().multiply(0.8));
                     label.layoutYProperty().bind(progressBar.layoutYProperty().add(progressBar.heightProperty()));
                     label.layoutXProperty().bind(progressBar.layoutXProperty().add(progressBar.widthProperty()).subtract(label.widthProperty()));
-                    group.getChildren().addAll(progressBar,label);
+                    group.getChildren().addAll(progressBar, label);
                     parent = group;
 
                     loadingTask = new Task() {
 
                         @Override
                         protected Object call() throws Exception {
-                            Platform.runLater(()-> progressBar.setProgress(0));
+                            Platform.runLater(() -> progressBar.setProgress(0));
 
-                            for(int i=0;i<downloadList.size();i++){
+                            for (int i = 0; i < downloadList.size(); i++) {
                                 String url = downloadList.get(i);
-                                Res.downLoadFromUrl(url,Res.getDefaultDirectory(),
-                                        url.replaceFirst("^(http(s?)://www\\.|http(s?)://|www\\.)",""),label.textProperty());
-                                double progress = i+1;
-                                Platform.runLater(()->{
-                                    progressBar.setProgress(progress/downloadList.size()*0.5);
+                                Res.downLoadFromUrl(url, Res.getDefaultDirectory(),
+                                        url.replaceFirst("^(http(s?)://www\\.|http(s?)://|www\\.)", ""), label.textProperty());
+                                double progress = i + 1;
+                                Platform.runLater(() -> {
+                                    progressBar.setProgress(progress / downloadList.size() * 0.5);
                                 });
                             }
 
-                            Platform.runLater(()-> progressBar.setProgress(0.5));
+                            Platform.runLater(() -> progressBar.setProgress(0.5));
 
-                            for(String key:resources.keySet()){
+                            for (String key : resources.keySet()) {
                                 String value = resources.get(key);
-                                String filename = value.replaceFirst("^(http(s?)://www\\.|http(s?)://|www\\.)","");
-                                String uri = Paths.get(Res.getDefaultDirectory()+File.separator+filename).toUri().toString();
-                                if(resources.get(key).endsWith("mp3")||resources.get(key).endsWith("mp4")){
+                                String filename = value.replaceFirst("^(http(s?)://www\\.|http(s?)://|www\\.)", "");
+                                String uri = Paths.get(Res.getDefaultDirectory() + File.separator + filename).toUri().toString();
+                                if (resources.get(key).endsWith("mp3") || resources.get(key).endsWith("mp4")) {
                                     preload.put(key, new Media(uri));
-                                }else if(resources.get(key).endsWith("wav")){
+                                } else if (resources.get(key).endsWith("wav")) {
                                     preload.put(key, new AudioClip(uri));
-                                }else{
+                                } else {
                                     preload.put(key, new Image(uri));
                                 }
-                                Platform.runLater(()->{
-                                    progressBar.setProgress(((double)preload.size())/resources.size()*0.5+0.5);
+                                Platform.runLater(() -> {
+                                    progressBar.setProgress(((double) preload.size()) / resources.size() * 0.5 + 0.5);
                                 });
                             }
 
@@ -251,10 +251,10 @@ public class TabContent extends App implements Initializable {
                         }
                     };
 
-                    loadingTask.setOnSucceeded(value ->{
+                    loadingTask.setOnSucceeded(value -> {
 
-                        if (xmlV.getScript() != null && xmlV.getScript().getScript()!=null &&
-                                !xmlV.getScript().getScript().replace("\n","").trim().equals("")) {
+                        if (xmlV.getScript() != null && xmlV.getScript().getScript() != null &&
+                                !xmlV.getScript().getScript().replace("\n", "").trim().equals("")) {
                             String script = xmlV.getScript().getType();
                             script = script == null ? "javascript" : script;
 
@@ -277,7 +277,7 @@ public class TabContent extends App implements Initializable {
                             container.getChildren().clear();
                             container.getChildren().add(0, parent);
                             container.requestFocus();
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             handleExceptionMessage(e);
                         }
                     });
@@ -323,7 +323,7 @@ public class TabContent extends App implements Initializable {
 
     public void removeParent() {
         super.dispose();
-        if(loadingTask!=null) loadingTask.cancel();
+        if (loadingTask != null) loadingTask.cancel();
         scriptEngine = null;
         container.getChildren().clear();
     }
@@ -436,7 +436,7 @@ public class TabContent extends App implements Initializable {
         if (client != null) client.close();
         try {
             Res.removeTempDirectory(directory);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

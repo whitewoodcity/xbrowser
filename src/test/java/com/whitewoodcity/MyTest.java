@@ -61,7 +61,6 @@ public class MyTest {
                         ObjectMapper xmlMapper = new XmlMapper();
                         try {
                             XmlV xmlV = xmlMapper.readValue(ar.result().bodyAsString(), XmlV.class);
-                            System.out.println(xmlV.getJson().getJsonObject());
                         }catch (Exception e){
                             e.printStackTrace();
                         }
@@ -74,15 +73,15 @@ public class MyTest {
 
     @Test
     public void test() {
-        PageParser pageParser=new PageParser();
-        //读文件
-        File file=new File(ClassLoader.getSystemResource("test.vxml").getPath());
-        VXml vXml=pageParser.parseFile(file,VXml.class);
-        List<CSS> csses=vXml.getCsses();
-        CSS css=csses.get(0);
-        System.out.println(css);
-        System.out.println(vXml.getScripts().get(0));
-        Script script=pageParser.paresReader(new StringReader(script_str),Script.class);
-        System.out.println(script);
+//        PageParser pageParser=new PageParser();
+//        //读文件
+//        File file=new File(ClassLoader.getSystemResource("test.vxml").getPath());
+//        VXml vXml=pageParser.parseFile(file,VXml.class);
+//        List<CSS> csses=vXml.getCsses();
+//        CSS css=csses.get(0);
+//        System.out.println(css);
+//        System.out.println(vXml.getScripts().get(0));
+//        Script script=pageParser.paresReader(new StringReader(script_str),Script.class);
+//        System.out.println(script);
     }
 }
