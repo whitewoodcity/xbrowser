@@ -43,7 +43,7 @@ And the XBrowser received this xmlv file then render the page based on this xmlv
 The dolphin image will move to the right since in the script the x coordinate will increase gradually.
 So cool right?
 
-Please note the script could be written in other script langues e.g. Ruby, and here is a ruby script of previous js version.
+Please note the script could be written in other script langues e.g. Ruby, and here is the ruby translation of previous js script.
 ```xml
     <script type="ruby">
 	timer = $app.timer
