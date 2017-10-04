@@ -1,2 +1,2 @@
-# xbrowser
+# XBrowser
 The hackable web browser
