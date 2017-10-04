@@ -3,29 +3,20 @@ package com.whitewoodcity.core.bean;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
-import javax.xml.bind.annotation.*;
-
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "script")
 public class Script {
 
-    @XmlAttribute(name = "type")
     @JacksonXmlProperty(isAttribute = true)
     public String type;
 
-    @XmlAttribute(name="link")
     @JacksonXmlProperty(isAttribute = true)
     public String link;
 
-    @XmlAttribute(name = "href")
     @JacksonXmlProperty(isAttribute = true)
     public String href;
 
-    @XmlAttribute(name = "version")
     @JacksonXmlProperty(isAttribute = true)
     public String version;
 
-    @XmlValue
     @JacksonXmlText
     public String script;
 
