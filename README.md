@@ -58,3 +58,18 @@ Please note the script could be written in other script langues e.g. Ruby, and h
 	timer.start()
     </script>
 ```
+also in groovy:
+```xml
+    <script type="groovy">
+	timer = app.timer
+	x = 0
+	img = preload.get('test.png')
+    
+	timer.action = {(now) ->
+		x= x+1
+		canvas.clear()
+		canvas.image(img,x,0)
+	}
+	timer.start()
+    </script>
+```
