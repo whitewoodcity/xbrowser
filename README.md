@@ -2,8 +2,8 @@
 
 A super cool browser and not just a browser, the XBrowser could translate the json string into components, and also use different script languages e.g. Javascript, Ruby, Groovy and any other script languages to manipulate images and musics, thus the producers could make a dynamic web applications just like traditional web browser and also make some interesting games like other game engines.
 
-Let's have a look of an example:
-The client sends a HTTP request to the server who replies a xmlv file, just like traditional html or other markup languages:
+Here is an example:
+The client sends a HTTP request to an HTTP server which replies a xmlv file, just like traditional html or other markup languages:
 ```xml
 <xmlv>
 	<preload>
