@@ -73,6 +73,7 @@ public class TabContent extends App implements Initializable {
     private Tab tab;
 
     private File directory;
+    private Map<String, Object> preload = new HashMap<>();
     private WebClient client;
     private ScriptEngine scriptEngine;
     private Node parent;
@@ -199,11 +200,6 @@ public class TabContent extends App implements Initializable {
 
                     Map<String, String> resources = super.parsePreloadString(xmlV.generateResources());
 
-//                    if(xmlV.getScript()!=null&&xmlV.getScript().getLink()!=null&&!xmlV.getScript().getLink().trim().equals("")){
-//                        resources.put("scriptEngine", xmlV.getScript().getLink());
-//                    }
-                    Map<String, Object> preload = new HashMap<>();
-
                     Group group = new Group();
                     ProgressBar progressBar = new ProgressBar();
                     Label label = new Label("0");
@@ -323,6 +319,7 @@ public class TabContent extends App implements Initializable {
 
     public void removeParent() {
         super.dispose();
+        preload.clear();
         if (loadingTask != null) loadingTask.cancel();
         scriptEngine = null;
         container.getChildren().clear();
@@ -439,5 +436,9 @@ public class TabContent extends App implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public Map<String, Object> getPreload() {
+        return preload;
     }
 }

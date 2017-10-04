@@ -118,6 +118,14 @@ public class XmlV {
                 form.setMethod(jsonObject.getString("method"));
                 node = form;
                 break;
+            case "image":
+            case "img":
+            case "imageview":
+                ImageView imageView = new ImageView(jsonObject.getString("url"));
+                imageView.setImage(app.getPreload().get(jsonObject.getString("image")));
+                decorateControl(imageView,jsonObject);
+                node = imageView;
+                break;
             case "textfield":
                 TextField textField = new TextField();
                 decorateControl(textField,jsonObject);
