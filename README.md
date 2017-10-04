@@ -9,8 +9,6 @@ The client sends a HTTP request to an HTTP server which replies a xmlv file, jus
 	<preload>
 test.png=http://d.lanrentuku.com/down/png/0905/creature/Dolphin_256x256.png;
 	</preload>
-    <json>
-    </json>
     <script type="js">
 	timer = app.timer
 	x = 0
@@ -23,19 +21,6 @@ test.png=http://d.lanrentuku.com/down/png/0905/creature/Dolphin_256x256.png;
 	}
 	timer.start()
     </script>
-    <css>
-.progress-bar > .bar {
-    -fx-background-color: linear-gradient(
-        from 0px .75em to .75em 0px,
-        repeat,
-        -fx-accent 0%,
-        -fx-accent 49%,
-        derive(-fx-accent, 30%) 50%,
-        derive(-fx-accent, 30%) 99%
-    );
-    /*-fx-accent: #d71505;*/
-}
-    </css>
 </xmlv>
 ```
 And the XBrowser received this xmlv file then render the page based on this xmlv file, here is what we get:
@@ -48,7 +33,8 @@ Please note the script could be written in other script langues e.g. Ruby, and h
     <script type="ruby">
 	timer = $app.timer
 	x = 0
-	img = preload.get('test.png')
+	img = $preload.get('test.png')
+	canvas = $canvas
     
 	timer.action = lambda{|now|
 		x= x+1
@@ -65,7 +51,7 @@ also in groovy:
 	x = 0
 	img = preload.get('test.png')
     
-	timer.action = {(now) ->
+	timer.action = { now ->
 		x= x+1
 		canvas.clear()
 		canvas.image(img,x,0)
