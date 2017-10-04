@@ -12,7 +12,6 @@ test.png=http://d.lanrentuku.com/down/png/0905/creature/Dolphin_256x256.png;
     <json>
     </json>
     <script type="js">
-	print('hello')
 	timer = app.timer
 	x = 0
 	var img = preload.get('test.png')
@@ -43,3 +42,19 @@ And the XBrowser received this xmlv file then render the page based on this xmlv
 <img width="960" alt="1" src="https://user-images.githubusercontent.com/5525436/31162685-7ebdc1da-a8a4-11e7-9eac-8890e3146a4d.png">
 The dolphin image will move to the right since in the script the x coordinate will increase gradually.
 So cool right?
+
+Please note the script could be written in other script langues e.g. Ruby, and here is a ruby script of previous js version.
+```xml
+    <script type="ruby">
+	timer = $app.timer
+	x = 0
+	img = preload.get('test.png')
+    
+	timer.action = lambda{|now|
+		x= x+1
+		canvas.clear()
+		canvas.image(img,x,0)
+	}
+	timer.start()
+    </script>
+```
