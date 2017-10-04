@@ -24,7 +24,7 @@ test.png=http://d.lanrentuku.com/down/png/0905/creature/Dolphin_256x256.png;
 	}
 	timer.start()
     </script>
-    <css href="http://www.baidu.com">
+    <css>
 .progress-bar > .bar {
     -fx-background-color: linear-gradient(
         from 0px .75em to .75em 0px,
