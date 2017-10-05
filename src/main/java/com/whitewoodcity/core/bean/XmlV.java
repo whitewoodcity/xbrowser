@@ -141,6 +141,7 @@ public class XmlV {
                 if(jsonObject.getJsonArray("value")!=null) jsonArray.addAll(jsonObject.getJsonArray("value"));
                 if(jsonObject.getJsonArray("values")!=null) jsonArray.addAll(jsonObject.getJsonArray("values"));
                 tableView.setValue(jsonArray);
+                tableView.setEditable(jsonObject.getBoolean("editable"));
                 decorateControl(tableView,jsonObject);
                 node = tableView;
                 break;
