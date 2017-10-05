@@ -1,13 +1,19 @@
 package com.whitewoodcity.core.node.conrol;
 
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Callback;
 
 import java.util.*;
 
@@ -20,6 +26,7 @@ public class TableView extends Control{
         body = new javafx.scene.control.TableView<Item>();
         ((javafx.scene.control.TableView)body).setItems(items);
         ((javafx.scene.control.TableView)body).setEditable(true);
+        ((javafx.scene.control.TableView)body).getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     public void setHeader(JsonArray header){
@@ -61,6 +68,12 @@ public class TableView extends Control{
     private TableColumn processStringColumnName(String name){
         TableColumn column = new TableColumn(name);
         column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, String>)p).getValue().getProperty(name));
+        column.setCellFactory(TextFieldTableCell.forTableColumn());
+        column.setOnEditCommit( t -> {
+            int index = ((TableColumn.CellEditEvent<Item, String>) t).getTablePosition().getRow();
+            Item item = ((TableColumn.CellEditEvent<Item, String>) t).getTableView().getItems().get(index);
+            item.setProperty(name,((TableColumn.CellEditEvent<Item, String>) t).getNewValue());
+                });
         columnMap.put(name, column);
         return column;
     }
@@ -104,5 +117,6 @@ class Item{
         if(properties.get(name)==null){
             properties.put(name, new SimpleStringProperty(value));
         }
+        properties.get(name).set(value);
     }
 }
