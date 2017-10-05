@@ -105,6 +105,8 @@ public class XmlV {
         String type = jsonObject.getString("type");
         Node node;
 
+        JsonArray jsonArray = new JsonArray();
+
         switch (type==null?"pane":type.toLowerCase()){
             case "canvas":
                 Canvas canvas = new Canvas();
@@ -129,9 +131,16 @@ public class XmlV {
             case "table":
             case "tableview":
                 TableView tableView = new TableView();
-                tableView.setHeader(jsonObject.getJsonArray("header"));
-                tableView.setHeader(jsonObject.getJsonArray("column"));
-                tableView.setValue(jsonObject.getJsonArray("value"));
+                jsonArray.clear();
+                if(jsonObject.getJsonArray("header")!=null) jsonArray.addAll(jsonObject.getJsonArray("header"));
+                if(jsonObject.getJsonArray("headers")!=null) jsonArray.addAll(jsonObject.getJsonArray("headers"));
+                if(jsonObject.getJsonArray("column")!=null) jsonArray.addAll(jsonObject.getJsonArray("column"));
+                if(jsonObject.getJsonArray("columns")!=null) jsonArray.addAll(jsonObject.getJsonArray("columns"));
+                tableView.setHeader(jsonArray);
+                jsonArray.clear();
+                if(jsonObject.getJsonArray("value")!=null) jsonArray.addAll(jsonObject.getJsonArray("value"));
+                if(jsonObject.getJsonArray("values")!=null) jsonArray.addAll(jsonObject.getJsonArray("values"));
+                tableView.setValue(jsonArray);
                 decorateControl(tableView,jsonObject);
                 node = tableView;
                 break;
@@ -164,13 +173,16 @@ public class XmlV {
             case "choicebox":
                 ChoiceBox choiceBox = new ChoiceBox();
                 decorateControl(choiceBox,jsonObject);
-                choiceBox.setItems(jsonObject.getJsonArray("items"));
+                jsonArray.clear();
+                if(jsonObject.getJsonArray("item")!=null) jsonArray.addAll(jsonObject.getJsonArray("item"));
+                if(jsonObject.getJsonArray("items")!=null) jsonArray.addAll(jsonObject.getJsonArray("items"));
+                choiceBox.setItems(jsonArray);
                 choiceBox.setValue(jsonObject.getString("value"));
                 node = choiceBox;
                 break;
             default:
                 Pane pane = new Pane();
-                JsonArray jsonArray = jsonObject.getJsonArray("children");
+                jsonArray = jsonObject.getJsonArray("children");
                 if(jsonArray!=null){
                     for(Object jo:jsonArray){
                         Node child = generateNodeByJsonObject((JsonObject)jo, app);

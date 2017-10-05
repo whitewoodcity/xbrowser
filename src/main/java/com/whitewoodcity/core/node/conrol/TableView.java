@@ -2,8 +2,7 @@ package com.whitewoodcity.core.node.conrol;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -12,6 +11,9 @@ import javafx.event.EventHandler;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.ChoiceBoxTableCell;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Callback;
 
@@ -59,7 +61,22 @@ public class TableView extends Control{
                 }
             }
         }else{
+            String name = jsonObject.getString("name");
+            String type = jsonObject.getString("type");
+            if("checkbox".equals(type)){
+                column = processCheckBoxColumnName(name);
+            }else if("choicebox".equals(type)||"combobox".equals(type)){
+                JsonArray jsonArray = new JsonArray();
+                if(jsonObject.getJsonArray("items")!=null) jsonArray.addAll(jsonObject.getJsonArray("items"));
+                if(jsonObject.getJsonArray("item")!=null) jsonArray.addAll(jsonObject.getJsonArray("item"));
 
+                if("choicebox".equals(type))
+                    column = processChoiceBoxColumnName(name, jsonArray);
+                else
+                    column = processComboBoxColumnName(name, jsonArray);
+            }else{
+                column = processStringColumnName(name);
+            }
         }
 
         return column;
@@ -67,13 +84,56 @@ public class TableView extends Control{
 
     private TableColumn processStringColumnName(String name){
         TableColumn column = new TableColumn(name);
-        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, String>)p).getValue().getProperty(name));
+        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Object>)p).getValue().getProperty(name));
         column.setCellFactory(TextFieldTableCell.forTableColumn());
         column.setOnEditCommit( t -> {
-            int index = ((TableColumn.CellEditEvent<Item, String>) t).getTablePosition().getRow();
-            Item item = ((TableColumn.CellEditEvent<Item, String>) t).getTableView().getItems().get(index);
-            item.setProperty(name,((TableColumn.CellEditEvent<Item, String>) t).getNewValue());
+            int index = ((TableColumn.CellEditEvent<Item, Object>) t).getTablePosition().getRow();
+            Item item = ((TableColumn.CellEditEvent<Item, Object>) t).getTableView().getItems().get(index);
+            item.setProperty(name,((TableColumn.CellEditEvent<Item, Object>) t).getNewValue());
                 });
+        columnMap.put(name, column);
+        return column;
+    }
+
+    private TableColumn processCheckBoxColumnName(String name){
+        TableColumn column = new TableColumn(name);
+        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Boolean>)p).getValue().getProperty(name));
+        column.setCellFactory(CheckBoxTableCell.forTableColumn(column));
+        column.setOnEditCommit( t -> {
+            int index = ((TableColumn.CellEditEvent<Item, Boolean>) t).getTablePosition().getRow();
+            Item item = ((TableColumn.CellEditEvent<Item, Boolean>) t).getTableView().getItems().get(index);
+            item.setProperty(name,((TableColumn.CellEditEvent<Item, Boolean>) t).getNewValue());
+        });
+        columnMap.put(name, column);
+        return column;
+    }
+
+    private TableColumn processChoiceBoxColumnName(String name, JsonArray items){
+        TableColumn column = new TableColumn(name);
+        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Object>)p).getValue().getProperty(name));
+        ObservableList list = FXCollections.observableArrayList();
+        if(items!=null) list.addAll(items.getList());
+        column.setCellFactory(ChoiceBoxTableCell.forTableColumn(list));
+        column.setOnEditCommit( t -> {
+            int index = ((TableColumn.CellEditEvent<Item, Object>) t).getTablePosition().getRow();
+            Item item = ((TableColumn.CellEditEvent<Item, Object>) t).getTableView().getItems().get(index);
+            item.setProperty(name,((TableColumn.CellEditEvent<Item, Object>) t).getNewValue());
+        });
+        columnMap.put(name, column);
+        return column;
+    }
+
+    private TableColumn processComboBoxColumnName(String name, JsonArray items){
+        TableColumn column = new TableColumn(name);
+        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Object>)p).getValue().getProperty(name));
+        ObservableList list = FXCollections.observableArrayList();
+        if(items!=null) list.addAll(items.getList());
+        column.setCellFactory(ComboBoxTableCell.forTableColumn(list));
+        column.setOnEditCommit( t -> {
+            int index = ((TableColumn.CellEditEvent<Item, Object>) t).getTablePosition().getRow();
+            Item item = ((TableColumn.CellEditEvent<Item, Object>) t).getTableView().getItems().get(index);
+            item.setProperty(name,((TableColumn.CellEditEvent<Item, Object>) t).getNewValue());
+        });
         columnMap.put(name, column);
         return column;
     }
@@ -92,9 +152,12 @@ public class TableView extends Control{
                     item.setProperty(column.get(j).getText(),list.get(j));
                 }
             }else if(object instanceof Map){
-                Map<String, String> map = (Map)object;
+                Map<String, Object> map = (Map)object;
                 for(String key:map.keySet()){
-                    item.setProperty(key, map.get(key));
+                    if(map.get(key) instanceof String)
+                        item.setProperty(key, (String)map.get(key));
+                    else if(map.get(key) instanceof Boolean)
+                        item.setProperty(key, (Boolean)map.get(key));
                 }
             }
 
@@ -104,19 +167,28 @@ public class TableView extends Control{
 }
 
 class Item{
-    Map<String, StringProperty> properties = new HashMap<>();
+    Map<String, Property> properties = new HashMap<>();
 
-    public StringProperty getProperty(String name){
+    public Property getProperty(String name){
         if(properties.get(name)==null){
             properties.put(name, new SimpleStringProperty());
         }
         return properties.get(name);
     }
 
-    public void setProperty(String name, String value){
+    public void setProperty(String name, Object value){
         if(properties.get(name)==null){
-            properties.put(name, new SimpleStringProperty(value));
+            properties.put(name, new SimpleStringProperty(value.toString()));
         }
-        properties.get(name).set(value);
+        if(value!=null) ((StringProperty)properties.get(name)).set(value.toString());
+    }
+
+    public void setProperty(String name, Boolean value){
+        if(properties.get(name)==null){
+            properties.put(name, new SimpleBooleanProperty());
+        }
+        if(properties.get(name) instanceof BooleanProperty){
+            ((BooleanProperty)properties.get(name)).set(value);
+        }
     }
 }
