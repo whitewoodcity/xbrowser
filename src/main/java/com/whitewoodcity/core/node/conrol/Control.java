@@ -122,7 +122,7 @@ public abstract class Control implements Node {
         this.name.set(name);
     }
 
-    public String getValue(){
+    public Object getValue(){
         return name.getValue();
     }
 }

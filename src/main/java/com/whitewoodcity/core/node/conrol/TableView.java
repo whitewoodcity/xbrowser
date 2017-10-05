@@ -3,21 +3,18 @@ package com.whitewoodcity.core.node.conrol;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.util.Callback;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TableView extends Control{
 
@@ -84,7 +81,7 @@ public class TableView extends Control{
 
     private TableColumn processStringColumnName(String name){
         TableColumn column = new TableColumn(name);
-        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Object>)p).getValue().getProperty(name));
+        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Object>)p).getValue().getStringProperty(name));
         column.setCellFactory(TextFieldTableCell.forTableColumn());
         column.setOnEditCommit( t -> {
             int index = ((TableColumn.CellEditEvent<Item, Object>) t).getTablePosition().getRow();
@@ -97,7 +94,7 @@ public class TableView extends Control{
 
     private TableColumn processCheckBoxColumnName(String name){
         TableColumn column = new TableColumn(name);
-        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Boolean>)p).getValue().getProperty(name));
+        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Boolean>)p).getValue().getBooleanProperty(name));
         column.setCellFactory(CheckBoxTableCell.forTableColumn(column));
         column.setOnEditCommit( t -> {
             int index = ((TableColumn.CellEditEvent<Item, Boolean>) t).getTablePosition().getRow();
@@ -110,7 +107,7 @@ public class TableView extends Control{
 
     private TableColumn processChoiceBoxColumnName(String name, JsonArray items){
         TableColumn column = new TableColumn(name);
-        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Object>)p).getValue().getProperty(name));
+        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Object>)p).getValue().getStringProperty(name));
         ObservableList list = FXCollections.observableArrayList();
         if(items!=null) list.addAll(items.getList());
         column.setCellFactory(ChoiceBoxTableCell.forTableColumn(list));
@@ -125,7 +122,7 @@ public class TableView extends Control{
 
     private TableColumn processComboBoxColumnName(String name, JsonArray items){
         TableColumn column = new TableColumn(name);
-        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Object>)p).getValue().getProperty(name));
+        column.setCellValueFactory( p -> ((TableColumn.CellDataFeatures<Item, Object>)p).getValue().getStringProperty(name));
         ObservableList list = FXCollections.observableArrayList();
         if(items!=null) list.addAll(items.getList());
         column.setCellFactory(ComboBoxTableCell.forTableColumn(list));
@@ -164,16 +161,36 @@ public class TableView extends Control{
             items.add(item);
         }
     }
+
+    public JsonArray getValue(){
+        JsonArray jsonArray = new JsonArray();
+        for(Item item:items){
+            JsonObject jsonObject = new JsonObject();
+            Map<String, Property> map = item.properties;
+            for(String key:map.keySet()){
+                jsonObject.put(key,map.get(key).getValue());
+            }
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray;
+    }
 }
 
 class Item{
     Map<String, Property> properties = new HashMap<>();
 
-    public Property getProperty(String name){
+    public StringProperty getStringProperty(String name){
         if(properties.get(name)==null){
             properties.put(name, new SimpleStringProperty());
         }
-        return properties.get(name);
+        return (StringProperty)properties.get(name);
+    }
+
+    public BooleanProperty getBooleanProperty(String name){
+        if(properties.get(name)==null){
+            properties.put(name, new SimpleBooleanProperty());
+        }
+        return (BooleanProperty)properties.get(name);
     }
 
     public void setProperty(String name, Object value){
@@ -191,4 +208,5 @@ class Item{
             ((BooleanProperty)properties.get(name)).set(value);
         }
     }
+
 }

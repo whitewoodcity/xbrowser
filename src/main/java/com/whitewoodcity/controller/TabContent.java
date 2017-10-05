@@ -6,6 +6,7 @@ import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
@@ -386,6 +387,46 @@ public class TabContent extends App implements Initializable {
 
     public ScriptEngine getScriptEngine() {
         return scriptEngine;
+    }
+
+    public void send(JsonObject json, String method, String action) {
+
+        HttpMethod m = HttpMethod.POST;
+        if (method != null) {
+            switch (method.trim().toLowerCase()) {
+                case "get":
+                    m = HttpMethod.GET;
+                    break;
+                case "delete":
+                    m = HttpMethod.DELETE;
+                    break;
+                case "put":
+                    m = HttpMethod.PUT;
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (action == null || action.isEmpty()) return;
+
+        String url = action.trim();
+        if (!url.startsWith("http")) {
+            action = "http://" + action;
+        }
+
+        if (json.isEmpty()) {
+            client.requestAbs(m, action)
+                    .send(ar -> {
+                        if (ar.succeeded()) handleHttpResponse(url, ar.result());
+                        else handleExceptionMessage(ar.cause());
+                    });
+        } else {
+            client.requestAbs(m, action)
+                    .sendJsonObject(json, ar -> {
+                        if (ar.succeeded()) handleHttpResponse(url, ar.result());
+                        else handleExceptionMessage(ar.cause());
+                    });
+        }
     }
 
     public void submit(MultiMap form, String method, String action) {

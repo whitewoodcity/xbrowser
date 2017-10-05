@@ -3,13 +3,15 @@ package com.whitewoodcity.core.node.conrol;
 import com.whitewoodcity.controller.TabContent;
 import io.vertx.core.MultiMap;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.util.Map;
+
 public class Form extends Control{
 
-    MultiMap form = MultiMap.caseInsensitiveMultiMap();
-
+    JsonObject jsonObject = new JsonObject();
     StringProperty id = new SimpleStringProperty();
     TabContent app;
     JsonArray children = new JsonArray();
@@ -59,6 +61,8 @@ public class Form extends Control{
     public void submit(){
         if(handler.handle()) return;
 
+        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+
         for(int i = 0;i<children.size();i++){
             String id = children.getValue(i).toString();
 
@@ -67,10 +71,33 @@ public class Form extends Control{
                 Control control = (Control)object;
                 if(control.getName()==null || control.getName().isEmpty())
                     continue;
-                form.set(control.getName(),control.getValue());
+                form.set(control.getName(),control.getValue().toString());
             }
         }
+        for(String key:jsonObject.fieldNames()){
+            form.add(key,jsonObject.getValue(key).toString());
+        }
+
         app.submit(form,method,action);
+    }
+
+    public void send(){
+        if(handler.handle()) return;
+
+        for(int i = 0;i<children.size();i++){
+            String id = children.getValue(i).toString();
+
+            Object object = app.getScriptEngine().get(id);
+
+            if(object!=null && object instanceof Control){
+                Control control = (Control)object;
+                if(control.getName()==null || control.getName().isEmpty())
+                    continue;
+                jsonObject.put(control.getName(),control.getValue());
+            }
+        }
+
+        app.send(jsonObject,method,action);
     }
 
     @Override
@@ -87,9 +114,9 @@ public class Form extends Control{
     }
 
     public void set(String name, String value){
-        form.set(name,value);
+        jsonObject.put(name,value);
     }
-    public String get(String name){
+    public Object get(String name){
         for(int i=0;i<children.size();i++){
             String id = children.getValue(i).toString();
             Object object = app.getScriptEngine().get(id);
@@ -100,7 +127,7 @@ public class Form extends Control{
             }
         }
 
-        return form.get(name);
+        return jsonObject.getValue(name).toString();
     }
     public void remove(String id){
         children.remove(id);
@@ -109,7 +136,7 @@ public class Form extends Control{
         children.add(id);
     }
     public void clear(){
-        form.clear();
+        jsonObject.clear();
         children.clear();
     }
 }
