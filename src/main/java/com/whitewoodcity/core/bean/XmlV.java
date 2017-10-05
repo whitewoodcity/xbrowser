@@ -126,6 +126,15 @@ public class XmlV {
                 decorateControl(imageView,jsonObject);
                 node = imageView;
                 break;
+            case "table":
+            case "tableview":
+                TableView tableView = new TableView();
+                tableView.setHeader(jsonObject.getJsonArray("header"));
+                tableView.setHeader(jsonObject.getJsonArray("column"));
+                tableView.setValue(jsonObject.getJsonArray("value"));
+                decorateControl(tableView,jsonObject);
+                node = tableView;
+                break;
             case "textfield":
                 TextField textField = new TextField();
                 decorateControl(textField,jsonObject);

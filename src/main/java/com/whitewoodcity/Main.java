@@ -12,6 +12,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import javax.script.ScriptEngineManager;
+import java.util.Locale;
 
 public class Main extends Application {
 
@@ -22,7 +23,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        primaryStage.setTitle(" ");
+        primaryStage.setTitle("XBrowser");
         primaryStage.getIcons().add(new Image("icons/xbrowser.png"));
         Group root = new Group();
         Button button = new Button("+");
