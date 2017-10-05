@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -21,7 +22,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        primaryStage.setTitle("XBrowser");
+        primaryStage.setTitle(" ");
+        primaryStage.getIcons().add(new Image("icons/xbrowser.png"));
         Group root = new Group();
         Button button = new Button("+");
         tabPane = new PagePane();
