@@ -2,6 +2,7 @@ package com.whitewoodcity.core.node.chart;
 
 import com.whitewoodcity.core.node.Node;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Side;
 
 public abstract class Chart implements Node {
@@ -103,6 +104,18 @@ public abstract class Chart implements Node {
 
     public String getTitle(){
         return body.getTitle();
+    }
+
+    public StringProperty titleProperty(){
+        return body.titleProperty();
+    }
+
+    public StringProperty title_property(){
+        return titleProperty();
+    }
+
+    public StringProperty titleproperty(){
+        return titleProperty();
     }
 
     public void setTitleSide(String side){

@@ -234,6 +234,8 @@ public class XmlV {
         if(width!=null) node.setWidth(width);
         if(height!=null) node.setHeight(height);
         node.setTitle(jsonObject.getString("title"));
+        node.setTitleSide(jsonObject.getString("titleside"));
+        node.setLegendSide(jsonObject.getString("legendside"));
     }
 
 }

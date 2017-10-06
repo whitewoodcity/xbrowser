@@ -9,10 +9,10 @@ public class PieChart extends Chart{
         body = new javafx.scene.chart.PieChart();
     }
 
-    public void setData(JsonObject data){
+    ObservableList<javafx.scene.chart.PieChart.Data> pieChartData =
+            FXCollections.observableArrayList();
 
-        ObservableList<javafx.scene.chart.PieChart.Data> pieChartData =
-                FXCollections.observableArrayList();
+    public void setData(JsonObject data){
 
         for(String key:data.fieldNames()){
             if(data.getValue(key)==null) continue;
@@ -29,5 +29,26 @@ public class PieChart extends Chart{
         }
 
         ((javafx.scene.chart.PieChart)body).setData(pieChartData);
+    }
+
+    public void set(String key, double value){
+        for(javafx.scene.chart.PieChart.Data datum:pieChartData){
+            if(datum.getName().equals(key)){
+                datum.setPieValue(value);
+                return;
+            }
+        }
+        pieChartData.add(new javafx.scene.chart.PieChart.Data(key, value));
+    }
+
+    public void remove(String key){
+        javafx.scene.chart.PieChart.Data d=null;
+        for(javafx.scene.chart.PieChart.Data datum:pieChartData){
+            if(datum.getName().equals(key)){
+                d = datum;
+            }
+        }
+        if(d!=null)
+            pieChartData.remove(d);
     }
 }
