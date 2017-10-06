@@ -151,4 +151,36 @@ public class XYChart extends Chart{
         jsonArray.add(jsonObject);
         setSeries(series,jsonArray);
     }
+
+    public void remove(String series, Object x, Object y){
+        for(Object object:((javafx.scene.chart.XYChart)body).getData()){
+            javafx.scene.chart.XYChart.Series s = (javafx.scene.chart.XYChart.Series)object;
+            if(s.getName().equals(series)){
+                Object tobeRemoved = null;
+                for(Object o:s.getData()){
+                    javafx.scene.chart.XYChart.Data datum =(javafx.scene.chart.XYChart.Data)o;
+                    if(x.equals(datum.getXValue())&&y.equals(datum.getYValue())){
+                        tobeRemoved = datum;
+                        break;
+                    }
+                }
+                if(tobeRemoved!=null){
+                    s.getData().remove(tobeRemoved);
+                    return;
+                }
+            }
+        }
+    }
+
+    public void remove(String series){
+        Object tobeRemoved = null;
+        for(Object object:((javafx.scene.chart.XYChart)body).getData()){
+            javafx.scene.chart.XYChart.Series s = (javafx.scene.chart.XYChart.Series)object;
+            if(s.getName().equals(series)){
+                tobeRemoved = s;
+            }
+        }
+        if(tobeRemoved!=null)
+            ((javafx.scene.chart.XYChart)body).getData().remove(tobeRemoved);
+    }
 }
