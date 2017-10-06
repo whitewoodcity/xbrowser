@@ -63,17 +63,38 @@ public class XYChart extends Chart{
         this.xScale = xScale;
     }
 
-    public void setSeries(String name, JsonArray jsonArray){
+    private void setSeries(String name, JsonArray jsonArray){
 
         javafx.scene.chart.XYChart.Series series = new javafx.scene.chart.XYChart.Series();
         series.setName(name);
         if(xScale == null) return;
         for(int i=0;i<xScale.size();i++){
             if(i<jsonArray.size()&&jsonArray.getValue(i)!=null) {
+                Object x = xScale.getValue(i);
                 if(xAxis instanceof CategoryAxis)
-                    series.getData().add(new javafx.scene.chart.XYChart.Data(xScale.getValue(i).toString(), jsonArray.getValue(i)));
+                    x = x.toString();
+
+                Object y = jsonArray.getValue(i);
+                if(y == null){
+
+                }else if(y instanceof Number)
+                    series.getData().add(new javafx.scene.chart.XYChart.Data(x, y));
+                else if(y instanceof JsonObject){
+                    Object xx=null, yy=null, extra=null;
+                    JsonObject jsonObject = (JsonObject)y;
+                    for(String key:jsonObject.fieldNames()){
+                        if(key.equals("x")) xx = jsonObject.getValue(key);
+                        else if(key.equals("y")) yy = jsonObject.getValue(key);
+                        else extra = jsonObject.getValue(key);
+                    }
+
+                    if(xx!=null&&yy!=null){
+                        if(extra!=null) series.getData().add(new javafx.scene.chart.XYChart.Data(xx, yy, extra));
+                        else series.getData().add(new javafx.scene.chart.XYChart.Data(xx, yy));
+                    }
+                }
                 else
-                    series.getData().add(new javafx.scene.chart.XYChart.Data(xScale.getValue(i), jsonArray.getValue(i)));
+                    series.getData().add(new javafx.scene.chart.XYChart.Data(x, y.toString()));
             }
         }
         ((javafx.scene.chart.XYChart)body).getData().add(series);

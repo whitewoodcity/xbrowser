@@ -190,7 +190,6 @@ public class XmlV {
                 break;
             case "linechart":
             case "barchart":
-            case "bubblechart":
             case "scatterchart":
             case "areachart":
                 AxisType xAxisType = AxisType.NUMBER;
@@ -219,6 +218,14 @@ public class XmlV {
                 xyChart.setYLabel(jsonObject.getString("ylabel"));
                 xyChart.setData(jsonObject.getJsonObject("data"));
                 node = xyChart;
+                break;
+            case "bubblechart":
+                XYChart bubbleChart = new XYChart(type, AxisType.NUMBER, AxisType.NUMBER);
+                decorateChart(bubbleChart,jsonObject);
+                bubbleChart.setXLabel(jsonObject.getString("xlabel"));
+                bubbleChart.setYLabel(jsonObject.getString("ylabel"));
+                bubbleChart.setData(jsonObject.getJsonObject("data"));
+                node = bubbleChart;
                 break;
             default:
                 Pane pane = new Pane();
