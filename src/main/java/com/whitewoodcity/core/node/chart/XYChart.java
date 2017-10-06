@@ -78,7 +78,7 @@ public class XYChart extends Chart{
                 if(y == null){
 
                 }else if(y instanceof Number)
-                    series.getData().add(new javafx.scene.chart.XYChart.Data(x, y));
+                    addData(series,x,y);
                 else if(y instanceof JsonObject){
                     Object xx=null, yy=null, extra=null;
                     JsonObject jsonObject = (JsonObject)y;
@@ -89,12 +89,12 @@ public class XYChart extends Chart{
                     }
 
                     if(xx!=null&&yy!=null){
-                        if(extra!=null) series.getData().add(new javafx.scene.chart.XYChart.Data(xx, yy, extra));
-                        else series.getData().add(new javafx.scene.chart.XYChart.Data(xx, yy));
+                        if(extra!=null) addData(series,xx,yy,extra);
+                        else addData(series,xx,yy);
                     }
                 }
                 else
-                    series.getData().add(new javafx.scene.chart.XYChart.Data(x, y.toString()));
+                    addData(series,x,y);
             }
         }
         ((javafx.scene.chart.XYChart)body).getData().add(series);
@@ -119,7 +119,7 @@ public class XYChart extends Chart{
                         return;
                     }
                 }
-                s.getData().add(new javafx.scene.chart.XYChart.Data(x, y));
+                addData(s,x,y);
                 return;
             }
         }
@@ -141,7 +141,7 @@ public class XYChart extends Chart{
                         return;
                     }
                 }
-                s.getData().add(new javafx.scene.chart.XYChart.Data(x, y, e));
+                addData(s,x,y,e);
                 return;
             }
         }
@@ -182,5 +182,44 @@ public class XYChart extends Chart{
         }
         if(tobeRemoved!=null)
             ((javafx.scene.chart.XYChart)body).getData().remove(tobeRemoved);
+    }
+
+    private void addData(javafx.scene.chart.XYChart.Series series,Object x, Object y){
+        boolean xOK = false, yOK = false;
+        if(x instanceof Number && xAxis instanceof NumberAxis){
+            xOK = true;
+        }else if(xAxis instanceof CategoryAxis){
+            x = x.toString();
+            xOK = true;
+        }
+
+        if(y instanceof Number && yAxis instanceof NumberAxis){
+            yOK = true;
+        }else if(yAxis instanceof CategoryAxis){
+            y = y.toString();
+            yOK = true;
+        }
+
+        if(xOK&&yOK)
+            series.getData().add(new javafx.scene.chart.XYChart.Data(x, y));
+    }
+
+    private void addData(javafx.scene.chart.XYChart.Series series,Object x, Object y, Object e){
+        boolean xOK = false, yOK = false;
+        if(x instanceof Number && xAxis instanceof NumberAxis){
+            xOK = true;
+        }else if(xAxis instanceof CategoryAxis){
+            x = x.toString();
+            xOK = true;
+        }
+
+        if(y instanceof Number && yAxis instanceof NumberAxis){
+            yOK = true;
+        }else if(yAxis instanceof CategoryAxis){
+            y = y.toString();
+            yOK = true;
+        }
+        if(xOK&&yOK)
+            series.getData().add(new javafx.scene.chart.XYChart.Data(x, y, e));
     }
 }
