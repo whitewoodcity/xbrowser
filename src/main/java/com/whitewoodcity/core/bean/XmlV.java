@@ -4,8 +4,7 @@ import com.whitewoodcity.controller.TabContent;
 import com.whitewoodcity.core.node.canvas.Canvas;
 import com.whitewoodcity.core.node.Node;
 import com.whitewoodcity.core.node.Pane;
-import com.whitewoodcity.core.node.chart.Chart;
-import com.whitewoodcity.core.node.chart.PieChart;
+import com.whitewoodcity.core.node.chart.*;
 import com.whitewoodcity.core.node.conrol.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -188,6 +187,38 @@ public class XmlV {
                 decorateChart(pieChart,jsonObject);
                 pieChart.setData(jsonObject.getJsonObject("data"));
                 node = pieChart;
+                break;
+            case "linechart":
+            case "barchart":
+            case "bubblechart":
+            case "scatterchart":
+            case "areachart":
+                AxisType xAxisType = AxisType.NUMBER;
+                if(jsonObject.getValue("xaxis")!=null&&
+                        jsonObject.getValue("xaxis") instanceof JsonArray &&
+                        jsonObject.getJsonArray("xaxis").size()>0){
+                    if(!(jsonObject.getJsonArray("xaxis").getValue(0) instanceof Number)){
+                        xAxisType = AxisType.CATEGORY;
+                    }
+                }
+                AxisType yAxisType = AxisType.NUMBER;
+                if(jsonObject.getValue("data")!=null&&
+                        jsonObject.getValue("data") instanceof JsonObject &&
+                        jsonObject.getJsonObject("data").fieldNames().size()>0){
+                    String key = (String) jsonObject.getJsonObject("data").fieldNames().toArray()[0];
+                    if(jsonObject.getJsonObject("data").getValue(key) instanceof JsonArray &&
+                            jsonObject.getJsonObject("data").getJsonArray(key).size()>0 &&
+                            !(jsonObject.getJsonObject("data").getJsonArray(key).getValue(0) instanceof Number)){
+                        yAxisType = AxisType.CATEGORY;
+                    }
+                }
+                XYChart xyChart = new XYChart(type, xAxisType, yAxisType);
+                decorateChart(xyChart,jsonObject);
+                xyChart.setXScale(jsonObject.getJsonArray("xaxis"));
+                xyChart.setXLabel(jsonObject.getString("xlabel"));
+                xyChart.setYLabel(jsonObject.getString("ylabel"));
+                xyChart.setData(jsonObject.getJsonObject("data"));
+                node = xyChart;
                 break;
             default:
                 Pane pane = new Pane();
