@@ -27,6 +27,11 @@ public class TableView extends Control{
         ((javafx.scene.control.TableView)body).setEditable(true);
         ((javafx.scene.control.TableView)body).getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 //        ((javafx.scene.control.TableView)body).setColumnResizePolicy((param) -> true );
+        body.widthProperty().addListener( (obj, oldVal, newVal)->{
+            for(TableColumn column:columnMap.values()){
+                column.setPrefWidth(newVal.doubleValue()/columnMap.size());
+            }
+        });
     }
 
     public void setEditable(Boolean editable){
