@@ -4,6 +4,8 @@ import com.whitewoodcity.controller.TabContent;
 import com.whitewoodcity.core.node.canvas.Canvas;
 import com.whitewoodcity.core.node.Node;
 import com.whitewoodcity.core.node.Pane;
+import com.whitewoodcity.core.node.chart.Chart;
+import com.whitewoodcity.core.node.chart.PieChart;
 import com.whitewoodcity.core.node.conrol.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -181,6 +183,12 @@ public class XmlV {
                 choiceBox.setValue(jsonObject.getString("value"));
                 node = choiceBox;
                 break;
+            case "piechart":
+                PieChart pieChart = new PieChart();
+                decorateChart(pieChart,jsonObject);
+                pieChart.setData(jsonObject.getJsonObject("data"));
+                node = pieChart;
+                break;
             default:
                 Pane pane = new Pane();
                 jsonArray = jsonObject.getJsonArray("children");
@@ -213,6 +221,19 @@ public class XmlV {
         if(width!=null) node.setWidth(width);
         if(height!=null) node.setHeight(height);
         node.setName(jsonObject.getString("name"));
+    }
+
+    public void decorateChart(Chart node, JsonObject jsonObject){
+        Double x, y, width, height;
+        x = jsonObject.getDouble("x");
+        y = jsonObject.getDouble("y");
+        width = jsonObject.getDouble("width");
+        height = jsonObject.getDouble("height");
+        node.setX(x==null?0:x);
+        node.setY(y==null?0:y);
+        if(width!=null) node.setWidth(width);
+        if(height!=null) node.setHeight(height);
+        node.setTitle(jsonObject.getString("title"));
     }
 
 }
