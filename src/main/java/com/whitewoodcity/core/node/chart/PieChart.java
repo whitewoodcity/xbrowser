@@ -48,6 +48,7 @@ public class PieChart extends Chart{
                 d = datum;
             }
         }
+
         if(d!=null)
             pieChartData.remove(d);
     }
