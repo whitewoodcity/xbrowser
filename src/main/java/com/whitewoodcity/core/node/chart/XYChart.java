@@ -107,4 +107,48 @@ public class XYChart extends Chart{
             }
         }
     }
+
+    public void set(String series, Object x, Object y){
+        for(Object object:((javafx.scene.chart.XYChart)body).getData()){
+            javafx.scene.chart.XYChart.Series s = (javafx.scene.chart.XYChart.Series)object;
+            if(s.getName().equals(series)){
+                for(Object o:s.getData()){
+                    javafx.scene.chart.XYChart.Data datum =(javafx.scene.chart.XYChart.Data)o;
+                    if(x.equals(datum.getXValue())){
+                        datum.setYValue(y);
+                        return;
+                    }
+                }
+                s.getData().add(new javafx.scene.chart.XYChart.Data(x, y));
+                return;
+            }
+        }
+        JsonArray jsonArray = new JsonArray();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("x",x).put("y",y);
+        jsonArray.add(jsonObject);
+        setSeries(series,jsonArray);
+    }
+
+    public void set(String series, Object x, Object y, Object e){
+        for(Object object:((javafx.scene.chart.XYChart)body).getData()){
+            javafx.scene.chart.XYChart.Series s = (javafx.scene.chart.XYChart.Series)object;
+            if(s.getName().equals(series)){
+                for(Object o:s.getData()){
+                    javafx.scene.chart.XYChart.Data datum =(javafx.scene.chart.XYChart.Data)o;
+                    if(x.equals(datum.getXValue())&&y.equals(datum.getYValue())){
+                        datum.setExtraValue(e);
+                        return;
+                    }
+                }
+                s.getData().add(new javafx.scene.chart.XYChart.Data(x, y, e));
+                return;
+            }
+        }
+        JsonArray jsonArray = new JsonArray();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("x",x).put("y",y).put("e",e);
+        jsonArray.add(jsonObject);
+        setSeries(series,jsonArray);
+    }
 }
