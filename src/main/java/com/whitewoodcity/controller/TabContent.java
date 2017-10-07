@@ -182,9 +182,10 @@ public class TabContent extends App implements Initializable {
 
                     XmlV xmlV = new XmlMapper().readValue(result, XmlV.class);
 
-                    if (!xmlV.isCssEmpty()) {
+                    if (xmlV.getCss()!=null) {
                         File cssFile = Res.getTempFile(directory, "css");
                         BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
+                        fos.write(Res.getUrlContents(xmlV.getCss().getHref()));
                         fos.write(xmlV.getCss().getCss());
                         fos.flush();
                         fos.close();
@@ -239,14 +240,6 @@ public class TabContent extends App implements Initializable {
 
                     loadingTask.setOnSucceeded(value -> {
 
-//                        if (xmlV.getScripts() != null && xmlV.getScripts().length > 0) {
-//                            String script = xmlV.getScripts()[0].getType();
-//                            script = script == null ? "javascript" : script;
-//
-//                            scriptEngine = Main.scriptEngineManager.getEngineByName(script);
-////                        scriptEngine= ScriptFactory.loadJRubyScript();
-//                        }
-
                         try {
                             context.clear();
 
@@ -258,8 +251,12 @@ public class TabContent extends App implements Initializable {
                                     URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
                                     java.lang.Class<?> targetClass = urlClassLoader.loadClass(clazz.getName());
                                     Object object = targetClass.getDeclaredConstructor().newInstance();
-                                    Object returnValue = targetClass.getDeclaredMethod(clazz.getFunction(), null).invoke(object);
-                                    System.out.println(returnValue);
+
+                                    targetClass.getDeclaredMethod("setApp", Object.class).invoke(object, this);
+                                    targetClass.getDeclaredMethod("setContext", Map.class).invoke(object, context);
+                                    targetClass.getDeclaredMethod("setPreload", Map.class).invoke(object, preload);
+
+                                    targetClass.getDeclaredMethod(clazz.getFunction(), null).invoke(object);
                                 }
                             }
 
@@ -269,13 +266,17 @@ public class TabContent extends App implements Initializable {
                                     scriptType = scriptType == null ? "javascript" : scriptType;
                                     scriptEngine = Main.scriptEngineManager.getEngineByName(scriptType);
 
+                                    scriptEngine.put("app", this);
+                                    scriptEngine.put("preload", preload);
+                                    scriptEngine.put("context", context);
+
+                                    for(String id:preload.keySet()){
+                                        scriptEngine.put(id, preload.get(id));
+                                    }
                                     for(String id:context.keySet()){
                                         scriptEngine.put(id, context.get(id));
                                     }
-
-                                    scriptEngine.put("app", this);
-                                    scriptEngine.put("preload", preload);
-
+                                    scriptEngine.eval(Res.getUrlContents(script.getHref()));
                                     scriptEngine.eval(script.getScript());
                                 }
                             }

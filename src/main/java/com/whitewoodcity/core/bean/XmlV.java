@@ -62,10 +62,6 @@ public class XmlV {
         this.jsonfx = jsonfx;
     }
 
-    public boolean isCssEmpty(){
-        return css==null||css.getCss()==null||css.getCss().trim().equals("");
-    }
-
     public Preload getPreload() {
         return preload;
     }

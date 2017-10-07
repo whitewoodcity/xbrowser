@@ -230,7 +230,10 @@ public class Res {
 
     public static String getUrlContents(String theUrl)
     {
-        StringBuilder content = new StringBuilder();
+        if(theUrl==null||theUrl.equals("")||
+                !theUrl.startsWith("http")) return "";
+
+        StringBuilder content = new StringBuilder("");
 
         // many of these calls can throw exceptions, so i've just
         // wrapped them all in one try/catch statement.
