@@ -4,6 +4,7 @@ import com.whitewoodcity.core.node.Node;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Rotate;
 
 public class Canvas implements Node {
     private javafx.scene.canvas.Canvas body;
@@ -174,5 +175,37 @@ public class Canvas implements Node {
 
     public void square(double x, double y, double side, boolean filled){
         rect(x,y,side,side, filled);
+    }
+
+    /**
+     * Draws an image on a graphics context.
+     *
+     * The image is drawn at (tlpx, tlpy) rotated by angle pivoted around the point:
+     *   (tlpx + image.getWidth() / 2, tlpy + image.getHeight() / 2)
+     *
+     * @param gc the graphics context the image is to be drawn on.
+     * @param angle the angle of rotation.
+     * @param tlx the top left x co-ordinate where the image will be plotted (in canvas co-ordinates).
+     * @param tly the top left y co-ordinate where the image will be plotted (in canvas co-ordinates).
+     * @param px the x pivot co-ordinate for the rotation (in canvas co-ordinates).
+     * @param py the y pivot co-ordinate for the rotation (in canvas co-ordinates).
+     */
+    Rotate rotate = new Rotate();
+
+    public void rotateImage(Image image, double tlx, double tly, double width, double height, double angle, double px, double py) {
+        javafx.scene.canvas.GraphicsContext gc = body.getGraphicsContext2D();
+        gc.save(); // saves the current state on stack, including the current transform
+        rotate.setAngle(angle);
+        rotate.setPivotX(px);
+        rotate.setPivotY(py);
+        gc.setTransform(rotate.getMxx(), rotate.getMyx(), rotate.getMxy(), rotate.getMyy(), rotate.getTx(), rotate.getTy());
+        gc.drawImage(image, tlx, tly, width, height);
+        gc.restore(); // back to original state (before rotation)
+    }
+    public void rotate_image(Image image, double tlx, double tly, double width, double height, double angle, double px, double py) {
+        rotateImage(image,tlx,tly,width,height,angle,px,py);
+    }
+    public void rotateimage(Image image, double tlx, double tly, double width, double height, double angle, double px, double py) {
+        rotateImage(image,tlx,tly,width,height,angle,px,py);
     }
 }
