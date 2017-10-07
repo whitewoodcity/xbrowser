@@ -20,12 +20,14 @@ public class XmlV {
 
     private Preload preload;
     private Json json;
-    private Script script;
     private CSS css;
     private JsonFX jsonfx;
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "class")
     private Class[] classes;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "script")
+    private Script[] scripts;
 
     public com.whitewoodcity.core.bean.Json getJson() {
         return json;
@@ -35,12 +37,12 @@ public class XmlV {
         this.json = json;
     }
 
-    public Script getScript() {
-        return script;
+    public Script[] getScripts() {
+        return scripts;
     }
 
-    public void setScript(Script script) {
-        this.script = script;
+    public void setScripts(Script[] scripts) {
+        this.scripts = scripts;
     }
 
     public CSS getCss() {

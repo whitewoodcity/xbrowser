@@ -3,6 +3,7 @@ package com.whitewoodcity.controller;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.Class;
+import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
@@ -237,9 +238,8 @@ public class TabContent extends App implements Initializable {
 
                     loadingTask.setOnSucceeded(value -> {
 
-                        if (xmlV.getScript() != null && xmlV.getScript().getScript() != null &&
-                                !xmlV.getScript().getScript().replace("\n", "").trim().equals("")) {
-                            String script = xmlV.getScript().getType();
+                        if (xmlV.getScripts() != null && xmlV.getScripts().length > 0) {
+                            String script = xmlV.getScripts()[0].getType();
                             script = script == null ? "javascript" : script;
 
                             scriptEngine = Main.scriptEngineManager.getEngineByName(script);
@@ -260,13 +260,15 @@ public class TabContent extends App implements Initializable {
                                 }
                             }
 
-                            if (scriptEngine != null) {
+                            if (xmlV.getScripts() != null && xmlV.getScripts().length > 0){
+                                for(Script script:xmlV.getScripts()){
+                                    scriptEngine.put("app", this);
+                                    scriptEngine.put("preload", preload);
 
-                                scriptEngine.put("app", this);
-                                scriptEngine.put("preload", preload);
-
-                                scriptEngine.eval(xmlV.getScript().getScript());
+                                    scriptEngine.eval(script.getScript());
+                                }
                             }
+
                             container.getChildren().clear();
                             container.getChildren().add(0, parent);
                             container.requestFocus();
