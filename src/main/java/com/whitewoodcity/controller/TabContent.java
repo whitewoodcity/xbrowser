@@ -2,8 +2,12 @@ package com.whitewoodcity.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
+import com.whitewoodcity.core.bean.Class;
+import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.parse.LayoutInflater;
+import com.whitewoodcity.core.node.input.KeyEventHandler;
+import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
@@ -11,8 +15,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -27,7 +29,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.shape.Rectangle;
@@ -36,18 +37,16 @@ import javafx.stage.FileChooser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 import javax.swing.filechooser.FileSystemView;
 import java.io.*;
-import java.lang.reflect.Executable;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.UUID;
 
 public class TabContent extends App implements Initializable {
 
@@ -77,6 +76,7 @@ public class TabContent extends App implements Initializable {
 
     private File directory;
     private Map<String, Object> preload = new HashMap<>();
+    private Map<String, com.whitewoodcity.core.node.Node> context = new HashMap<>();
     private WebClient client;
     private ScriptEngine scriptEngine;
     private Node parent;
@@ -97,13 +97,6 @@ public class TabContent extends App implements Initializable {
         container.setClip(containerClip);
 
         container.setOnDragOver(event -> event.acceptTransferModes(TransferMode.ANY));
-
-        container.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEventHandler);
-        container.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEventHandler);
-        container.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEventHandler);
-        container.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
-        container.addEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
-        container.setFocusTraversable(true);
 
         try {
             directory = Res.getTempDirectory(UUID.randomUUID() + "");
@@ -201,9 +194,10 @@ public class TabContent extends App implements Initializable {
 
                     XmlV xmlV = new XmlMapper().readValue(result, XmlV.class);
 
-                    if (!xmlV.isCssEmpty()) {
+                    if (xmlV.getCss()!=null) {
                         File cssFile = Res.getTempFile(directory, "css");
                         BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
+                        fos.write(Res.getUrlContents(xmlV.getCss().getHref()));
                         fos.write(xmlV.getCss().getCss());
                         fos.flush();
                         fos.close();
@@ -233,9 +227,7 @@ public class TabContent extends App implements Initializable {
                                 Res.downLoadFromUrl(url, Res.getDefaultDirectory(),
                                         url.replaceFirst("^(http(s?)://www\\.|http(s?)://|www\\.)", ""), label.textProperty());
                                 double progress = i + 1;
-                                Platform.runLater(() -> {
-                                    progressBar.setProgress(progress / downloadList.size() * 0.5);
-                                });
+                                Platform.runLater(() -> progressBar.setProgress(progress / downloadList.size() * 0.5));
                             }
 
                             Platform.runLater(() -> progressBar.setProgress(0.5));
@@ -251,9 +243,7 @@ public class TabContent extends App implements Initializable {
                                 } else {
                                     preload.put(key, new Image(uri));
                                 }
-                                Platform.runLater(() -> {
-                                    progressBar.setProgress(((double) preload.size()) / resources.size() * 0.5 + 0.5);
-                                });
+                                Platform.runLater(() -> progressBar.setProgress(((double) preload.size()) / resources.size() * 0.5 + 0.5));
                             }
 
                             return null;
@@ -262,27 +252,47 @@ public class TabContent extends App implements Initializable {
 
                     loadingTask.setOnSucceeded(value -> {
 
-                        if (xmlV.getScript() != null && xmlV.getScript().getScript() != null &&
-                                !xmlV.getScript().getScript().replace("\n", "").trim().equals("")) {
-                            String script = xmlV.getScript().getType();
-                            script = script == null ? "javascript" : script;
-
-                            scriptEngine = Main.scriptEngineManager.getEngineByName(script);
-//                        scriptEngine= ScriptFactory.loadJRubyScript();
-                        }
-
                         try {
+                            context.clear();
+
                             parent = xmlV.generateNode(this).getNode();
 
-                            if (scriptEngine != null) {
+                            if(xmlV.getClasses() != null && xmlV.getClasses().length>0){
+                                for(Class clazz:xmlV.getClasses()){
+                                    URL url = new URL(clazz.getUrl());
+                                    URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
+                                    java.lang.Class<?> targetClass = urlClassLoader.loadClass(clazz.getName());
+                                    Object object = targetClass.getDeclaredConstructor().newInstance();
 
-                                scriptEngine.put("app", this);
-                                scriptEngine.put("preload", preload);
-                                scriptEngine.put("mouse", mouseEventHandler);
-                                scriptEngine.put("key", keyEventHandler);
+                                    targetClass.getDeclaredMethod("setApp", Object.class).invoke(object, this);
+                                    targetClass.getDeclaredMethod("setContext", Map.class).invoke(object, context);
+                                    targetClass.getDeclaredMethod("setPreload", Map.class).invoke(object, preload);
 
-                                scriptEngine.eval(xmlV.getScript().getScript());
+                                    targetClass.getDeclaredMethod(clazz.getFunction(), null).invoke(object);
+                                }
                             }
+
+                            if (xmlV.getScripts() != null && xmlV.getScripts().length > 0){
+                                for(Script script:xmlV.getScripts()){
+                                    String scriptType = script.getType();
+                                    scriptType = scriptType == null ? "javascript" : scriptType;
+                                    scriptEngine = Main.scriptEngineManager.getEngineByName(scriptType);
+
+                                    scriptEngine.put("app", this);
+                                    scriptEngine.put("preload", preload);
+                                    scriptEngine.put("context", context);
+
+                                    for(String id:preload.keySet()){
+                                        scriptEngine.put(id, preload.get(id));
+                                    }
+                                    for(String id:context.keySet()){
+                                        scriptEngine.put(id, context.get(id));
+                                    }
+                                    scriptEngine.eval(Res.getUrlContents(script.getHref()));
+                                    scriptEngine.eval(script.getScript());
+                                }
+                            }
+
                             container.getChildren().clear();
                             container.getChildren().add(0, parent);
                             container.requestFocus();
@@ -294,7 +304,7 @@ public class TabContent extends App implements Initializable {
                     Thread thread = new Thread(loadingTask);
                     thread.setDaemon(true);
                     thread.start();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     handleExceptionMessage(e, result);
                     return;
                 }
@@ -330,7 +340,7 @@ public class TabContent extends App implements Initializable {
         container.requestFocus();
     }
 
-    public void removeParent() {
+    private void removeParent() {
         super.dispose();
         preload.clear();
         if (loadingTask != null) loadingTask.cancel();
@@ -397,9 +407,13 @@ public class TabContent extends App implements Initializable {
         }
     }
 
-    public ScriptEngine getScriptEngine() {
-        return scriptEngine;
+    public Map<String, com.whitewoodcity.core.node.Node> getContext() {
+        return context;
     }
+
+    //    public ScriptEngine getScriptEngine() {
+//        return scriptEngine;
+//    }
 
     public void send(JsonObject json, String method, String action) {
 
@@ -493,5 +507,50 @@ public class TabContent extends App implements Initializable {
 
     public Map<String, Object> getPreload() {
         return preload;
+    }
+
+    @Override
+    public MouseEventHandler getMouse() {
+
+        if (mouseEventHandler == null) {
+            mouseEventHandler = new MouseEventHandler();
+            container.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEventHandler);
+            container.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEventHandler);
+            container.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEventHandler);
+        }
+
+        return mouseEventHandler;
+    }
+
+    @Override
+    public KeyEventHandler getKey() {
+
+        if (keyEventHandler == null) {
+            keyEventHandler = new KeyEventHandler();
+            container.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+            container.addEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
+            container.setFocusTraversable(true);
+        }
+
+        return keyEventHandler;
+    }
+
+    @Override
+    protected void disposeMouse() {
+        if (mouseEventHandler != null) {
+            container.removeEventHandler(MouseEvent.MOUSE_PRESSED, mouseEventHandler);
+            container.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseEventHandler);
+            container.removeEventHandler(MouseEvent.MOUSE_MOVED, mouseEventHandler);
+            mouseEventHandler = null;
+        }
+    }
+
+    @Override
+    protected void disposeKey() {
+        if (keyEventHandler != null) {
+            container.removeEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+            container.removeEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
+            keyEventHandler = null;
+        }
     }
 }

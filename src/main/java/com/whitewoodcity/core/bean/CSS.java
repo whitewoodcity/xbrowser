@@ -6,10 +6,10 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 public class CSS {
 
     @JacksonXmlProperty(isAttribute = true)
-    private String href;
+    private String href="";
 
     @JacksonXmlText
-    private String css;
+    private String css="";
 
     public String getHref() {
         return href;

@@ -18,7 +18,7 @@ public class Script {
     public String version;
 
     @JacksonXmlText
-    public String script;
+    public String script="";
 
     public String getType() {
         return type;

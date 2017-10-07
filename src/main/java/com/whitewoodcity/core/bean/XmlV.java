@@ -1,5 +1,8 @@
 package com.whitewoodcity.core.bean;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.whitewoodcity.controller.TabContent;
 import com.whitewoodcity.core.node.canvas.Canvas;
 import com.whitewoodcity.core.node.Node;
@@ -10,17 +13,22 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@JacksonXmlRootElement(localName = "xmlv")
 public class XmlV {
 
     private Preload preload;
     private Json json;
-    private Script script;
     private CSS css;
     private JsonFX jsonfx;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "class")
+    private Class[] classes;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "script")
+    private Script[] scripts;
 
     public com.whitewoodcity.core.bean.Json getJson() {
         return json;
@@ -30,12 +38,12 @@ public class XmlV {
         this.json = json;
     }
 
-    public Script getScript() {
-        return script;
+    public Script[] getScripts() {
+        return scripts;
     }
 
-    public void setScript(Script script) {
-        this.script = script;
+    public void setScripts(Script[] scripts) {
+        this.scripts = scripts;
     }
 
     public CSS getCss() {
@@ -54,16 +62,20 @@ public class XmlV {
         this.jsonfx = jsonfx;
     }
 
-    public boolean isCssEmpty(){
-        return css==null||css.getCss()==null||css.getCss().trim().equals("");
-    }
-
     public Preload getPreload() {
         return preload;
     }
 
     public void setPreload(Preload preload) {
         this.preload = preload;
+    }
+
+    public Class[] getClasses() {
+        return classes;
+    }
+
+    public void setClasses(Class[] classes) {
+        this.classes = classes;
     }
 
     public List<String> generateResources(){
@@ -206,9 +218,14 @@ public class XmlV {
                         jsonObject.getJsonObject("data").fieldNames().size()>0){
                     String key = (String) jsonObject.getJsonObject("data").fieldNames().toArray()[0];
                     if(jsonObject.getJsonObject("data").getValue(key) instanceof JsonArray &&
-                            jsonObject.getJsonObject("data").getJsonArray(key).size()>0 &&
-                            !(jsonObject.getJsonObject("data").getJsonArray(key).getValue(0) instanceof Number)){
-                        yAxisType = AxisType.CATEGORY;
+                            jsonObject.getJsonObject("data").getJsonArray(key).size()>0){
+                        if(!(jsonObject.getJsonObject("data").getJsonArray(key).getValue(0) instanceof Number)
+                                && !(jsonObject.getJsonObject("data").getJsonArray(key).getValue(0) instanceof JsonObject)){
+                            yAxisType = AxisType.CATEGORY;
+                        }else if((jsonObject.getJsonObject("data").getJsonArray(key).getValue(0) instanceof JsonObject &&
+                                !(jsonObject.getJsonObject("data").getJsonArray(key).getJsonObject(0).getValue("y") instanceof Number))){
+                            yAxisType = AxisType.CATEGORY;
+                        }
                     }
                 }
                 XYChart xyChart = new XYChart(type, xAxisType, yAxisType);
@@ -240,9 +257,9 @@ public class XmlV {
                 break;
         }
 
-        if(jsonObject.getString("id")!=null&&app.getScriptEngine()!=null){
+        if(jsonObject.getString("id")!=null){
             node.setId(jsonObject.getString("id"));
-            app.getScriptEngine().put(jsonObject.getString("id"), node);
+            app.getContext().put(jsonObject.getString("id"), node);
         }
 
         return node;

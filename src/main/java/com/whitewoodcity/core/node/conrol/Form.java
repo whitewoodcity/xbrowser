@@ -66,7 +66,7 @@ public class Form extends Control{
         for(int i = 0;i<children.size();i++){
             String id = children.getValue(i).toString();
 
-            Object object = app.getScriptEngine().get(id);
+            Object object = app.getContext().get(id);
             if(object!=null && object instanceof Control){
                 Control control = (Control)object;
                 if(control.getName()==null || control.getName().isEmpty())
@@ -87,7 +87,7 @@ public class Form extends Control{
         for(int i = 0;i<children.size();i++){
             String id = children.getValue(i).toString();
 
-            Object object = app.getScriptEngine().get(id);
+            Object object = app.getContext().get(id);
 
             if(object!=null && object instanceof Control){
                 Control control = (Control)object;
@@ -119,7 +119,7 @@ public class Form extends Control{
     public Object get(String name){
         for(int i=0;i<children.size();i++){
             String id = children.getValue(i).toString();
-            Object object = app.getScriptEngine().get(id);
+            Object object = app.getContext().get(id);
             if(object!=null && object instanceof Control){
                 Control control = (Control)object;
                 if(control.getName().equals(name))

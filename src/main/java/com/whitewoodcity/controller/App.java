@@ -4,6 +4,8 @@ import com.whitewoodcity.core.node.AnimationTimer;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.util.Res;
+import io.vertx.core.MultiMap;
+import io.vertx.core.json.JsonObject;
 import javafx.beans.property.StringProperty;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -13,11 +15,11 @@ import java.net.URI;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class App {
+public abstract class App {
     protected MediaPlayer mediaPlayer;
     protected AnimationTimer timer;
-    protected MouseEventHandler mouseEventHandler = new MouseEventHandler();
-    protected KeyEventHandler keyEventHandler = new KeyEventHandler();
+    protected MouseEventHandler mouseEventHandler;
+    protected KeyEventHandler keyEventHandler;
 
     public MediaPlayer play(Media media){
         return play(media, Integer.MAX_VALUE);
@@ -55,6 +57,8 @@ public class App {
     public void dispose(){
         if (timer != null) timer.stop();
         if (mediaPlayer !=null) mediaPlayer.dispose();
+        if (mouseEventHandler!=null) disposeMouse();
+        if (keyEventHandler!=null) disposeKey();
     }
 
     public void focus(com.whitewoodcity.core.node.Node node){
@@ -89,8 +93,20 @@ public class App {
         return kv[1];
     }
 
+    public abstract MouseEventHandler getMouse();
+
+    public abstract KeyEventHandler getKey();
+
+    protected abstract void disposeMouse();
+
+    protected abstract void disposeKey();
+
+    public abstract void submit(MultiMap form, String method, String action);
+
+    public abstract void send(JsonObject json, String method, String action);
+
     public static void main(String[] args) throws Exception{
-        App app = new App();
+        App app = new TabContent();
         List<String> list = new ArrayList<>();
         Set<String> download = new HashSet<>();
         list.add("new:test.wav=http://fdsjaflkdjsakljlfds.wav");
