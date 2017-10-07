@@ -212,9 +212,7 @@ public class TabContent extends App implements Initializable {
                                 Res.downLoadFromUrl(url, Res.getDefaultDirectory(),
                                         url.replaceFirst("^(http(s?)://www\\.|http(s?)://|www\\.)", ""), label.textProperty());
                                 double progress = i + 1;
-                                Platform.runLater(() -> {
-                                    progressBar.setProgress(progress / downloadList.size() * 0.5);
-                                });
+                                Platform.runLater(() -> progressBar.setProgress(progress / downloadList.size() * 0.5));
                             }
 
                             Platform.runLater(() -> progressBar.setProgress(0.5));
@@ -230,9 +228,7 @@ public class TabContent extends App implements Initializable {
                                 } else {
                                     preload.put(key, new Image(uri));
                                 }
-                                Platform.runLater(() -> {
-                                    progressBar.setProgress(((double) preload.size()) / resources.size() * 0.5 + 0.5);
-                                });
+                                Platform.runLater(() -> progressBar.setProgress(((double) preload.size()) / resources.size() * 0.5 + 0.5));
                             }
 
                             return null;
@@ -307,7 +303,7 @@ public class TabContent extends App implements Initializable {
         container.requestFocus();
     }
 
-    public void removeParent() {
+    private void removeParent() {
         super.dispose();
         preload.clear();
         if (loadingTask != null) loadingTask.cancel();
@@ -513,6 +509,7 @@ public class TabContent extends App implements Initializable {
         if (keyEventHandler != null) {
             container.removeEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
             container.removeEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
+            keyEventHandler = null;
         }
     }
 }
