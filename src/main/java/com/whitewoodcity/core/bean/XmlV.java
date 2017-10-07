@@ -1,5 +1,8 @@
 package com.whitewoodcity.core.bean;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.whitewoodcity.controller.TabContent;
 import com.whitewoodcity.core.node.canvas.Canvas;
 import com.whitewoodcity.core.node.Node;
@@ -10,10 +13,9 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@JacksonXmlRootElement(localName = "xmlv")
 public class XmlV {
 
     private Preload preload;
@@ -21,6 +23,9 @@ public class XmlV {
     private Script script;
     private CSS css;
     private JsonFX jsonfx;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "class")
+    private Class[] classes;
 
     public com.whitewoodcity.core.bean.Json getJson() {
         return json;
@@ -64,6 +69,14 @@ public class XmlV {
 
     public void setPreload(Preload preload) {
         this.preload = preload;
+    }
+
+    public Class[] getClasses() {
+        return classes;
+    }
+
+    public void setClasses(Class[] classes) {
+        this.classes = classes;
     }
 
     public List<String> generateResources(){

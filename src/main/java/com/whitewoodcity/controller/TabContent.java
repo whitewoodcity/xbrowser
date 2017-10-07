@@ -189,6 +189,8 @@ public class TabContent extends App implements Initializable {
 
                     XmlV xmlV = new XmlMapper().readValue(result, XmlV.class);
 
+//                    System.out.println(xmlV.getClasses().length);
+
                     if (!xmlV.isCssEmpty()) {
                         File cssFile = Res.getTempFile(directory, "css");
                         BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
