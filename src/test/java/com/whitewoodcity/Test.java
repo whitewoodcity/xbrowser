@@ -5,8 +5,12 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.VXml;
 import com.whitewoodcity.core.bean.XmlV;
+import com.whitewoodcity.core.parse.LayoutInflater;
 import com.whitewoodcity.core.parse.PageParser;
+import javafx.scene.layout.StackPane;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,10 +48,13 @@ public class Test {
             "    </css>\n" +
             "</vxml>";
 
-    public static void main(String[] args) {
-        PageParser pageParser=new PageParser();
-        VXml script=pageParser.paresReader(new StringReader(vxml),VXml.class);
-        System.out.println(script.getfXml().getFxml());
+    public static final String layout="<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+            "<Button/>";
+
+    public static void main(String[] args) throws IOException, XmlPullParserException {
+//        PageParser pageParser=new PageParser();
+//        VXml script=pageParser.paresReader(new StringReader(vxml),VXml.class);
+//        System.out.println(script.getfXml().getFxml());
 //        System.out.println(script.getCsses().get(0).getCss());
 //        ObjectMapper xmlMapper = new XmlMapper();
 //        try {

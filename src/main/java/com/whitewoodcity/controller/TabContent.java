@@ -3,6 +3,7 @@ package com.whitewoodcity.controller;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
+import com.whitewoodcity.core.parse.LayoutInflater;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
@@ -32,6 +33,7 @@ import javafx.scene.media.Media;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
@@ -123,6 +125,16 @@ public class TabContent extends App implements Initializable {
 
     @FXML
     private void loadUrl(Event event) {
+        try {
+            LayoutInflater.with().inflate(container);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
+        if(true){
+            return;
+        }
         String url = urlInput.getText();
         if (url.startsWith("file:")) {
             try {
