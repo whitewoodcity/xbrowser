@@ -152,6 +152,7 @@ public class Res {
 
             try(InputStream inputStream = conn.getInputStream();
                 FileOutputStream fileOutputStream = new FileOutputStream(file)){
+
                 int c;
                 while ((c = inputStream.read()) != -1) {
                     fileOutputStream.write(c);

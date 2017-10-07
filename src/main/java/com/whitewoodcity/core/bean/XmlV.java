@@ -206,9 +206,14 @@ public class XmlV {
                         jsonObject.getJsonObject("data").fieldNames().size()>0){
                     String key = (String) jsonObject.getJsonObject("data").fieldNames().toArray()[0];
                     if(jsonObject.getJsonObject("data").getValue(key) instanceof JsonArray &&
-                            jsonObject.getJsonObject("data").getJsonArray(key).size()>0 &&
-                            !(jsonObject.getJsonObject("data").getJsonArray(key).getValue(0) instanceof Number)){
-                        yAxisType = AxisType.CATEGORY;
+                            jsonObject.getJsonObject("data").getJsonArray(key).size()>0){
+                        if(!(jsonObject.getJsonObject("data").getJsonArray(key).getValue(0) instanceof Number)
+                                && !(jsonObject.getJsonObject("data").getJsonArray(key).getValue(0) instanceof JsonObject)){
+                            yAxisType = AxisType.CATEGORY;
+                        }else if((jsonObject.getJsonObject("data").getJsonArray(key).getValue(0) instanceof JsonObject &&
+                                !(jsonObject.getJsonObject("data").getJsonArray(key).getJsonObject(0).getValue("y") instanceof Number))){
+                            yAxisType = AxisType.CATEGORY;
+                        }
                     }
                 }
                 XYChart xyChart = new XYChart(type, xAxisType, yAxisType);
