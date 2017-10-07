@@ -2,6 +2,7 @@ package com.whitewoodcity.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
+import com.whitewoodcity.core.bean.Class;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
@@ -37,6 +38,7 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -178,8 +180,6 @@ public class TabContent extends App implements Initializable {
 
                     XmlV xmlV = new XmlMapper().readValue(result, XmlV.class);
 
-//                    System.out.println(xmlV.getClasses().length);
-
                     if (!xmlV.isCssEmpty()) {
                         File cssFile = Res.getTempFile(directory, "css");
                         BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
@@ -249,6 +249,17 @@ public class TabContent extends App implements Initializable {
                         try {
                             parent = xmlV.generateNode(this).getNode();
 
+                            if(xmlV.getClasses() != null && xmlV.getClasses().length>0){
+                                for(Class clazz:xmlV.getClasses()){
+                                    URL url = new URL(clazz.getUrl());
+                                    URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
+                                    java.lang.Class<?> targetClass = urlClassLoader.loadClass(clazz.getName());
+                                    Object object = targetClass.getDeclaredConstructor().newInstance();
+                                    Object returnValue = targetClass.getDeclaredMethod(clazz.getFunction(), null).invoke(object);
+                                    System.out.println(returnValue);
+                                }
+                            }
+
                             if (scriptEngine != null) {
 
                                 scriptEngine.put("app", this);
@@ -267,7 +278,7 @@ public class TabContent extends App implements Initializable {
                     Thread thread = new Thread(loadingTask);
                     thread.setDaemon(true);
                     thread.start();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     handleExceptionMessage(e, result);
                     return;
                 }
