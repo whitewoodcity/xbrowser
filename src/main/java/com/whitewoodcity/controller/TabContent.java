@@ -2,6 +2,7 @@ package com.whitewoodcity.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
+import com.whitewoodcity.core.bean.CSS;
 import com.whitewoodcity.core.bean.Class;
 import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.XmlV;
@@ -182,15 +183,17 @@ public class TabContent extends App implements Initializable {
 
                     XmlV xmlV = new XmlMapper().readValue(result, XmlV.class);
 
-                    if (xmlV.getCss()!=null) {
-                        File cssFile = Res.getTempFile(directory, "css");
-                        BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
-                        fos.write(Res.getUrlContents(xmlV.getCss().getHref()));
-                        fos.write(xmlV.getCss().getCss());
-                        fos.flush();
-                        fos.close();
-                        container.getStylesheets().clear();
-                        container.getStylesheets().add(cssFile.toURI().toString());
+                    if(xmlV.getCsses()!=null&&xmlV.getCsses().length>0){
+                        for(CSS css:xmlV.getCsses()){
+                            File cssFile = Res.getTempFile(directory, "css");
+                            BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
+                            fos.write(Res.getUrlContents(css.getHref()));
+                            fos.write(css.getCss());
+                            fos.flush();
+                            fos.close();
+                            container.getStylesheets().clear();
+                            container.getStylesheets().add(cssFile.toURI().toString());
+                        }
                     }
 
                     Map<String, String> resources = super.parsePreloadString(xmlV.generateResources());
