@@ -3,6 +3,8 @@ package com.whitewoodcity.controller;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.bean.XmlV;
+import com.whitewoodcity.core.node.input.KeyEventHandler;
+import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
@@ -10,8 +12,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -26,7 +26,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.shape.Rectangle;
@@ -34,18 +33,15 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 import javax.swing.filechooser.FileSystemView;
 import java.io.*;
-import java.lang.reflect.Executable;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.UUID;
 
 public class TabContent extends App implements Initializable {
 
@@ -95,13 +91,6 @@ public class TabContent extends App implements Initializable {
         container.setClip(containerClip);
 
         container.setOnDragOver(event -> event.acceptTransferModes(TransferMode.ANY));
-
-        container.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEventHandler);
-        container.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEventHandler);
-        container.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEventHandler);
-        container.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
-        container.addEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
-        container.setFocusTraversable(true);
 
         try {
             directory = Res.getTempDirectory(UUID.randomUUID() + "");
@@ -268,8 +257,6 @@ public class TabContent extends App implements Initializable {
 
                                 scriptEngine.put("app", this);
                                 scriptEngine.put("preload", preload);
-                                scriptEngine.put("mouse", mouseEventHandler);
-                                scriptEngine.put("key", keyEventHandler);
 
                                 scriptEngine.eval(xmlV.getScript().getScript());
                             }
@@ -483,5 +470,49 @@ public class TabContent extends App implements Initializable {
 
     public Map<String, Object> getPreload() {
         return preload;
+    }
+
+    @Override
+    public MouseEventHandler getMouse() {
+
+        if (mouseEventHandler == null) {
+            mouseEventHandler = new MouseEventHandler();
+            container.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEventHandler);
+            container.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEventHandler);
+            container.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEventHandler);
+        }
+
+        return mouseEventHandler;
+    }
+
+    @Override
+    public KeyEventHandler getKey() {
+
+        if (keyEventHandler == null) {
+            keyEventHandler = new KeyEventHandler();
+            container.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+            container.addEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
+            container.setFocusTraversable(true);
+        }
+
+        return keyEventHandler;
+    }
+
+    @Override
+    protected void disposeMouse() {
+        if (mouseEventHandler != null) {
+            container.removeEventHandler(MouseEvent.MOUSE_PRESSED, mouseEventHandler);
+            container.removeEventHandler(MouseEvent.MOUSE_RELEASED, mouseEventHandler);
+            container.removeEventHandler(MouseEvent.MOUSE_MOVED, mouseEventHandler);
+            mouseEventHandler = null;
+        }
+    }
+
+    @Override
+    protected void disposeKey() {
+        if (keyEventHandler != null) {
+            container.removeEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+            container.removeEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
+        }
     }
 }
