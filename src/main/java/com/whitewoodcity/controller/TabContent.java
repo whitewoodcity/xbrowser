@@ -74,6 +74,7 @@ public class TabContent extends App implements Initializable {
 
     private File directory;
     private Map<String, Object> preload = new HashMap<>();
+    private Map<String, com.whitewoodcity.core.node.Node> context = new HashMap<>();
     private WebClient client;
     private ScriptEngine scriptEngine;
     private Node parent;
@@ -238,15 +239,17 @@ public class TabContent extends App implements Initializable {
 
                     loadingTask.setOnSucceeded(value -> {
 
-                        if (xmlV.getScripts() != null && xmlV.getScripts().length > 0) {
-                            String script = xmlV.getScripts()[0].getType();
-                            script = script == null ? "javascript" : script;
-
-                            scriptEngine = Main.scriptEngineManager.getEngineByName(script);
-//                        scriptEngine= ScriptFactory.loadJRubyScript();
-                        }
+//                        if (xmlV.getScripts() != null && xmlV.getScripts().length > 0) {
+//                            String script = xmlV.getScripts()[0].getType();
+//                            script = script == null ? "javascript" : script;
+//
+//                            scriptEngine = Main.scriptEngineManager.getEngineByName(script);
+////                        scriptEngine= ScriptFactory.loadJRubyScript();
+//                        }
 
                         try {
+                            context.clear();
+
                             parent = xmlV.generateNode(this).getNode();
 
                             if(xmlV.getClasses() != null && xmlV.getClasses().length>0){
@@ -262,6 +265,14 @@ public class TabContent extends App implements Initializable {
 
                             if (xmlV.getScripts() != null && xmlV.getScripts().length > 0){
                                 for(Script script:xmlV.getScripts()){
+                                    String scriptType = script.getType();
+                                    scriptType = scriptType == null ? "javascript" : scriptType;
+                                    scriptEngine = Main.scriptEngineManager.getEngineByName(scriptType);
+
+                                    for(String id:context.keySet()){
+                                        scriptEngine.put(id, context.get(id));
+                                    }
+
                                     scriptEngine.put("app", this);
                                     scriptEngine.put("preload", preload);
 
@@ -383,9 +394,13 @@ public class TabContent extends App implements Initializable {
         }
     }
 
-    public ScriptEngine getScriptEngine() {
-        return scriptEngine;
+    public Map<String, com.whitewoodcity.core.node.Node> getContext() {
+        return context;
     }
+
+    //    public ScriptEngine getScriptEngine() {
+//        return scriptEngine;
+//    }
 
     public void send(JsonObject json, String method, String action) {
 

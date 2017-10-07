@@ -14,6 +14,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @JacksonXmlRootElement(localName = "xmlv")
 public class XmlV {
@@ -260,9 +261,9 @@ public class XmlV {
                 break;
         }
 
-        if(jsonObject.getString("id")!=null&&app.getScriptEngine()!=null){
+        if(jsonObject.getString("id")!=null){
             node.setId(jsonObject.getString("id"));
-            app.getScriptEngine().put(jsonObject.getString("id"), node);
+            app.getContext().put(jsonObject.getString("id"), node);
         }
 
         return node;
