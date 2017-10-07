@@ -21,7 +21,9 @@ public class XmlV {
 
     private Preload preload;
     private Json json;
-    private CSS css;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "css")
+    private CSS[] csses;
     private JsonFX jsonfx;
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "class")
@@ -46,12 +48,12 @@ public class XmlV {
         this.scripts = scripts;
     }
 
-    public CSS getCss() {
-        return css;
+    public CSS[] getCsses() {
+        return csses;
     }
 
-    public void setCss(CSS css) {
-        this.css = css;
+    public void setCsses(CSS[] csses) {
+        this.csses = csses;
     }
 
     public JsonFX getJsonfx() {
