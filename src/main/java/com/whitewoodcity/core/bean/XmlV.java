@@ -14,10 +14,12 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @JacksonXmlRootElement(localName = "xmlv")
 public class XmlV {
+
+    @JacksonXmlProperty(isAttribute = true)
+    private String title;
 
     private Preload preload;
     private Json json;
@@ -78,6 +80,14 @@ public class XmlV {
 
     public void setClasses(Class[] classes) {
         this.classes = classes;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public List<String> generateResources(){

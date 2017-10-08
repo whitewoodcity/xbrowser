@@ -194,6 +194,8 @@ public class TabContent extends App implements Initializable {
 
                     XmlV xmlV = new XmlMapper().readValue(result, XmlV.class);
 
+                    tab.setText(xmlV.getTitle());
+
                     if (xmlV.getCsses() != null && xmlV.getCsses().length > 0) {
                         for (CSS css : xmlV.getCsses()) {
                             processCss(css);
