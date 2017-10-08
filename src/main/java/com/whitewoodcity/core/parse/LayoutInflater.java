@@ -1,14 +1,8 @@
 package com.whitewoodcity.core.parse;
 
 import com.whitewoodcity.core.exception.InflateException;
-import com.whitewoodcity.core.node.conrol.Button;
-import com.whitewoodcity.core.view.View;
-import javafx.collections.ObservableList;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
+import com.whitewoodcity.core.node.Node;
+import com.whitewoodcity.core.node.layout.ViewGroup;
 import javafx.scene.layout.StackPane;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -17,10 +11,6 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 
 public class LayoutInflater {
 
@@ -28,6 +18,12 @@ public class LayoutInflater {
 
     static final Class<?>[] mConstructorSignature = new Class[] {};
     final Object[] mConstructorArgs = new Object[0];
+    private static final String[] sClassPrefixList = {
+            "com.whitewoodcity.core.node.conrol.",
+            "com.whitewoodcity.core.node.canvas.",
+            "com.whitewoodcity.core.node.chart.",
+            "com.whitewoodcity.core.node.layout."
+    };
 
     XmlPullParser parser;
 
@@ -46,8 +42,6 @@ public class LayoutInflater {
     }
 
     public Node inflate(StackPane root) throws IOException, XmlPullParserException {
-
-        Node result=root;
         int type;
         while ((type=parser.next())!=XmlPullParser.START_TAG&&
                 type!=XmlPullParser.END_DOCUMENT);
@@ -57,28 +51,54 @@ public class LayoutInflater {
         String name=parser.getName();
         //创建父元素
         Node temp=createNodeFromTag(name);
-        //创建父元素中的子元素
-        inflateChildren(parser,temp);
-        root.getChildren().add(temp);
-        return result;
+        if(temp!=null){
+            //创建父元素中的子元素
+            inflateChildren(parser,temp);
+            root.getChildren().add(temp.getNode());
+        }
+        return temp;
     }
 
     private Node createNodeFromTag(String tagName) {
-        Class<? extends com.whitewoodcity.core.node.Node> clazz=null;
-        String prefix="com.whitewoodcity.core.node.conrol.";
-        try {
-//            System.out.println(prefix+tagName);
-            clazz=getClass().getClassLoader().loadClass(prefix+tagName).asSubclass(com.whitewoodcity.core.node.Node.class);
-            com.whitewoodcity.core.node.Node view=clazz.newInstance();
-            System.out.println(view);
-            return view.getNode();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
-            throw  new InflateException("Error inflating class " + tagName,e);
+        Node node = null;
+        if(tagName.contains(".")){
+            try {
+                node=createNode(tagName,null);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }else {
+            for (String prefix:sClassPrefixList){
+                try {
+                    node=createNode(tagName,prefix);
+                    if(node!=null){
+                        return node;
+                    }
+                } catch (ClassNotFoundException e) {
+
+                }
+            }
         }
+        return node;
     }
 
-     void inflateChildren(XmlPullParser parser, Node node) throws IOException, XmlPullParserException {
+    private Node createNode(String tagName,String prefix) throws ClassNotFoundException {
+        Class<? extends com.whitewoodcity.core.node.Node> clazz=null;
+        try {
+            clazz=getClass().getClassLoader().loadClass(prefix != null ? (prefix + tagName) : tagName).asSubclass(com.whitewoodcity.core.node.Node.class);
+            com.whitewoodcity.core.node.Node view=clazz.newInstance();
+            System.out.println(view);
+            return view;
+        } catch (IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return null;
+    }
+
+     private void inflateChildren(XmlPullParser parser, Node node) throws IOException, XmlPullParserException {
         final int depth=parser.getDepth();
         int type;
         while (((type = parser.next()) != XmlPullParser.END_TAG ||
@@ -87,21 +107,31 @@ public class LayoutInflater {
                 continue;
             }
             String tagName=parser.getName();
+            //创建当前标签Node
             Node view=createNodeFromTag(tagName);
-            Parent parent= (Parent) node;
-            inflateChildren(parser,view);
-            try {
-                Method invoker=parent.getClass().getDeclaredMethod("getChildren");
-                ObservableList<Node> childrens= (ObservableList<Node>) invoker.invoke(parent);
-                childrens.add(view);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+            if(view!=null&&view instanceof ViewGroup){
+                ViewGroup viewGroup= (ViewGroup) node;
+                //查找当前标签其内是否还有其他标签如果没有就直接返回
+                inflateChildren(parser,view);
+                viewGroup.addNode(view);
             }
         }
      }
 
     public static final String layout="<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-            "<Button/>";
+            "<Fragmlayout\n" +
+            "    id=\"fl\"\n" +
+            "    width=\"100\"\n" +
+            "    height=\"100\"\n" +
+            "    background=\"#FF0000\">\n" +
+            "\n" +
+            "    <Button/>\n" +
+            "    <LinearLayout>\n" +
+            "        <Text/>\n" +
+            "    </LinearLayout>\n" +
+            "    <Lable/>\n" +
+            "    <ImageView/>\n" +
+            "</Fragmlayout>";
 
 
 }
