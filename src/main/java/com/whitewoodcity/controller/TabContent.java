@@ -35,7 +35,6 @@ import javafx.scene.media.Media;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-import org.xmlpull.v1.XmlPullParserException;
 
 import javax.script.ScriptEngine;
 import javax.swing.filechooser.FileSystemView;
@@ -119,16 +118,6 @@ public class TabContent extends App implements Initializable {
 
     @FXML
     private void loadUrl(Event event) {
-        try {
-            LayoutInflater.with().inflate(container);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        }
-        if(true){
-            return;
-        }
         String url = urlInput.getText();
         if (url.startsWith("file:")) {
             try {
@@ -197,14 +186,7 @@ public class TabContent extends App implements Initializable {
 
                     if(xmlV.getCsses()!=null&&xmlV.getCsses().length>0){
                         for(CSS css:xmlV.getCsses()){
-                            File cssFile = Res.getTempFile(directory, "css");
-                            BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
-                            fos.write(Res.getUrlContents(css.getHref()));
-                            fos.write(css.getCss());
-                            fos.flush();
-                            fos.close();
-                            container.getStylesheets().clear();
-                            container.getStylesheets().add(cssFile.toURI().toString());
+                            processCss(css);
                         }
                     }
 
@@ -262,37 +244,13 @@ public class TabContent extends App implements Initializable {
 
                             if(xmlV.getClasses() != null && xmlV.getClasses().length>0){
                                 for(Class clazz:xmlV.getClasses()){
-                                    URL url = new URL(clazz.getUrl());
-                                    URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
-                                    java.lang.Class<?> targetClass = urlClassLoader.loadClass(clazz.getName());
-                                    Object object = targetClass.getDeclaredConstructor().newInstance();
-
-                                    targetClass.getDeclaredMethod("setApp", Object.class).invoke(object, this);
-                                    targetClass.getDeclaredMethod("setContext", Map.class).invoke(object, context);
-                                    targetClass.getDeclaredMethod("setPreload", Map.class).invoke(object, preload);
-
-                                    targetClass.getDeclaredMethod(clazz.getFunction(), null).invoke(object);
+                                    processClass(clazz);
                                 }
                             }
 
                             if (xmlV.getScripts() != null && xmlV.getScripts().length > 0){
                                 for(Script script:xmlV.getScripts()){
-                                    String scriptType = script.getType();
-                                    scriptType = scriptType == null ? "javascript" : scriptType;
-                                    scriptEngine = Main.scriptEngineManager.getEngineByName(scriptType);
-
-                                    scriptEngine.put("app", this);
-                                    scriptEngine.put("preload", preload);
-                                    scriptEngine.put("context", context);
-
-                                    for(String id:preload.keySet()){
-                                        scriptEngine.put(id, preload.get(id));
-                                    }
-                                    for(String id:context.keySet()){
-                                        scriptEngine.put(id, context.get(id));
-                                    }
-                                    scriptEngine.eval(Res.getUrlContents(script.getHref()));
-                                    scriptEngine.eval(script.getScript());
+                                    processScript(script);
                                 }
                             }
 
@@ -555,5 +513,109 @@ public class TabContent extends App implements Initializable {
             container.removeEventHandler(KeyEvent.KEY_RELEASED, keyEventHandler);
             keyEventHandler = null;
         }
+    }
+
+    private void processCss(CSS css){
+        if(css.getHref()!=null&&!css.getHref().trim().equals("")){
+            client.getAbs(css.getHref())
+                    .send(ar ->{
+                        if(ar.succeeded()){
+                            Platform.runLater(()->{
+                                try {
+                                    processCss(ar.result().bodyAsString());
+                                }catch (Throwable throwable){
+                                    handleExceptionMessage(throwable);
+                                }
+                            });
+                        }else{
+                            handleExceptionMessage(ar.cause());
+                        }
+                    });
+        }
+
+        try {
+            processCss(css.getCss());
+        }catch (Throwable throwable){
+            handleExceptionMessage(throwable);
+        }
+    }
+
+    private void processCss(String css) throws Exception{
+        File cssFile = Res.getTempFile(directory, "css");
+        BufferedWriter fos = new BufferedWriter(new FileWriter(cssFile));
+        fos.write(css);
+        fos.flush();
+        fos.close();
+        container.getStylesheets().clear();
+        container.getStylesheets().add(cssFile.toURI().toString());
+    }
+
+    private void processClass(Class clazz) throws Exception{
+        Main.vertx.executeBlocking(future ->{
+            try {
+                URL url = new URL(clazz.getUrl());
+                URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
+                java.lang.Class<?> targetClass = urlClassLoader.loadClass(clazz.getName());
+                Object object = targetClass.getDeclaredConstructor().newInstance();
+
+                targetClass.getDeclaredMethod("setApp", Object.class).invoke(object, this);
+                targetClass.getDeclaredMethod("setContext", Map.class).invoke(object, context);
+                targetClass.getDeclaredMethod("setPreload", Map.class).invoke(object, preload);
+
+                Platform.runLater(()->{
+                    try {
+                        targetClass.getDeclaredMethod(clazz.getFunction(), null).invoke(object);
+                    }catch (Throwable throwable){
+                        handleExceptionMessage(throwable);
+                    }
+                });
+
+                future.complete(object);
+            }catch (Throwable e){
+                future.fail(e);
+            }
+        }, res ->{
+            if(res.failed()) handleExceptionMessage(res.cause());
+        });
+    }
+
+    private void processScript(Script script){
+        String scriptType = script.getType();
+        scriptType = scriptType == null ? "javascript" : scriptType;
+        scriptEngine = Main.scriptEngineManager.getEngineByName(scriptType);
+
+        scriptEngine.put("app", this);
+        scriptEngine.put("preload", preload);
+        scriptEngine.put("context", context);
+
+        for(String id:preload.keySet()){
+            scriptEngine.put(id, preload.get(id));
+        }
+        for(String id:context.keySet()){
+            scriptEngine.put(id, context.get(id));
+        }
+
+        if(script.getHref()!=null&&!script.getHref().trim().equals("")){
+            client.getAbs(script.getHref()).send(ar->{
+                if(ar.succeeded()){
+                    Platform.runLater(()->{
+                        try {
+                            scriptEngine.eval(ar.result().bodyAsString());
+                        }catch (Throwable throwable){
+                            handleExceptionMessage(throwable);
+                        }
+                    });
+                }else{
+                    handleExceptionMessage(ar.cause());
+                }
+            });
+        }
+
+        try {
+            scriptEngine.eval(script.getScript());
+        }catch (Throwable throwable){
+            handleExceptionMessage(throwable);
+        }
+
     }
 }
