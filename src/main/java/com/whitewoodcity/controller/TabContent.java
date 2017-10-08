@@ -317,7 +317,7 @@ public class TabContent extends App implements Initializable {
         if (loadingTask != null) loadingTask.cancel();
         scriptEngine = null;
         container.getChildren().clear();
-        exceptionBox.setExceptionMessage(null);
+        exceptionBox.clearExceptionMessage();
     }
 
     public HBox getHeader() {

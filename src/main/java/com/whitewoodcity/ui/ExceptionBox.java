@@ -36,7 +36,6 @@ public class ExceptionBox extends Stage{
     }
 
     public void clearExceptionMessage(){
-        exceptionButton.setTextFill(Color.BLACK);
-        textArea.setText("");
+        this.setExceptionMessage(null);
     }
 }
