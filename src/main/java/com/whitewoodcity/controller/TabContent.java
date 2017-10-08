@@ -9,6 +9,7 @@ import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.core.parse.LayoutInflater;
+import com.whitewoodcity.ui.ExceptionBox;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
@@ -70,6 +71,9 @@ public class TabContent extends App implements Initializable {
     private Button fileSaver;
 
     @FXML
+    private Button exceptionButton;
+
+    @FXML
     private StackPane container;
     private Rectangle containerClip = new Rectangle();
 
@@ -83,14 +87,16 @@ public class TabContent extends App implements Initializable {
     private Node parent;
     private WebView webView;
     private Task loadingTask;
+    private ExceptionBox exceptionBox;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         client = WebClient.create(Main.vertx);
         header.setSpacing(10);
         header.setPadding(new Insets(10));
-        urlInput.prefWidthProperty().bind(header.widthProperty().subtract(50)
-                .subtract(fileSelector.widthProperty()).subtract(urlLocator.widthProperty()).subtract(fileSaver.widthProperty()));
+        urlInput.prefWidthProperty().bind(header.widthProperty().subtract(60)
+                .subtract(fileSelector.widthProperty()).subtract(urlLocator.widthProperty())
+                .subtract(fileSaver.widthProperty()).subtract(exceptionButton.widthProperty()));
         container.layoutYProperty().bind(header.heightProperty());
 
         containerClip.widthProperty().bind(container.widthProperty());
@@ -104,6 +110,9 @@ public class TabContent extends App implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        exceptionBox = new ExceptionBox(exceptionButton);
+        exceptionBox.hide();
     }
 
     public void setTab(Tab tab) {
@@ -308,6 +317,7 @@ public class TabContent extends App implements Initializable {
         if (loadingTask != null) loadingTask.cancel();
         scriptEngine = null;
         container.getChildren().clear();
+        exceptionBox.setExceptionMessage(null);
     }
 
     public HBox getHeader() {
@@ -352,6 +362,12 @@ public class TabContent extends App implements Initializable {
             return;
         }
         loadFile(file);
+    }
+
+    @FXML
+    private void displayExceptionMessage(ActionEvent event){
+        if(exceptionBox.isShowing()) exceptionBox.hide();
+        else exceptionBox.show();
     }
 
     @FXML
@@ -513,27 +529,31 @@ public class TabContent extends App implements Initializable {
     }
 
     private void processCss(CSS css) {
-        if (css.getHref() != null && !css.getHref().trim().equals("")) {
-            client.getAbs(css.getHref()).send(ar -> {
-                if (ar.succeeded()) {
-                    String result = ar.result().bodyAsString();
-                    Platform.runLater(() -> {
-                        try {
-                            processCss(result);
-                        } catch (Throwable throwable) {
-                            handleExceptionMessage(throwable);
-                        }
-                    });
-                } else {
-                    handleExceptionMessage(ar.cause());
-                }
-            });
+        try {
+            if(css.getHref()!=null&&!css.getHref().trim().equals("")) {
+                client.getAbs(css.getHref()).send(ar -> {
+                    if (ar.succeeded()) {
+                        String result = ar.result().bodyAsString();
+                        Platform.runLater(() -> {
+                            try {
+                                processCss(result);
+                            } catch (Throwable throwable) {
+                                handleThrowableMessage(throwable);
+                            }
+                        });
+                    } else {
+                        handleThrowableMessage(ar.cause());
+                    }
+                });
+            }
+        }catch (Throwable throwable){
+            handleThrowableMessage(throwable);
         }
 
         try {
             processCss(css.getCss());
         } catch (Throwable throwable) {
-            handleExceptionMessage(throwable);
+            handleThrowableMessage(throwable);
         }
     }
 
@@ -569,11 +589,11 @@ public class TabContent extends App implements Initializable {
                     try {
                         res.result().getClass().getDeclaredMethod(clazz.getFunction(), null).invoke(res.result());
                     } catch (Throwable throwable) {
-                        handleExceptionMessage(throwable);
+                        handleThrowableMessage(throwable);
                     }
                 });
             } else
-                handleExceptionMessage(res.cause());
+                handleThrowableMessage(res.cause());
         });
     }
 
@@ -593,28 +613,38 @@ public class TabContent extends App implements Initializable {
             scriptEngine.put(id, context.get(id));
         }
 
-        if (script.getHref() != null && !script.getHref().trim().equals("")) {
-            client.getAbs(script.getHref()).send(ar -> {
-                if (ar.succeeded()) {
-                    String result = ar.result().bodyAsString();
-                    Platform.runLater(() -> {
-                        try {
-                            scriptEngine.eval(result);
-                        } catch (Throwable throwable) {
-                            handleExceptionMessage(throwable);
-                        }
-                    });
-                } else {
-                    handleExceptionMessage(ar.cause());
-                }
-            });
+        try {
+            if(script.getHref()!=null&&!script.getHref().trim().equals("")) {
+                client.getAbs(script.getHref()).send(ar -> {
+                    if (ar.succeeded()) {
+                        String result = ar.result().bodyAsString();
+                        Platform.runLater(() -> {
+                            try {
+                                scriptEngine.eval(result);
+                            } catch (Throwable throwable) {
+                                handleThrowableMessage(throwable);
+                            }
+                        });
+                    } else {
+                        handleThrowableMessage(ar.cause());
+                    }
+                });
+            }
+        }catch (Throwable throwable){
+            handleThrowableMessage(throwable);
         }
 
         try {
             scriptEngine.eval(script.getScript());
         } catch (Throwable throwable) {
-            handleExceptionMessage(throwable);
+            handleThrowableMessage(throwable);
         }
+    }
 
+    private void handleThrowableMessage(Throwable e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        Platform.runLater(()->exceptionBox.setExceptionMessage(sw.toString()));
     }
 }
