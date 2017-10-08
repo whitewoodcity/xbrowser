@@ -1,7 +1,9 @@
 package com.whitewoodcity;
 
 import com.whitewoodcity.ui.PagePane;
+import com.whitewoodcity.util.Res;
 import io.vertx.core.Vertx;
+import io.vertx.core.impl.FileResolver;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -13,6 +15,8 @@ import javafx.stage.Stage;
 
 import javax.script.ScriptEngineManager;
 import java.util.Locale;
+
+import static io.vertx.core.impl.FileResolver.CACHE_DIR_BASE_PROP_NAME;
 
 public class Main extends Application {
 
@@ -66,7 +70,9 @@ public class Main extends Application {
 
 
     public static void main(String[] args) throws Exception{
+
         System.getProperties().setProperty("vertx.disableDnsResolver","true");
+        System.getProperties().setProperty(CACHE_DIR_BASE_PROP_NAME, Res.getDefaultDirectory().getPath());
         vertx = Vertx.vertx();
         scriptEngineManager = new ScriptEngineManager();
 
