@@ -371,10 +371,6 @@ public class TabContent extends App implements Initializable {
         return context;
     }
 
-    //    public ScriptEngine getScriptEngine() {
-//        return scriptEngine;
-//    }
-
     public void send(JsonObject json, String method, String action) {
 
         HttpMethod m = HttpMethod.POST;
