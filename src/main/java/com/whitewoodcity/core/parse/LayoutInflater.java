@@ -20,9 +20,9 @@ public class LayoutInflater {
     final Object[] mConstructorArgs = new Object[0];
     private static final String[] sClassPrefixList = {
             "com.whitewoodcity.core.node.conrol.",
+            "com.whitewoodcity.core.node.layout.",
             "com.whitewoodcity.core.node.canvas.",
-            "com.whitewoodcity.core.node.chart.",
-            "com.whitewoodcity.core.node.layout."
+            "com.whitewoodcity.core.node.chart."
     };
 
     XmlPullParser parser;
@@ -83,16 +83,15 @@ public class LayoutInflater {
     }
 
     private Node createNode(String tagName,String prefix) throws ClassNotFoundException {
-        Class<? extends com.whitewoodcity.core.node.Node> clazz=null;
+        Class<? extends Node> clazz=null;
         try {
-            clazz=getClass().getClassLoader().loadClass(prefix != null ? (prefix + tagName) : tagName).asSubclass(com.whitewoodcity.core.node.Node.class);
-            com.whitewoodcity.core.node.Node view=clazz.newInstance();
+            clazz=Node.class.getClassLoader().loadClass(prefix != null ? (prefix + tagName) : tagName).asSubclass(Node.class);
+            Node view=clazz.newInstance();
             System.out.println(view);
             return view;
         } catch (IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             throw e;
         }
         return null;
@@ -109,7 +108,7 @@ public class LayoutInflater {
             String tagName=parser.getName();
             //创建当前标签Node
             Node view=createNodeFromTag(tagName);
-            if(view!=null&&view instanceof ViewGroup){
+            if(view!=null&&node instanceof ViewGroup){
                 ViewGroup viewGroup= (ViewGroup) node;
                 //查找当前标签其内是否还有其他标签如果没有就直接返回
                 inflateChildren(parser,view);
@@ -119,19 +118,14 @@ public class LayoutInflater {
      }
 
     public static final String layout="<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-            "<Fragmlayout\n" +
+            "<FrameLayout" +
             "    id=\"fl\"\n" +
             "    width=\"100\"\n" +
             "    height=\"100\"\n" +
             "    background=\"#FF0000\">\n" +
             "\n" +
             "    <Button/>\n" +
-            "    <LinearLayout>\n" +
-            "        <Text/>\n" +
-            "    </LinearLayout>\n" +
-            "    <Lable/>\n" +
-            "    <ImageView/>\n" +
-            "</Fragmlayout>";
+            "</FrameLayout>";
 
 
 }

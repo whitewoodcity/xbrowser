@@ -7,6 +7,11 @@ public abstract class ViewGroup implements Node{
 
     Pane pane;
 
+    public ViewGroup() {
+        pane=getPane();
+    }
+
+    public abstract Pane getPane();
 
     public void addNode(Node node){
         if(pane!=null){
