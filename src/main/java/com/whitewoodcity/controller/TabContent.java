@@ -27,6 +27,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -36,6 +37,7 @@ import javafx.scene.media.Media;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import org.xmlpull.v1.XmlPullParserException;
 
 import javax.script.ScriptEngine;
@@ -113,6 +115,8 @@ public class TabContent extends App implements Initializable {
 
         exceptionBox = new ExceptionBox(exceptionButton);
         exceptionBox.hide();
+
+//        processParent(ParentType.TITLE, null,null);
     }
 
     public void setTab(Tab tab) {
@@ -188,6 +192,18 @@ public class TabContent extends App implements Initializable {
     private void processParent(ParentType type, String result, String urlOrMsg) {
         removeParent();
         switch (type) {
+            case TITLE:
+                Image image = new Image("logo/logo.png");
+                ImageView imageView = new ImageView(image);
+                imageView.setPreserveRatio(true);
+                double height = Screen.getPrimary().getBounds().getHeight()/5;
+                if(height*image.getWidth()/image.getHeight()>Screen.getPrimary().getBounds().getWidth()/3){
+                    imageView.setFitWidth(Screen.getPrimary().getBounds().getWidth()/3);
+                }else{
+                    imageView.setFitHeight(height);
+                }
+                parent = imageView;
+                break;
             case GROUP:
                 container.setPadding(new Insets(0));
                 try {
