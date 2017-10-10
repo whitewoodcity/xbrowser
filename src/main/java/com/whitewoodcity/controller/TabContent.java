@@ -20,6 +20,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -116,7 +117,7 @@ public class TabContent extends App implements Initializable {
         exceptionBox = new ExceptionBox(exceptionButton);
         exceptionBox.hide();
 
-//        processParent(ParentType.TITLE, null,null);
+        processParent(ParentType.TITLE, null,null);
     }
 
     public void setTab(Tab tab) {
@@ -336,6 +337,7 @@ public class TabContent extends App implements Initializable {
         scriptEngine = null;
         container.getChildren().clear();
         exceptionBox.clearExceptionMessage();
+        container.getStylesheets().clear();
     }
 
     public HBox getHeader() {
@@ -389,10 +391,10 @@ public class TabContent extends App implements Initializable {
     }
 
     @FXML
-    private void saveFile(ActionEvent event) {
+    public void saveFile(ActionEvent event) {
         String url = urlInput.getText();
         try {
-            if (!url.startsWith("file:")) return;
+            if (url == null||!url.startsWith("file:")) return;
             URI uri = new URI(url);
             File file = new File(uri);
             if (!(parent instanceof TextArea)) return;
@@ -581,7 +583,6 @@ public class TabContent extends App implements Initializable {
         fos.write(css);
         fos.flush();
         fos.close();
-        container.getStylesheets().clear();
         container.getStylesheets().add(cssFile.toURI().toString());
     }
 
@@ -617,7 +618,6 @@ public class TabContent extends App implements Initializable {
 
     private void processScript(Script script) {
         String scriptType = script.getType();
-        scriptType = scriptType == null ? "javascript" : scriptType;
         scriptEngine = Main.scriptEngineManager.getEngineByName(scriptType);
 
         scriptEngine.put("app", this);

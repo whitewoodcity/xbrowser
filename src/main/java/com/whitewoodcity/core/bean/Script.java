@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 public class Script {
 
     @JacksonXmlProperty(isAttribute = true)
-    public String type;
+    public String type="Groovy";
 
     @JacksonXmlProperty(isAttribute = true)
     public String link;

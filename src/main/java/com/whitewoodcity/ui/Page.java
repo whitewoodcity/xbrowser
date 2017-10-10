@@ -20,6 +20,7 @@ import java.net.URL;
 public class Page extends Tab{
 
     private Tooltip tooltip;
+    private TabContent controller;
 
     public Page(String title, TabPane tabPane) {
         setText(title);
@@ -40,7 +41,7 @@ public class Page extends Tab{
 //            FXMLLoader fxmlLoader=new FXMLLoader(Res.getFxmlRes("tab_content"));
 //            Pane parent=fxmlLoader.load();
             setContent(parent);
-            TabContent controller=fxmlLoader.getController();
+            controller=fxmlLoader.getController();
             controller.getHeader().prefWidthProperty().bind(tabPane.widthProperty());
             controller.getContainer().prefWidthProperty().bind(tabPane.widthProperty());
             controller.getContainer().prefHeightProperty().bind(tabPane.heightProperty()
@@ -48,9 +49,13 @@ public class Page extends Tab{
                     .subtract(controller.getHeader().heightProperty()));
             this.setOnClosed((event)->controller.close());
             controller.setTab(this);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public TabContent getController() {
+        return controller;
     }
 }
