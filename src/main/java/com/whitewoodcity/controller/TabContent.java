@@ -8,8 +8,6 @@ import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
-import com.whitewoodcity.core.parse.LayoutInflater;
-import com.whitewoodcity.ui.ExceptionBox;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
@@ -20,7 +18,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -39,7 +36,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
-import org.xmlpull.v1.XmlPullParserException;
 
 import javax.script.ScriptEngine;
 import javax.swing.filechooser.FileSystemView;
@@ -85,16 +81,15 @@ public class TabContent extends App implements Initializable {
     private File directory;
     private Map<String, Object> preload = new HashMap<>();
     private Map<String, com.whitewoodcity.core.node.Node> context = new HashMap<>();
-    private WebClient client;
+    private WebClient webClient;
     private ScriptEngine scriptEngine;
     private Node parent;
     private WebView webView;
     private Task loadingTask;
-    private ExceptionBox exceptionBox;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        client = WebClient.create(Main.vertx);
+        webClient = WebClient.create(Main.vertx);
         header.setSpacing(10);
         header.setPadding(new Insets(10));
         urlInput.prefWidthProperty().bind(header.widthProperty().subtract(60)
@@ -114,8 +109,7 @@ public class TabContent extends App implements Initializable {
             e.printStackTrace();
         }
 
-        exceptionBox = new ExceptionBox(exceptionButton);
-        exceptionBox.hide();
+        super.initialize(exceptionButton);
 
         processParent(ParentType.TITLE, null,null);
     }
@@ -155,7 +149,7 @@ public class TabContent extends App implements Initializable {
         }
         String immutableUrl = url;
         try {
-            client.getAbs(url).send(ar -> {
+            webClient.getAbs(url).send(ar -> {
                 if (ar.succeeded()) {
                     handleHttpResponse(immutableUrl, ar.result());
                 } else {
@@ -338,7 +332,6 @@ public class TabContent extends App implements Initializable {
         if (loadingTask != null) loadingTask.cancel();
         scriptEngine = null;
         container.getChildren().clear();
-        exceptionBox.clearExceptionMessage();
         container.getStylesheets().clear();
     }
 
@@ -388,8 +381,7 @@ public class TabContent extends App implements Initializable {
 
     @FXML
     private void displayExceptionMessage(ActionEvent event){
-        if(exceptionBox.isShowing()) exceptionBox.hide();
-        else exceptionBox.show();
+        super.displayOrHideExceptionBox();
     }
 
     @FXML
@@ -437,13 +429,13 @@ public class TabContent extends App implements Initializable {
         }
 
         if (json.isEmpty()) {
-            client.requestAbs(m, action)
+            webClient.requestAbs(m, action)
                     .send(ar -> {
                         if (ar.succeeded()) handleHttpResponse(url, ar.result());
                         else handleExceptionMessage(ar.cause());
                     });
         } else {
-            client.requestAbs(m, action)
+            webClient.requestAbs(m, action)
                     .sendJsonObject(json, ar -> {
                         if (ar.succeeded()) handleHttpResponse(url, ar.result());
                         else handleExceptionMessage(ar.cause());
@@ -477,13 +469,13 @@ public class TabContent extends App implements Initializable {
         }
 
         if (form.isEmpty()) {
-            client.requestAbs(m, action)
+            webClient.requestAbs(m, action)
                     .send(ar -> {
                         if (ar.succeeded()) handleHttpResponse(url, ar.result());
                         else handleExceptionMessage(ar.cause());
                     });
         } else {
-            client.requestAbs(m, action)
+            webClient.requestAbs(m, action)
                     .sendForm(form, ar -> {
                         if (ar.succeeded()) handleHttpResponse(url, ar.result());
                         else handleExceptionMessage(ar.cause());
@@ -493,7 +485,8 @@ public class TabContent extends App implements Initializable {
 
     public void close() {
         removeParent();
-        if (client != null) client.close();
+        if (webClient != null) webClient.close();
+
         try {
             Res.removeTempDirectory(directory);
         } catch (Exception e) {
@@ -553,7 +546,7 @@ public class TabContent extends App implements Initializable {
     private void processCss(CSS css) {
         try {
             if(css.getHref()!=null&&!css.getHref().trim().equals("")) {
-                client.getAbs(css.getHref()).send(ar -> {
+                webClient.getAbs(css.getHref()).send(ar -> {
                     if (ar.succeeded()) {
                         String result = ar.result().bodyAsString();
                         Platform.runLater(() -> {
@@ -635,7 +628,7 @@ public class TabContent extends App implements Initializable {
 
         try {
             if(script.getHref()!=null&&!script.getHref().trim().equals("")) {
-                client.getAbs(script.getHref()).send(ar -> {
+                webClient.getAbs(script.getHref()).send(ar -> {
                     if (ar.succeeded()) {
                         String result = ar.result().bodyAsString();
                         Platform.runLater(() -> {
@@ -661,10 +654,4 @@ public class TabContent extends App implements Initializable {
         }
     }
 
-    private void handleThrowableMessage(Throwable e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        Platform.runLater(()->exceptionBox.setExceptionMessage(sw.toString()));
-    }
 }
