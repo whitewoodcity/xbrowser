@@ -12,7 +12,12 @@ public class PagePane extends TabPane{
             if(event.isShortcutDown()&&event.getCode()== KeyCode.T){
                 this.buildPane();
             }else if(event.isShortcutDown()&&event.getCode()== KeyCode.W){
-                this.getTabs().remove(this.getSelectionModel().getSelectedItem());
+                Tab tab = this.getSelectionModel().getSelectedItem();
+                if(tab!=null){
+                    Page page = (Page)tab;
+                    page.getOnClosed().handle(null);
+                    this.getTabs().remove(this.getSelectionModel().getSelectedItem());
+                }
             }else if(event.isShortcutDown()&&event.getCode()== KeyCode.S){
                 Page page = (Page)this.getSelectionModel().getSelectedItem();
                 page.getController().saveFile(null);
