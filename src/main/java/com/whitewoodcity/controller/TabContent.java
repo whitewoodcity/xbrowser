@@ -134,7 +134,9 @@ public class TabContent extends App implements Initializable {
     @FXML
     private void loadUrl(Event event) {
         String url = urlInput.getText();
-        if (url.startsWith("file:")) {
+        if (url == null){
+            //do nothing
+        }else if (url.startsWith("file:")) {
             try {
                 URI uri = new URI(url);
                 File file = new File(uri);
