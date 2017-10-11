@@ -137,6 +137,9 @@ public abstract class App {
     public void listen(int port, int length){
         if(buffer==null) buffer = Buffer.buffer();
         if(datagramSocket==null) datagramSocket = Main.vertx.createDatagramSocket();
+        final int maxLen;
+        if(length>1000) maxLen = 1000;
+        else maxLen = length;
         datagramSocket.listen(port,"0.0.0.0",asyncResult ->{
             if (asyncResult.succeeded()) {
                 datagramSocket.handler(packet -> {
@@ -144,8 +147,8 @@ public abstract class App {
                     Platform.runLater(() ->{
                         if(buffer!=null){
                             buffer.appendBuffer(packet.data());
-                            if(buffer.length()>length*4){
-                                buffer = buffer.getBuffer(buffer.length()-length*4,buffer.length());
+                            if(buffer.length()>maxLen*4){
+                                buffer = buffer.getBuffer(buffer.length()-maxLen*4,buffer.length());
                             }
                         }
                     });

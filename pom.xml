@@ -10,7 +10,7 @@
 
     <properties>
         <vertx.version>3.5.0.Beta1</vertx.version>
-        <main.class>io.example.Main</main.class>
+        <main.class>com.whitewoodcity.Main</main.class>
     </properties>
 
     <dependencies>
