@@ -596,19 +596,15 @@ public class TabContent extends App implements Initializable {
                 object.getClass().getDeclaredMethod("setContext", Map.class).invoke(object, context);
                 object.getClass().getDeclaredMethod("setPreload", Map.class).invoke(object, preload);
 
-                future.complete(object);
+                Object result = object.getClass().getDeclaredMethod(clazz.getFunction(), null).invoke(object);
+
+                future.complete(result);
             } catch (Throwable e) {
                 future.fail(e);
             }
         }, res -> {
             if (res.succeeded()) {
-                Platform.runLater(() -> {
-                    try {
-                        res.result().getClass().getDeclaredMethod(clazz.getFunction(), null).invoke(res.result());
-                    } catch (Throwable throwable) {
-                        handleThrowableMessage(throwable);
-                    }
-                });
+                handleMessage(res.result());
             } else
                 handleThrowableMessage(res.cause());
         });
@@ -628,17 +624,36 @@ public class TabContent extends App implements Initializable {
         for (String id : context.keySet()) {
             scriptEngine.put(id, context.get(id));
         }
+        Main.vertx.executeBlocking(fut ->{
+            try {
+                fut.complete(scriptEngine.eval(script.getScript()));
+            } catch (Throwable throwable) {
+                fut.fail(throwable);
+            }
+        }, res ->{
+            if(res.succeeded()){
+                handleMessage(res.result());
+            }else {
+                handleThrowableMessage(res.cause());
+            }
+        });
 
         try {
             if(script.getHref()!=null&&!script.getHref().trim().equals("")) {
                 webClient.getAbs(script.getHref()).send(ar -> {
                     if (ar.succeeded()) {
                         String result = ar.result().bodyAsString();
-                        Platform.runLater(() -> {
+                        Main.vertx.executeBlocking(fut ->{
                             try {
-                                scriptEngine.eval(result);
+                                fut.complete(scriptEngine.eval(result));
                             } catch (Throwable throwable) {
-                                handleThrowableMessage(throwable);
+                                fut.fail(throwable);
+                            }
+                        }, res ->{
+                            if(res.succeeded()){
+                                handleMessage(res.result());
+                            }else {
+                                handleThrowableMessage(res.cause());
                             }
                         });
                     } else {
@@ -650,10 +665,6 @@ public class TabContent extends App implements Initializable {
             handleThrowableMessage(throwable);
         }
 
-        try {
-            scriptEngine.eval(script.getScript());
-        } catch (Throwable throwable) {
-            handleThrowableMessage(throwable);
-        }
+
     }
 }

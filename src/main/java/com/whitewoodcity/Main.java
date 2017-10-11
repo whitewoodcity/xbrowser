@@ -3,6 +3,7 @@ package com.whitewoodcity;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -70,13 +71,15 @@ public class Main extends Application {
         vertx.close();
         tabPane.close();
         super.stop();
+        System.exit(0);
     }
 
     public static void main(String[] args) throws Exception{
 
         System.getProperties().setProperty(DISABLE_DNS_RESOLVER_PROP_NAME,"true");
         System.getProperties().setProperty(CACHE_DIR_BASE_PROP_NAME, Res.getDefaultDirectory().getPath());
-        vertx = Vertx.vertx();
+        VertxOptions vertxOptions = new VertxOptions().setMaxWorkerExecuteTime(10000000000L);
+        vertx = Vertx.vertx(vertxOptions);
         scriptEngineManager = new ScriptEngineManager();
         generateNames(Locale.getDefault());
 

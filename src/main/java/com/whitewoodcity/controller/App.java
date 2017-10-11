@@ -217,6 +217,14 @@ public abstract class App {
         Platform.runLater(()->exceptionBox.setExceptionMessage(sw.toString()));
     }
 
+    protected void handleMessage(Object message) {
+        String m;
+        if(message!=null) m = message.toString();
+        else m = null;
+        Platform.runLater(()->exceptionBox.setMessage(m));
+    }
+
+
     protected void displayOrHideExceptionBox(){
         if(exceptionBox.isShowing()) exceptionBox.hide();
         else exceptionBox.show();
