@@ -5,6 +5,7 @@ import com.whitewoodcity.core.node.AnimationTimer;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.ui.ExceptionBox;
+import com.whitewoodcity.ui.Page;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
@@ -223,10 +224,6 @@ public abstract class App {
         else exceptionBox.show();
     }
 
-    public abstract void selectFile(ActionEvent event);
-    public abstract void saveFile(ActionEvent event);
-    public abstract void load();
-
     protected void decorateMenuButton(MenuButton menu){
         menu.textProperty().bind(Main.namesMap.get("menu"));
 
@@ -247,9 +244,18 @@ public abstract class App {
                 pagePane.buildPane();
             }
         });
-        loadItem.setOnAction(this::selectFile);
-        saveItem.setOnAction(this::saveFile);
-        refreshItem.setOnAction(event -> load());
+        loadItem.setOnAction(event ->{
+            Page page = (Page)pagePane.getSelectionModel().getSelectedItem();
+            if(page!=null) page.getController().selectFile(event);
+        });
+        saveItem.setOnAction(event ->{
+            Page page = (Page)pagePane.getSelectionModel().getSelectedItem();
+            if(page!=null) page.getController().saveFile(event);
+        });
+        refreshItem.setOnAction(event ->{
+            Page page = (Page)pagePane.getSelectionModel().getSelectedItem();
+            if(page!=null) page.getController().load();
+        });
         closeItem.setOnAction(event->{
             if(pagePane!=null){
                 Tab page = pagePane.getSelectionModel().getSelectedItem();
