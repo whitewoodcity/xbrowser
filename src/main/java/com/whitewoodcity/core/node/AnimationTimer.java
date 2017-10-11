@@ -1,7 +1,5 @@
 package com.whitewoodcity.core.node;
 
-import javafx.application.Platform;
-
 public class AnimationTimer extends javafx.animation.AnimationTimer{
 
     ActionHandler<Long> action;
@@ -12,8 +10,6 @@ public class AnimationTimer extends javafx.animation.AnimationTimer{
 
     @Override
     public void handle(long now) {
-        Platform.runLater(()->
-            action.handle(now)
-        );
+        action.handle(now);
     }
 }
