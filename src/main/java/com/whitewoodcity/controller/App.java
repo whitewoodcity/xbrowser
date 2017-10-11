@@ -11,7 +11,6 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -19,8 +18,6 @@ import javafx.scene.media.MediaPlayer;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URI;
-import java.nio.file.Paths;
 import java.util.*;
 
 public abstract class App {
@@ -159,7 +156,7 @@ public abstract class App {
         });
     }
 
-    public void listen(int port, boolean accumulated){
+    private void listen(int port, boolean accumulated){
         if(buffer==null) buffer = Buffer.buffer();
         if(datagramSocket==null) datagramSocket = Main.vertx.createDatagramSocket();
         datagramSocket.listen(port,"0.0.0.0",asyncResult ->{
