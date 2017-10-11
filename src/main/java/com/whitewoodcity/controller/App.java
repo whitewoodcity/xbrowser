@@ -2,6 +2,7 @@ package com.whitewoodcity.controller;
 
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.node.AnimationTimer;
+import com.whitewoodcity.core.node.Node;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.ui.ExceptionBox;
@@ -25,7 +26,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
-public abstract class App {
+public abstract class App{
     protected PagePane pagePane;
 
     protected MediaPlayer mediaPlayer;

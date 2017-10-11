@@ -16,6 +16,8 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -664,7 +666,24 @@ public class TabContent extends App implements Initializable {
         }catch (Throwable throwable){
             handleThrowableMessage(throwable);
         }
+    }
 
-
+    public ReadOnlyDoubleProperty widthProperty(){
+        return container.widthProperty();
+    }
+    public ReadOnlyDoubleProperty heightProperty(){
+        return container.heightProperty();
+    }
+    public ReadOnlyDoubleProperty width_property(){
+        return widthProperty();
+    }
+    public ReadOnlyDoubleProperty height_property(){
+        return heightProperty();
+    }
+    public ReadOnlyDoubleProperty widthproperty(){
+        return widthProperty();
+    }
+    public ReadOnlyDoubleProperty heightproperty(){
+        return heightProperty();
     }
 }
