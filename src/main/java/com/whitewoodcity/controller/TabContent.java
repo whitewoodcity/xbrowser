@@ -86,7 +86,9 @@ public class TabContent extends App implements Initializable {
         header.setPadding(new Insets(10));
         urlInput.prefWidthProperty().bind(header.widthProperty().subtract(50)
                 .subtract(menu.widthProperty()).subtract(exceptionButton.widthProperty()));
-
+        urlInput.setOnKeyPressed(event ->{
+            if(event.getCode()==KeyCode.ENTER) load();
+        });
         decorateMenuButton(menu);
 
         container.layoutYProperty().bind(header.heightProperty());
@@ -116,16 +118,13 @@ public class TabContent extends App implements Initializable {
         this.pagePane = pagePane;
     }
 
-    @FXML
-    public void loadEntry(KeyEvent keyEvent) {
-        if (keyEvent.getCode() == KeyCode.ENTER) {
-            loadUrl(keyEvent);
-        }
+    public void load(){
+        load(urlInput.getText());
     }
 
-    public void loadUrl(Event event) {
-        String url = urlInput.getText();
-        if (url == null){
+    public void load(String url) {
+        removeParent();
+        if (url == null || url.equals("")){
             //do nothing
         }else if (url.startsWith("file:")) {
             try {
@@ -173,6 +172,7 @@ public class TabContent extends App implements Initializable {
     }
 
     private void handleExceptionMessage(Throwable e, String message) {
+
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
@@ -184,7 +184,6 @@ public class TabContent extends App implements Initializable {
     }
 
     private void processParent(ParentType type, String result, String urlOrMsg) {
-        removeParent();
         if(tab!=null) tab.textProperty().unbind();
         switch (type) {
             case TITLE:
@@ -356,10 +355,15 @@ public class TabContent extends App implements Initializable {
 
     @FXML
     public void onFileDropped(DragEvent event) {
-        Dragboard dragboard = event.getDragboard();
-        if (dragboard.hasFiles()) {
-            File file = dragboard.getFiles().get(0);
-            loadFile(file);
+        try {
+            Dragboard dragboard = event.getDragboard();
+            if (dragboard.hasFiles()) {
+                File file = dragboard.getFiles().get(0);
+                urlInput.setText(file.toURI().toURL().toExternalForm());
+                load();
+            }
+        }catch (Throwable throwable){
+            handleThrowableMessage(throwable);
         }
     }
 
@@ -367,11 +371,13 @@ public class TabContent extends App implements Initializable {
         FileChooser chooser = new FileChooser();
         FileSystemView fsv = FileSystemView.getFileSystemView();
         chooser.setInitialDirectory(fsv.getHomeDirectory());
-        File file = chooser.showOpenDialog(container.getScene().getWindow());
-        if (file == null) {
-            return;
+        try {
+            File file = chooser.showOpenDialog(container.getScene().getWindow());
+            urlInput.setText(file.toURI().toURL().toExternalForm());
+            load();
+        }catch (Throwable throwable){
+            handleThrowableMessage(throwable);
         }
-        loadFile(file);
     }
 
     @FXML

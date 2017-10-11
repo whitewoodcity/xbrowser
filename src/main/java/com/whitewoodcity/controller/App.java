@@ -84,9 +84,17 @@ public abstract class App {
         if (keyEventHandler!=null) disposeKey();
         exceptionBox.clearExceptionMessage();
         if (datagramSocket !=null){
-            datagramSocket.close(ar -> datagramSocket = null);
+            datagramSocket.close(ar -> {
+                if(ar.succeeded())
+                    datagramSocket = null;
+                else {
+                    handleThrowableMessage(ar.cause());
+                }
+            });
         }
-        if (buffer!=null) buffer = null;
+        if (buffer!=null){
+            buffer = null;
+        }
     }
 
     public void focus(com.whitewoodcity.core.node.Node node){
@@ -135,7 +143,10 @@ public abstract class App {
 
     public void send(int port, String address, String value){
         if(datagramSocket==null) datagramSocket = Main.vertx.createDatagramSocket();
-        datagramSocket.send(value, port, address, ar->{});
+        datagramSocket.send(value, port, address, ar->{
+            if (ar.failed()) {
+                handleThrowableMessage(ar.cause());
+            }});
     }
 
     public void listen(int port){
@@ -143,7 +154,6 @@ public abstract class App {
     }
 
     public void listen(int port, int length){
-        if(buffer==null) buffer = Buffer.buffer();
         if(datagramSocket==null) datagramSocket = Main.vertx.createDatagramSocket();
         final int maxLen;
         if(length>1000) maxLen = 1000;
@@ -158,6 +168,8 @@ public abstract class App {
                             if(buffer.length()>maxLen*4){
                                 buffer = buffer.getBuffer(buffer.length()-maxLen*4,buffer.length());
                             }
+                        }else{
+                            buffer = packet.data();
                         }
                     });
                 });
@@ -168,7 +180,6 @@ public abstract class App {
     }
 
     private void listen(int port, boolean accumulated){
-        if(buffer==null) buffer = Buffer.buffer();
         if(datagramSocket==null) datagramSocket = Main.vertx.createDatagramSocket();
         datagramSocket.listen(port,"0.0.0.0",asyncResult ->{
             if (asyncResult.succeeded()) {
@@ -214,7 +225,7 @@ public abstract class App {
 
     public abstract void selectFile(ActionEvent event);
     public abstract void saveFile(ActionEvent event);
-    public abstract void loadUrl(Event event);
+    public abstract void load();
 
     protected void decorateMenuButton(MenuButton menu){
         menu.textProperty().bind(Main.namesMap.get("menu"));
@@ -238,7 +249,7 @@ public abstract class App {
         });
         loadItem.setOnAction(this::selectFile);
         saveItem.setOnAction(this::saveFile);
-        refreshItem.setOnAction(this::loadUrl);
+        refreshItem.setOnAction(event -> load());
         closeItem.setOnAction(event->{
             if(pagePane!=null){
                 Tab page = pagePane.getSelectionModel().getSelectedItem();
