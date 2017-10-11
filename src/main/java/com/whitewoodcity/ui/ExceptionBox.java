@@ -36,7 +36,7 @@ public class ExceptionBox extends Stage{
 
     public void setMessage(String message) {
         if(message!=null&&!message.trim().equals("")){
-            exceptionButton.setTextFill(Color.GREEN);
+            exceptionButton.setTextFill(Color.DEEPSKYBLUE);
         }else{
             exceptionButton.setTextFill(Color.BLACK);
         }
