@@ -1,5 +1,6 @@
 package com.whitewoodcity.ui;
 
+import com.whitewoodcity.Main;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
@@ -7,7 +8,7 @@ import javafx.scene.input.KeyCode;
 public class PagePane extends TabPane{
 
     public void buildPane(){
-        Page page = new Page("New Tab", this);
+        Page page = new Page(Main.namesMap.get("tab").get(), this);
         getTabs().add(page);
         getSelectionModel().select(page);
     }

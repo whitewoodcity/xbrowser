@@ -14,7 +14,7 @@
     </stylesheets>
     <HBox fx:id="header" alignment="CENTER">
         <padding><Insets topRightBottomLeft="10"/></padding>
-        <MenuButton fx:id="menu" text="Menu"/>
+        <MenuButton fx:id="menu"/>
         <TextField fx:id="urlInput" onKeyPressed="#loadEntry">
             <text>http://w2v4.com/static/test.xmlv</text>
         </TextField>

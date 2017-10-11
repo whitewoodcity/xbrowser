@@ -19,7 +19,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -46,10 +45,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.UUID;
+import java.util.*;
 
 public class TabContent extends App implements Initializable {
 
@@ -73,7 +69,6 @@ public class TabContent extends App implements Initializable {
     private Rectangle containerClip = new Rectangle();
 
     private Tab tab;
-    private PagePane pagePane;
 
     private File directory;
     private Map<String, Object> preload = new HashMap<>();
@@ -92,37 +87,7 @@ public class TabContent extends App implements Initializable {
         urlInput.prefWidthProperty().bind(header.widthProperty().subtract(50)
                 .subtract(menu.widthProperty()).subtract(exceptionButton.widthProperty()));
 
-        MenuItem newItem = new MenuItem("New Tab");
-        MenuItem loadItem = new MenuItem("Load");
-        MenuItem saveItem = new MenuItem("Save");
-        MenuItem refreshItem = new MenuItem("Refresh");
-        MenuItem closeItem = new MenuItem("Close");
-
-        newItem.setOnAction(event->{
-            if(pagePane!=null){
-                pagePane.buildPane();
-            }
-        });
-        loadItem.setOnAction(this::onFileSelector);
-        saveItem.setOnAction(this::saveFile);
-        refreshItem.setOnAction(this::loadUrl);
-        closeItem.setOnAction(event->{
-            if(pagePane!=null){
-                Tab page = pagePane.getSelectionModel().getSelectedItem();
-                if(page!=null){
-                    page.getOnClosed().handle(event);
-                    pagePane.getTabs().remove(page);
-                }
-            }
-        });
-
-        newItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
-        loadItem.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
-        saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
-        refreshItem.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
-        closeItem.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN));
-
-        menu.getItems().addAll(newItem,loadItem,saveItem,refreshItem,closeItem);
+        decorateMenuButton(menu);
 
         container.layoutYProperty().bind(header.heightProperty());
 
@@ -158,8 +123,7 @@ public class TabContent extends App implements Initializable {
         }
     }
 
-    @FXML
-    private void loadUrl(Event event) {
+    public void loadUrl(Event event) {
         String url = urlInput.getText();
         if (url == null){
             //do nothing
@@ -400,8 +364,7 @@ public class TabContent extends App implements Initializable {
         }
     }
 
-    @FXML
-    public void onFileSelector(ActionEvent event) {
+    public void selectFile(ActionEvent event) {
         FileChooser chooser = new FileChooser();
         FileSystemView fsv = FileSystemView.getFileSystemView();
         chooser.setInitialDirectory(fsv.getHomeDirectory());
@@ -417,7 +380,6 @@ public class TabContent extends App implements Initializable {
         super.displayOrHideExceptionBox();
     }
 
-    @FXML
     public void saveFile(ActionEvent event) {
         String url = urlInput.getText();
         try {
@@ -689,5 +651,4 @@ public class TabContent extends App implements Initializable {
             handleThrowableMessage(throwable);
         }
     }
-
 }

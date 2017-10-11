@@ -4,6 +4,8 @@ import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.Vertx;
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -14,6 +16,8 @@ import javafx.stage.Stage;
 
 import javax.script.ScriptEngineManager;
 
+import java.util.*;
+
 import static io.vertx.core.impl.FileResolver.CACHE_DIR_BASE_PROP_NAME;
 import static io.vertx.core.spi.resolver.ResolverProvider.DISABLE_DNS_RESOLVER_PROP_NAME;
 
@@ -21,12 +25,13 @@ public class Main extends Application {
 
     public static Vertx vertx;
     public static ScriptEngineManager scriptEngineManager;
+    public static Map<String, StringProperty> namesMap = new HashMap<>();
 
     private PagePane tabPane;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        primaryStage.setTitle("XBrowser");
+        primaryStage.titleProperty().bind(namesMap.get("title"));
         primaryStage.getIcons().add(new Image("icons/xbrowser.png"));
         Group root = new Group();
         Button button = new Button("+");
@@ -73,7 +78,25 @@ public class Main extends Application {
         System.getProperties().setProperty(CACHE_DIR_BASE_PROP_NAME, Res.getDefaultDirectory().getPath());
         vertx = Vertx.vertx();
         scriptEngineManager = new ScriptEngineManager();
+        generateNames(Locale.getDefault());
 
         launch(args);
+    }
+
+    public static void generateNames(Locale locale){
+
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("properties/names", locale);
+
+        Enumeration<String> keys = resourceBundle.getKeys();
+
+        while(keys.hasMoreElements()){
+            String name = keys.nextElement();
+            if(namesMap.get(name)==null){
+                namesMap.put(name,new SimpleStringProperty(resourceBundle.getString(name)));
+            }else{
+                namesMap.get(name).set(resourceBundle.getString(name));
+            }
+        }
+
     }
 }

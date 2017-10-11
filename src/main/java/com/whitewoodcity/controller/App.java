@@ -5,13 +5,19 @@ import com.whitewoodcity.core.node.AnimationTimer;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.ui.ExceptionBox;
+import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;
-import javafx.scene.control.Button;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -21,6 +27,8 @@ import java.io.StringWriter;
 import java.util.*;
 
 public abstract class App {
+    protected PagePane pagePane;
+
     protected MediaPlayer mediaPlayer;
     protected AnimationTimer timer;
     protected MouseEventHandler mouseEventHandler;
@@ -203,6 +211,62 @@ public abstract class App {
         if(exceptionBox.isShowing()) exceptionBox.hide();
         else exceptionBox.show();
     }
+
+    public abstract void selectFile(ActionEvent event);
+    public abstract void saveFile(ActionEvent event);
+    public abstract void loadUrl(Event event);
+
+    protected void decorateMenuButton(MenuButton menu){
+        menu.textProperty().bind(Main.namesMap.get("menu"));
+
+        MenuItem newItem = new MenuItem();
+        MenuItem loadItem = new MenuItem();
+        MenuItem saveItem = new MenuItem();
+        MenuItem refreshItem = new MenuItem();
+        MenuItem closeItem = new MenuItem();
+        Menu languageMenu = new Menu();
+
+        MenuItem english = new MenuItem("English");
+        MenuItem simChin = new MenuItem("简体中文");
+
+        languageMenu.getItems().addAll(english, simChin);
+
+        newItem.setOnAction(event->{
+            if(pagePane!=null){
+                pagePane.buildPane();
+            }
+        });
+        loadItem.setOnAction(this::selectFile);
+        saveItem.setOnAction(this::saveFile);
+        refreshItem.setOnAction(this::loadUrl);
+        closeItem.setOnAction(event->{
+            if(pagePane!=null){
+                Tab page = pagePane.getSelectionModel().getSelectedItem();
+                if(page!=null){
+                    page.getOnClosed().handle(event);
+                    pagePane.getTabs().remove(page);
+                }
+            }
+        });
+        english.setOnAction(value ->Main.generateNames(new Locale("en")));
+        simChin.setOnAction(value ->Main.generateNames(new Locale("zh","CN")));
+
+        newItem.textProperty().bind(Main.namesMap.get("tab"));
+        loadItem.textProperty().bind(Main.namesMap.get("load"));
+        saveItem.textProperty().bind(Main.namesMap.get("save"));
+        refreshItem.textProperty().bind(Main.namesMap.get("refresh"));
+        closeItem.textProperty().bind(Main.namesMap.get("close"));
+        languageMenu.textProperty().bind(Main.namesMap.get("language"));
+
+        newItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
+        loadItem.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+        saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
+        refreshItem.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
+        closeItem.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN));
+
+        menu.getItems().addAll(newItem,loadItem,saveItem,refreshItem,closeItem,languageMenu);
+    }
+
 
     public static void main(String[] args) throws Exception{
         App app = new TabContent();

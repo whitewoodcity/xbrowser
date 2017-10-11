@@ -2,6 +2,7 @@ package com.whitewoodcity.ui;
 
 import com.whitewoodcity.controller.TabContent;
 import com.whitewoodcity.util.Res;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
@@ -23,7 +24,7 @@ public class Page extends Tab{
     private TabContent controller;
 
     public Page(String title, PagePane pagePane) {
-        setText(title);
+        this.setText(title);
         setClosable(true);
         tooltip=new Tooltip();
         tooltip.setText(title);
