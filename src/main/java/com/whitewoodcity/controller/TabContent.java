@@ -185,6 +185,7 @@ public class TabContent extends App implements Initializable {
 
     private void processParent(ParentType type, String result, String urlOrMsg) {
         removeParent();
+        if(tab!=null) tab.textProperty().unbind();
         switch (type) {
             case TITLE:
                 Image image = new Image("logo/logo.png");
@@ -299,7 +300,6 @@ public class TabContent extends App implements Initializable {
                 errorMsg.setText(result + "\n" + urlOrMsg);
                 container.setPadding(new Insets(10));
                 parent = errorMsg;
-                tab.textProperty().unbind();
                 tab.setText(urlOrMsg);
 
                 break;
@@ -309,7 +309,6 @@ public class TabContent extends App implements Initializable {
                     webView = new WebView();
                 }
                 webView.getEngine().loadContent(result);
-                tab.textProperty().unbind();
                 tab.textProperty().bind(webView.getEngine().titleProperty());
                 webView.getEngine().load(urlOrMsg);
 
