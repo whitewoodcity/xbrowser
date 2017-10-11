@@ -22,14 +22,14 @@ public class Page extends Tab{
     private Tooltip tooltip;
     private TabContent controller;
 
-    public Page(String title, TabPane tabPane) {
+    public Page(String title, PagePane pagePane) {
         setText(title);
         setClosable(true);
         tooltip=new Tooltip();
         tooltip.setText(title);
         setTooltip(tooltip);
         try {
-            StackPane headerArea = (StackPane) tabPane.lookup(".tab-header-area");
+            StackPane headerArea = (StackPane) pagePane.lookup(".tab-header-area");
 
             URL location = getClass().getResource("/fxml/tab_content.fxml");
 
@@ -42,14 +42,14 @@ public class Page extends Tab{
 //            Pane parent=fxmlLoader.load();
             setContent(parent);
             controller=fxmlLoader.getController();
-            controller.getHeader().prefWidthProperty().bind(tabPane.widthProperty());
-            controller.getContainer().prefWidthProperty().bind(tabPane.widthProperty());
-            controller.getContainer().prefHeightProperty().bind(tabPane.heightProperty()
+            controller.getHeader().prefWidthProperty().bind(pagePane.widthProperty());
+            controller.getContainer().prefWidthProperty().bind(pagePane.widthProperty());
+            controller.getContainer().prefHeightProperty().bind(pagePane.heightProperty()
                     .subtract(headerArea.heightProperty())
                     .subtract(controller.getHeader().heightProperty()));
-            this.setOnClosed((event)->controller.close());
+            this.setOnClosed(controller::close);
             controller.setTab(this);
-
+            controller.setPagePane(pagePane);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -67,7 +67,6 @@ public class Main extends Application {
         super.stop();
     }
 
-
     public static void main(String[] args) throws Exception{
 
         System.getProperties().setProperty(DISABLE_DNS_RESOLVER_PROP_NAME,"true");

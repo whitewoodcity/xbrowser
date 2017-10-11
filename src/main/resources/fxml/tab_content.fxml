@@ -14,12 +14,10 @@
     </stylesheets>
     <HBox fx:id="header" alignment="CENTER">
         <padding><Insets topRightBottomLeft="10"/></padding>
+        <MenuButton fx:id="menu" text="Menu"/>
         <TextField fx:id="urlInput" onKeyPressed="#loadEntry">
             <text>http://w2v4.com/static/test.xmlv</text>
         </TextField>
-        <Button fx:id="urlLocator" text="↺" onAction="#loadUrl"/>
-        <Button fx:id="fileSelector"  text="⇪" onAction="#onFileSelector" />
-        <Button fx:id="fileSaver" text="↯" onAction="#saveFile"/>
         <Button fx:id="exceptionButton" text="!" onAction="#displayExceptionMessage"/>
     </HBox>
     <StackPane fx:id="container"

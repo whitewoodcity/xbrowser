@@ -8,6 +8,7 @@ import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
+import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
@@ -18,6 +19,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -61,13 +63,7 @@ public class TabContent extends App implements Initializable {
     private TextField urlInput;
 
     @FXML
-    private Button fileSelector;
-
-    @FXML
-    private Button urlLocator;
-
-    @FXML
-    private Button fileSaver;
+    private MenuButton menu;
 
     @FXML
     private Button exceptionButton;
@@ -77,6 +73,7 @@ public class TabContent extends App implements Initializable {
     private Rectangle containerClip = new Rectangle();
 
     private Tab tab;
+    private PagePane pagePane;
 
     private File directory;
     private Map<String, Object> preload = new HashMap<>();
@@ -92,9 +89,41 @@ public class TabContent extends App implements Initializable {
         webClient = WebClient.create(Main.vertx);
         header.setSpacing(10);
         header.setPadding(new Insets(10));
-        urlInput.prefWidthProperty().bind(header.widthProperty().subtract(60)
-                .subtract(fileSelector.widthProperty()).subtract(urlLocator.widthProperty())
-                .subtract(fileSaver.widthProperty()).subtract(exceptionButton.widthProperty()));
+        urlInput.prefWidthProperty().bind(header.widthProperty().subtract(50)
+                .subtract(menu.widthProperty()).subtract(exceptionButton.widthProperty()));
+
+        MenuItem newItem = new MenuItem("New Tab");
+        MenuItem loadItem = new MenuItem("Load");
+        MenuItem saveItem = new MenuItem("Save");
+        MenuItem refreshItem = new MenuItem("Refresh");
+        MenuItem closeItem = new MenuItem("Close");
+
+        newItem.setOnAction(event->{
+            if(pagePane!=null){
+                pagePane.buildPane();
+            }
+        });
+        loadItem.setOnAction(this::onFileSelector);
+        saveItem.setOnAction(this::saveFile);
+        refreshItem.setOnAction(this::loadUrl);
+        closeItem.setOnAction(event->{
+            if(pagePane!=null){
+                Tab page = pagePane.getSelectionModel().getSelectedItem();
+                if(page!=null){
+                    page.getOnClosed().handle(event);
+                    pagePane.getTabs().remove(page);
+                }
+            }
+        });
+
+        newItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
+        loadItem.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+        saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
+        refreshItem.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
+        closeItem.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN));
+
+        menu.getItems().addAll(newItem,loadItem,saveItem,refreshItem,closeItem);
+
         container.layoutYProperty().bind(header.heightProperty());
 
         containerClip.widthProperty().bind(container.widthProperty());
@@ -116,6 +145,10 @@ public class TabContent extends App implements Initializable {
 
     public void setTab(Tab tab) {
         this.tab = tab;
+    }
+
+    public void setPagePane(PagePane pagePane) {
+        this.pagePane = pagePane;
     }
 
     @FXML
@@ -483,9 +516,12 @@ public class TabContent extends App implements Initializable {
         }
     }
 
-    public void close() {
+    public void close(Event event) {
         removeParent();
-        if (webClient != null) webClient.close();
+        if (webClient != null) {
+            webClient.close();
+            webClient = null;
+        }
 
         try {
             Res.removeTempDirectory(directory);
