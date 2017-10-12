@@ -2,6 +2,7 @@ package com.whitewoodcity.core.node.chart;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import javafx.application.Platform;
 import javafx.scene.chart.*;
 
 public class XYChart extends Chart{
@@ -30,6 +31,11 @@ public class XYChart extends Chart{
                 break;
         }
 
+        if (Platform.isFxApplicationThread()) createXYChart(type);
+        else Platform.runLater(() -> createXYChart(type));
+    }
+
+    private void createXYChart(String type){
         switch (type){
             case "barchart":
                 body = new BarChart(xAxis,yAxis);
@@ -47,15 +53,18 @@ public class XYChart extends Chart{
                 body = new LineChart(xAxis,yAxis);
                 break;
         }
-
     }
 
     public void setXLabel(String label){
-        xAxis.setLabel(label);
+        if (Platform.isFxApplicationThread()) xAxis.setLabel(label);
+        else Platform.runLater(() -> xAxis.setLabel(label));
+
     }
 
     public void setYLabel(String label){
-        yAxis.setLabel(label);
+        if (Platform.isFxApplicationThread()) yAxis.setLabel(label);
+        else Platform.runLater(() -> yAxis.setLabel(label));
+
     }
 
     public void setXScale(JsonArray xScale){
@@ -101,14 +110,21 @@ public class XYChart extends Chart{
     }
 
     public void setData(JsonObject jsonObject){
+        if (Platform.isFxApplicationThread()) setDataBase(jsonObject);
+        else Platform.runLater(() -> setDataBase(jsonObject));
+    }
+    private void setDataBase(JsonObject jsonObject){
         for(String name:jsonObject.fieldNames()){
             if(jsonObject.getValue(name)!=null && jsonObject.getValue(name) instanceof JsonArray){
                 setSeries(name, jsonObject.getJsonArray(name));
             }
         }
     }
-
     public void set(String series, Object x, Object y){
+        if (Platform.isFxApplicationThread()) setBase(series,x,y);
+        else Platform.runLater(() -> setBase(series,x,y));
+    }
+    private void setBase(String series, Object x, Object y){
         for(Object object:((javafx.scene.chart.XYChart)body).getData()){
             javafx.scene.chart.XYChart.Series s = (javafx.scene.chart.XYChart.Series)object;
             if(s.getName().equals(series)){
@@ -129,8 +145,11 @@ public class XYChart extends Chart{
         jsonArray.add(jsonObject);
         setSeries(series,jsonArray);
     }
-
     public void set(String series, Object x, Object y, Object e){
+        if (Platform.isFxApplicationThread()) setBase(series,x,y,e);
+        else Platform.runLater(() -> setBase(series,x,y,e));
+    }
+    private void setBase(String series, Object x, Object y, Object e){
         for(Object object:((javafx.scene.chart.XYChart)body).getData()){
             javafx.scene.chart.XYChart.Series s = (javafx.scene.chart.XYChart.Series)object;
             if(s.getName().equals(series)){
@@ -151,8 +170,11 @@ public class XYChart extends Chart{
         jsonArray.add(jsonObject);
         setSeries(series,jsonArray);
     }
-
     public void remove(String series, Object x, Object y){
+        if (Platform.isFxApplicationThread()) removeBase(series,x,y);
+        else Platform.runLater(() -> removeBase(series,x,y));
+    }
+    private void removeBase(String series, Object x, Object y){
         for(Object object:((javafx.scene.chart.XYChart)body).getData()){
             javafx.scene.chart.XYChart.Series s = (javafx.scene.chart.XYChart.Series)object;
             if(s.getName().equals(series)){
@@ -171,8 +193,11 @@ public class XYChart extends Chart{
             }
         }
     }
-
     public void remove(String series){
+        if (Platform.isFxApplicationThread()) removeBase(series);
+        else Platform.runLater(() -> removeBase(series));
+    }
+    private void removeBase(String series){
         Object tobeRemoved = null;
         for(Object object:((javafx.scene.chart.XYChart)body).getData()){
             javafx.scene.chart.XYChart.Series s = (javafx.scene.chart.XYChart.Series)object;
