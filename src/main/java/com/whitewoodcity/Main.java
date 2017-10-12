@@ -27,6 +27,8 @@ import static io.vertx.core.spi.resolver.ResolverProvider.DISABLE_DNS_RESOLVER_P
 
 public class Main extends Application {
 
+    public static final String DEFAULT_MAX_WORKER_EXECUTE_TIME = "defaultMaxExecutionTime";
+
     public static Vertx vertx;
     public static ScriptEngineManager scriptEngineManager;
     public static Map<String, StringProperty> namesMap = new HashMap<>();
@@ -92,6 +94,7 @@ public class Main extends Application {
         System.getProperties().setProperty(DISABLE_DNS_RESOLVER_PROP_NAME,"true");
         System.getProperties().setProperty(CACHE_DIR_BASE_PROP_NAME, Res.getDefaultDirectory().getPath());
         VertxOptions vertxOptions = new VertxOptions().setMaxWorkerExecuteTime(10000000000L);
+        System.getProperties().setProperty(DEFAULT_MAX_WORKER_EXECUTE_TIME,vertxOptions.getMaxWorkerExecuteTime()/1000000+"");
         vertx = Vertx.vertx(vertxOptions);
         scriptEngineManager = new ScriptEngineManager();
         generateNames(Locale.getDefault());
