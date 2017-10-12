@@ -48,6 +48,8 @@ import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.whitewoodcity.Main.DEFAULT_MAX_WORKER_EXECUTE_TIME;
+
 public class TabContent extends App implements Initializable {
 
     @FXML
@@ -587,20 +589,32 @@ public class TabContent extends App implements Initializable {
 
     private void processClass(Class clazz) throws Exception {
         Main.vertx.executeBlocking(future -> {
+            Thread thread = new Thread(()->{
+                try {
+                    URL url = new URL(clazz.getUrl());
+                    URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
+                    java.lang.Class<?> targetClass = urlClassLoader.loadClass(clazz.getName());
+                    Object object = targetClass.getDeclaredConstructor().newInstance();
+
+                    object.getClass().getDeclaredMethod("setApp", Object.class).invoke(object, this);
+                    object.getClass().getDeclaredMethod("setContext", Map.class).invoke(object, context);
+                    object.getClass().getDeclaredMethod("setPreload", Map.class).invoke(object, preload);
+
+                    Object result = object.getClass().getDeclaredMethod(clazz.getFunction(), null).invoke(object);
+
+                    future.complete(result);
+                } catch (Throwable e) {
+                    future.fail(e);
+                }
+            });
+            thread.setDaemon(true);
+            thread.start();
             try {
-                URL url = new URL(clazz.getUrl());
-                URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
-                java.lang.Class<?> targetClass = urlClassLoader.loadClass(clazz.getName());
-                Object object = targetClass.getDeclaredConstructor().newInstance();
-
-                object.getClass().getDeclaredMethod("setApp", Object.class).invoke(object, this);
-                object.getClass().getDeclaredMethod("setContext", Map.class).invoke(object, context);
-                object.getClass().getDeclaredMethod("setPreload", Map.class).invoke(object, preload);
-
-                Object result = object.getClass().getDeclaredMethod(clazz.getFunction(), null).invoke(object);
-
-                future.complete(result);
-            } catch (Throwable e) {
+                Thread.sleep(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME));
+                if(thread.isAlive()){
+                    thread.interrupt();
+                }
+            }catch (Throwable e){
                 future.fail(e);
             }
         }, res -> {
@@ -626,10 +640,22 @@ public class TabContent extends App implements Initializable {
             scriptEngine.put(id, context.get(id));
         }
         Main.vertx.executeBlocking(fut ->{
+            Thread thread = new Thread(()->{
+                try {
+                    fut.complete(scriptEngine.eval(script.getScript()));
+                } catch (Throwable throwable) {
+                    fut.fail(throwable);
+                }
+            });
+            thread.setDaemon(true);
+            thread.start();
             try {
-                fut.complete(scriptEngine.eval(script.getScript()));
-            } catch (Throwable throwable) {
-                fut.fail(throwable);
+                Thread.sleep(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME));
+                if(thread.isAlive()){
+                    thread.interrupt();
+                }
+            }catch (Throwable e){
+                fut.fail(e);
             }
         }, res ->{
             if(res.succeeded()){
@@ -645,10 +671,22 @@ public class TabContent extends App implements Initializable {
                     if (ar.succeeded()) {
                         String result = ar.result().bodyAsString();
                         Main.vertx.executeBlocking(fut ->{
+                            Thread thread = new Thread(()->{
+                                try {
+                                    fut.complete(scriptEngine.eval(result));
+                                } catch (Throwable throwable) {
+                                    fut.fail(throwable);
+                                }
+                            });
+                            thread.setDaemon(true);
+                            thread.start();
                             try {
-                                fut.complete(scriptEngine.eval(result));
-                            } catch (Throwable throwable) {
-                                fut.fail(throwable);
+                                Thread.sleep(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME));
+                                if(thread.isAlive()){
+                                    thread.interrupt();
+                                }
+                            }catch (Throwable e){
+                                fut.fail(e);
                             }
                         }, res ->{
                             if(res.succeeded()){
