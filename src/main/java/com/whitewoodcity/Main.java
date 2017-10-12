@@ -8,7 +8,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -16,7 +15,6 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import javax.script.ScriptEngineManager;
 
@@ -99,7 +97,10 @@ public class Main extends Application {
         scriptEngineManager = new ScriptEngineManager();
         generateNames(Locale.getDefault());
 
+//        System.setProperty("java.security.policy",Res.createSecurityPolicyFile().toURI().toURL().toExternalForm());
+//        System.setSecurityManager(new ApplicationSecurityManager());
         launch(args);
+
     }
 
     public static void generateNames(Locale locale){

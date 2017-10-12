@@ -24,6 +24,20 @@ public class Res {
         return ClassLoader.getSystemResource("fxml"+ File.separator+fxml+".fxml");
     }
 
+    public static File createSecurityPolicyFile() throws IOException{
+        File dir = getDefaultDirectory();
+        File policyFile = new File(dir.getAbsolutePath()+File.separator+"xbrowser.policy");
+        if(!policyFile.exists()){
+            policyFile.delete();
+        }
+        policyFile.createNewFile();
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(policyFile), "utf-8"))) {
+            writer.write("grant { permission java.security.AllPermission; };");
+        }
+        return policyFile;
+    }
+
     public static File getDefaultDirectory() throws IOException{
         String path = System.getProperty("user.home");
         File dir=new File(path+File.separator+"Whitewoodcity"+File.separator+"xbrowser");

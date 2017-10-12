@@ -8,6 +8,7 @@ import com.whitewoodcity.core.bean.Script;
 import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
+import com.whitewoodcity.thread.CustomerThread;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
 import io.vertx.core.MultiMap;
@@ -591,7 +592,7 @@ public class TabContent extends App implements Initializable {
 
     private void processClass(Class clazz) throws Exception {
         Main.vertx.executeBlocking(future -> {
-            Thread thread = new Thread(()->{
+            Thread thread = new CustomerThread(()->{
                 try {
                     URL url = new URL(clazz.getUrl());
                     URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
@@ -643,7 +644,7 @@ public class TabContent extends App implements Initializable {
         }
 
         Main.vertx.executeBlocking(fut ->{
-            Thread thread = new Thread(()->{
+            Thread thread = new CustomerThread(()->{
                 try {
                     fut.complete(scriptEngine.eval(script.getScript()));
                 } catch (Throwable throwable) {
@@ -651,6 +652,7 @@ public class TabContent extends App implements Initializable {
                 }
             });
             thread.setDaemon(true);
+            thread.setName("Customer Thread");
             thread.start();
             try {
                 Thread.sleep(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME));
@@ -674,7 +676,7 @@ public class TabContent extends App implements Initializable {
                     if (ar.succeeded()) {
                         String result = ar.result().bodyAsString();
                         Main.vertx.executeBlocking(fut ->{
-                            Thread thread = new Thread(()->{
+                            Thread thread = new CustomerThread(()->{
                                 try {
                                     fut.complete(scriptEngine.eval(result));
                                 } catch (Throwable throwable) {
