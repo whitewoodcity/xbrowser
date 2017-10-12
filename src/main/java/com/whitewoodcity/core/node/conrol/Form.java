@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class Form extends Control{
 
@@ -19,8 +20,7 @@ public class Form extends Control{
     String action;
     FormHandler handler;
 
-    public Form(){//TabContent content
-//        this.content = content;
+    public Form(){
         handler = () -> false;
     }
 
@@ -58,7 +58,7 @@ public class Form extends Control{
         this.handler = action;
     }
 
-    public void submit(){
+    public void submit() throws InterruptedException, ExecutionException{
         if(handler.handle()) return;
 
         MultiMap form = MultiMap.caseInsensitiveMultiMap();
@@ -81,7 +81,7 @@ public class Form extends Control{
         app.submit(form,method,action);
     }
 
-    public void send(){
+    public void send() throws InterruptedException, ExecutionException{
         if(handler.handle()) return;
 
         for(int i = 0;i<children.size();i++){
@@ -116,7 +116,7 @@ public class Form extends Control{
     public void set(String name, String value){
         jsonObject.put(name,value);
     }
-    public Object get(String name){
+    public Object get(String name) throws InterruptedException, ExecutionException{
         for(int i=0;i<children.size();i++){
             String id = children.getValue(i).toString();
             Object object = app.getContext().get(id);
