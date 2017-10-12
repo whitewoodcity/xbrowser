@@ -2,6 +2,7 @@ package com.whitewoodcity.core.node.conrol;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +16,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 public class TableView extends Control{
 
@@ -22,6 +25,11 @@ public class TableView extends Control{
     ObservableList<Item> items = FXCollections.observableArrayList();
 
     public TableView(){
+        if (Platform.isFxApplicationThread()) tableView();
+        else Platform.runLater(this::tableView);
+    }
+
+    private void tableView(){
         body = new javafx.scene.control.TableView<Item>();
         ((javafx.scene.control.TableView)body).setItems(items);
         ((javafx.scene.control.TableView)body).setEditable(true);
@@ -35,10 +43,17 @@ public class TableView extends Control{
     }
 
     public void setEditable(Boolean editable){
-        if(editable!=null) ((javafx.scene.control.TableView)body).setEditable(editable);
+        if(editable!=null){
+            if (Platform.isFxApplicationThread()) ((javafx.scene.control.TableView)body).setEditable(editable);
+            else Platform.runLater(()->((javafx.scene.control.TableView)body).setEditable(editable));
+        }
     }
 
     public void setHeader(JsonArray header){
+        if (Platform.isFxApplicationThread()) setHeaderBase(header);
+        else Platform.runLater(()->setHeaderBase(header));
+    }
+    private void setHeaderBase(JsonArray header){
         if(header==null) return;
         for(Object object:header){
             if(object instanceof String) {
@@ -146,6 +161,11 @@ public class TableView extends Control{
     }
 
     public void setValue(JsonArray values){
+        if (Platform.isFxApplicationThread()) setValueBase(values);
+        else Platform.runLater(()->setValueBase(values));
+    }
+
+    private void setValueBase(JsonArray values){
         if(values==null) return;
         List vs = values.getList();
         for(int i=0;i<vs.size();i++){
@@ -172,7 +192,19 @@ public class TableView extends Control{
         }
     }
 
-    public JsonArray getValue(){
+    public JsonArray getValue() throws InterruptedException,ExecutionException{
+        if (Platform.isFxApplicationThread()) {
+            return getValueBase();
+        }else{
+            final FutureTask<JsonArray> task = new FutureTask<>(() -> {
+                return getValueBase();
+            });
+            Platform.runLater(task);
+            return task.get();
+        }
+    }
+
+    private JsonArray getValueBase(){
         JsonArray jsonArray = new JsonArray();
         for(Item item:items){
             JsonObject jsonObject = new JsonObject();

@@ -36,8 +36,6 @@ public class Label extends Control{
             Platform.runLater(task);
             return task.get();
         }
-
-
     }
 
     public StringProperty textProperty()throws InterruptedException,ExecutionException {
