@@ -2,6 +2,7 @@ package com.whitewoodcity.core.node.canvas;
 
 import javafx.scene.image.Image;
 
+@Deprecated
 public class GraphicsContext{
     private javafx.scene.canvas.GraphicsContext body;
 

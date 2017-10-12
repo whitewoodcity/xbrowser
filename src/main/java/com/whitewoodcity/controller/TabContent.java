@@ -47,6 +47,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.whitewoodcity.Main.DEFAULT_MAX_WORKER_EXECUTE_TIME;
 
@@ -639,6 +641,7 @@ public class TabContent extends App implements Initializable {
         for (String id : context.keySet()) {
             scriptEngine.put(id, context.get(id));
         }
+
         Main.vertx.executeBlocking(fut ->{
             Thread thread = new Thread(()->{
                 try {
