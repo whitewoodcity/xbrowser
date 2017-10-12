@@ -1,7 +1,12 @@
 package com.whitewoodcity.core.node;
 
+import com.whitewoodcity.ui.ExceptionBox;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 
 public interface Node {
     javafx.scene.Node getNode();
@@ -35,11 +40,14 @@ public interface Node {
     }
 
     default void setRotate(double value){
-        getNode().setRotate(value);
+        Platform.runLater(()->getNode().setRotate(value));
     }
 
-    default double getRotate(){
-        return getNode().getRotate();
+    default double getRotate() throws Exception{
+        if(Platform.isFxApplicationThread()) return getNode().getRotate();
+        final FutureTask<Double> task = new FutureTask<>(()->getNode().getRotate());
+        Platform.runLater(task);
+        return task.get();
     }
 
     default DoubleProperty rotateProperty(){

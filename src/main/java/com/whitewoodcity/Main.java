@@ -5,8 +5,10 @@ import com.whitewoodcity.util.Res;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -14,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import javax.script.ScriptEngineManager;
 
@@ -32,6 +35,15 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        primaryStage.setOnCloseRequest(e -> {
+            try {
+                this.stop();
+            } catch (Exception e1) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
+
         primaryStage.titleProperty().bind(namesMap.get("title"));
         primaryStage.getIcons().add(new Image("icons/xbrowser.png"));
         Group root = new Group();
@@ -71,6 +83,7 @@ public class Main extends Application {
         vertx.close();
         tabPane.close();
         super.stop();
+        Platform.exit();
         System.exit(0);
     }
 

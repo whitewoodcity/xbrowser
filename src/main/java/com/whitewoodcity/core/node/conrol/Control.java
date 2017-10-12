@@ -1,9 +1,12 @@
 package com.whitewoodcity.core.node.conrol;
 
 import com.whitewoodcity.core.node.Node;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+
+import java.util.concurrent.FutureTask;
 
 public abstract class Control implements Node {
 
@@ -12,19 +15,27 @@ public abstract class Control implements Node {
     StringProperty name = new SimpleStringProperty();
 
     public void setX(double x) {
-        body.setLayoutX(x);
+        if(Platform.isFxApplicationThread()) body.setLayoutX(x);
+        else Platform.runLater(()->body.setLayoutX(x));
     }
 
     public void setY(double y){
-        body.setLayoutY(y);
+        if(Platform.isFxApplicationThread()) body.setLayoutY(y);
+        else Platform.runLater(()->body.setLayoutY(y));
     }
 
-    public double getX(){
-        return body.getLayoutX();
+    public double getX() throws Exception{
+        if(Platform.isFxApplicationThread()) return body.getLayoutX();
+        final FutureTask<Double> task = new FutureTask<>(()->body.getLayoutX());
+        Platform.runLater(task);
+        return task.get();
     }
 
-    public double getY(){
-        return body.getLayoutY();
+    public double getY() throws Exception{
+        if(Platform.isFxApplicationThread()) return body.getLayoutY();
+        final FutureTask<Double> task = new FutureTask<>(()->body.getLayoutY());
+        Platform.runLater(task);
+        return task.get();
     }
 
     public DoubleProperty xProperty(){
