@@ -606,7 +606,7 @@ public class TabContent extends App implements Initializable {
             object.getClass().getDeclaredMethod("setApp", Object.class).invoke(object, this);
             object.getClass().getDeclaredMethod("setContext", Map.class).invoke(object, context);
             object.getClass().getDeclaredMethod("setPreload", Map.class).invoke(object, preload);
-
+            accessCode = null;//remove access code thus executing client code will not be able to do some risky works
             return object.getClass().getDeclaredMethod(clazz.getFunction(), null).invoke(object);
         });
     }
