@@ -47,7 +47,10 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.UUID;
 
 import static com.whitewoodcity.Main.DEFAULT_MAX_WORKER_EXECUTE_TIME;
 import static com.whitewoodcity.Main.DEFAULT_TOLERATED_WORKER_EXECUTE_TIME;
@@ -91,8 +94,8 @@ public class TabContent extends App implements Initializable {
         header.setPadding(new Insets(10));
         urlInput.prefWidthProperty().bind(header.widthProperty().subtract(50)
                 .subtract(menu.widthProperty()).subtract(exceptionButton.widthProperty()));
-        urlInput.setOnKeyPressed(event ->{
-            if(event.getCode()==KeyCode.ENTER) load();
+        urlInput.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) load();
         });
         decorateMenuButton(menu);
 
@@ -112,7 +115,7 @@ public class TabContent extends App implements Initializable {
 
         super.initialize(exceptionButton);
 
-        processParent(ParentType.TITLE, null,null);
+        processParent(ParentType.TITLE, null, null);
     }
 
     public void setTab(Tab tab) {
@@ -123,15 +126,15 @@ public class TabContent extends App implements Initializable {
         this.pagePane = pagePane;
     }
 
-    public void load(){
+    public void load() {
         load(urlInput.getText());
     }
 
     public void load(String url) {
         removeParent();
-        if (url == null || url.equals("")){
+        if (url == null || url.equals("")) {
             //do nothing
-        }else if (url.startsWith("file:")) {
+        } else if (url.startsWith("file:")) {
             try {
                 URI uri = new URI(url);
                 File file = new File(uri);
@@ -189,16 +192,16 @@ public class TabContent extends App implements Initializable {
     }
 
     private void processParent(ParentType type, String result, String urlOrMsg) {
-        if(tab!=null) tab.textProperty().unbind();
+        if (tab != null) tab.textProperty().unbind();
         switch (type) {
             case TITLE:
                 Image image = new Image("logo/logo.png");
                 ImageView imageView = new ImageView(image);
                 imageView.setPreserveRatio(true);
-                double height = Screen.getPrimary().getBounds().getHeight()/5;
-                if(height*image.getWidth()/image.getHeight()>Screen.getPrimary().getBounds().getWidth()/3){
-                    imageView.setFitWidth(Screen.getPrimary().getBounds().getWidth()/3);
-                }else{
+                double height = Screen.getPrimary().getBounds().getHeight() / 5;
+                if (height * image.getWidth() / image.getHeight() > Screen.getPrimary().getBounds().getWidth() / 3) {
+                    imageView.setFitWidth(Screen.getPrimary().getBounds().getWidth() / 3);
+                } else {
                     imageView.setFitHeight(height);
                 }
                 parent = imageView;
@@ -367,7 +370,7 @@ public class TabContent extends App implements Initializable {
                 urlInput.setText(file.toURI().toURL().toExternalForm());
                 load();
             }
-        }catch (Throwable throwable){
+        } catch (Throwable throwable) {
             handleThrowableMessage(throwable);
         }
     }
@@ -380,20 +383,20 @@ public class TabContent extends App implements Initializable {
             File file = chooser.showOpenDialog(container.getScene().getWindow());
             urlInput.setText(file.toURI().toURL().toExternalForm());
             load();
-        }catch (Throwable throwable){
+        } catch (Throwable throwable) {
             handleThrowableMessage(throwable);
         }
     }
 
     @FXML
-    private void displayExceptionMessage(ActionEvent event){
+    private void displayExceptionMessage(ActionEvent event) {
         super.displayOrHideExceptionBox();
     }
 
     public void saveFile(ActionEvent event) {
         String url = urlInput.getText();
         try {
-            if (url == null||!url.startsWith("file:")) return;
+            if (url == null || !url.startsWith("file:")) return;
             URI uri = new URI(url);
             File file = new File(uri);
             if (!(parent instanceof TextArea)) return;
@@ -553,7 +556,7 @@ public class TabContent extends App implements Initializable {
 
     private void processCss(CSS css) {
         try {
-            if(css.getHref()!=null&&!css.getHref().trim().equals("")) {
+            if (css.getHref() != null && !css.getHref().trim().equals("")) {
                 webClient.getAbs(css.getHref()).send(ar -> {
                     if (ar.succeeded()) {
                         String result = ar.result().bodyAsString();
@@ -569,7 +572,7 @@ public class TabContent extends App implements Initializable {
                     }
                 });
             }
-        }catch (Throwable throwable){
+        } catch (Throwable throwable) {
             handleThrowableMessage(throwable);
         }
 
@@ -591,7 +594,7 @@ public class TabContent extends App implements Initializable {
 
     private void processClass(Class clazz) throws Exception {
 
-        handleCustomerCode(Main.getGlobalAccessCode(),accessCode -> {
+        handleCustomerCode(Main.getGlobalAccessCode(), accessCode -> {
             URL url = new URL(clazz.getUrl());
             URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
             Thread.currentThread().setName(accessCode);
@@ -622,29 +625,29 @@ public class TabContent extends App implements Initializable {
         }
 
         handleCustomerCode(Main.getGlobalAccessCode(),
-                accessCode ->  scriptEngine.eval(script.getScript()));
+                accessCode -> scriptEngine.eval(script.getScript()));
 
         try {
-            if(script.getHref()!=null&&!script.getHref().trim().equals("")) {
+            if (script.getHref() != null && !script.getHref().trim().equals("")) {
                 webClient.getAbs(script.getHref()).send(ar -> {
                     if (ar.succeeded()) {
                         String result = ar.result().bodyAsString();
                         handleCustomerCode(Main.getGlobalAccessCode(),
-                                accessCode ->  scriptEngine.eval(result));
+                                accessCode -> scriptEngine.eval(result));
                     } else {
                         handleThrowableMessage(ar.cause());
                     }
                 });
             }
-        }catch (Throwable throwable){
+        } catch (Throwable throwable) {
             handleThrowableMessage(throwable);
         }
     }
 
-    private void handleCustomerCode(String accessCode,Handler handler){
+    private void handleCustomerCode(String accessCode, Handler handler) {
 
-        Main.vertx.executeBlocking(fut ->{
-            Thread thread = new CustomerThread(()->{
+        Main.vertx.executeBlocking(fut -> {
+            Thread thread = new CustomerThread(() -> {
                 try {
                     fut.complete(handler.handle(accessCode));
                 } catch (Throwable throwable) {
@@ -653,41 +656,46 @@ public class TabContent extends App implements Initializable {
             });
             thread.setDaemon(true);
             thread.start();
-            Main.vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME),id->{
-                if(thread.isAlive()){
+            Main.vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME), id -> {
+                if (thread.isAlive()) {
                     thread.interrupt();
                 }
             });
-            Main.vertx.setTimer(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME),id->{
-                if(thread.isAlive()){
+            Main.vertx.setTimer(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME), id -> {
+                if (thread.isAlive()) {
                     thread.stop();
                 }
             });
-        }, res ->{
-            if(res.succeeded()){
+        }, res -> {
+            if (res.succeeded()) {
                 handleMessage(res.result());
-            }else {
+            } else {
                 handleThrowableMessage(res.cause());
             }
         });
     }
 
-    public ReadOnlyDoubleProperty widthProperty(){
+    public ReadOnlyDoubleProperty widthProperty() {
         return container.widthProperty();
     }
-    public ReadOnlyDoubleProperty heightProperty(){
+
+    public ReadOnlyDoubleProperty heightProperty() {
         return container.heightProperty();
     }
-    public ReadOnlyDoubleProperty width_property(){
+
+    public ReadOnlyDoubleProperty width_property() {
         return widthProperty();
     }
-    public ReadOnlyDoubleProperty height_property(){
+
+    public ReadOnlyDoubleProperty height_property() {
         return heightProperty();
     }
-    public ReadOnlyDoubleProperty widthproperty(){
+
+    public ReadOnlyDoubleProperty widthproperty() {
         return widthProperty();
     }
-    public ReadOnlyDoubleProperty heightproperty(){
+
+    public ReadOnlyDoubleProperty heightproperty() {
         return heightProperty();
     }
 }
