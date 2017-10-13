@@ -590,45 +590,19 @@ public class TabContent extends App implements Initializable {
     }
 
     private void processClass(Class clazz) throws Exception {
-        Main.vertx.executeBlocking(future -> {
-            String accessCode = Main.getGlobalAccessCode();
-            Thread thread = new CustomerThread(()->{
-                try {
-                    URL url = new URL(clazz.getUrl());
-                    URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
-                    Thread.currentThread().setName(accessCode);
-                    java.lang.Class<?> targetClass = urlClassLoader.loadClass(clazz.getName());
-                    Object object = targetClass.getDeclaredConstructor().newInstance();
 
-                    object.getClass().getDeclaredMethod("setApp", Object.class).invoke(object, this);
-                    object.getClass().getDeclaredMethod("setContext", Map.class).invoke(object, context);
-                    object.getClass().getDeclaredMethod("setPreload", Map.class).invoke(object, preload);
+        handleCustomerCode(Main.getGlobalAccessCode(),accessCode -> {
+            URL url = new URL(clazz.getUrl());
+            URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
+            Thread.currentThread().setName(accessCode);
+            java.lang.Class<?> targetClass = urlClassLoader.loadClass(clazz.getName());
+            Object object = targetClass.getDeclaredConstructor().newInstance();
 
-                    Object result = object.getClass().getDeclaredMethod(clazz.getFunction(), null).invoke(object);
+            object.getClass().getDeclaredMethod("setApp", Object.class).invoke(object, this);
+            object.getClass().getDeclaredMethod("setContext", Map.class).invoke(object, context);
+            object.getClass().getDeclaredMethod("setPreload", Map.class).invoke(object, preload);
 
-                    future.complete(result);
-                } catch (Throwable e) {
-                    future.fail(e);
-                }
-            });
-            thread.setDaemon(true);
-            thread.start();
-
-            Main.vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME),id->{
-                if(thread.isAlive()){
-                    thread.interrupt();
-                }
-            });
-            Main.vertx.setTimer(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME),id->{
-                if(thread.isAlive()){
-                    thread.stop();
-                }
-            });
-        }, res -> {
-            if (res.succeeded()) {
-                handleMessage(res.result());
-            } else
-                handleThrowableMessage(res.cause());
+            return object.getClass().getDeclaredMethod(clazz.getFunction(), null).invoke(object);
         });
     }
 
@@ -647,17 +621,38 @@ public class TabContent extends App implements Initializable {
             scriptEngine.put(id, context.get(id));
         }
 
+        handleCustomerCode(Main.getGlobalAccessCode(),
+                accessCode ->  scriptEngine.eval(script.getScript()));
+
+        try {
+            if(script.getHref()!=null&&!script.getHref().trim().equals("")) {
+                webClient.getAbs(script.getHref()).send(ar -> {
+                    if (ar.succeeded()) {
+                        String result = ar.result().bodyAsString();
+                        handleCustomerCode(Main.getGlobalAccessCode(),
+                                accessCode ->  scriptEngine.eval(result));
+                    } else {
+                        handleThrowableMessage(ar.cause());
+                    }
+                });
+            }
+        }catch (Throwable throwable){
+            handleThrowableMessage(throwable);
+        }
+    }
+
+    private void handleCustomerCode(String accessCode,Handler handler){
+
         Main.vertx.executeBlocking(fut ->{
             Thread thread = new CustomerThread(()->{
                 try {
-                    fut.complete(scriptEngine.eval(script.getScript()));
+                    fut.complete(handler.handle(accessCode));
                 } catch (Throwable throwable) {
                     fut.fail(throwable);
                 }
             });
             thread.setDaemon(true);
             thread.start();
-
             Main.vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME),id->{
                 if(thread.isAlive()){
                     thread.interrupt();
@@ -675,47 +670,6 @@ public class TabContent extends App implements Initializable {
                 handleThrowableMessage(res.cause());
             }
         });
-
-        try {
-            if(script.getHref()!=null&&!script.getHref().trim().equals("")) {
-                webClient.getAbs(script.getHref()).send(ar -> {
-                    if (ar.succeeded()) {
-                        String result = ar.result().bodyAsString();
-                        Main.vertx.executeBlocking(fut ->{
-                            Thread thread = new CustomerThread(()->{
-                                try {
-                                    fut.complete(scriptEngine.eval(result));
-                                } catch (Throwable throwable) {
-                                    fut.fail(throwable);
-                                }
-                            });
-                            thread.setDaemon(true);
-                            thread.start();
-                            Main.vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME),id->{
-                                if(thread.isAlive()){
-                                    thread.interrupt();
-                                }
-                            });
-                            Main.vertx.setTimer(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME),id->{
-                                if(thread.isAlive()){
-                                    thread.stop();
-                                }
-                            });
-                        }, res ->{
-                            if(res.succeeded()){
-                                handleMessage(res.result());
-                            }else {
-                                handleThrowableMessage(res.cause());
-                            }
-                        });
-                    } else {
-                        handleThrowableMessage(ar.cause());
-                    }
-                });
-            }
-        }catch (Throwable throwable){
-            handleThrowableMessage(throwable);
-        }
     }
 
     public ReadOnlyDoubleProperty widthProperty(){
