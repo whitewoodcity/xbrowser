@@ -24,7 +24,7 @@ test.png=http://d.lanrentuku.com/down/png/0905/creature/Dolphin_256x256.png;
 </xmlv>
 ```
 And the XBrowser received the xmlv file then render the page based on the xmlv file, here is what we get:
-<img width="960" alt="1" src="https://user-images.githubusercontent.com/5525436/31162685-7ebdc1da-a8a4-11e7-9eac-8890e3146a4d.png">
+<img width="960" alt="1" src="https://user-images.githubusercontent.com/5525436/31541744-542c9800-afd5-11e7-9949-288ee753a1fb.png">
 The dolphin image will move to the right since in the script the x coordinate will increase gradually.
 So cool right?
 
