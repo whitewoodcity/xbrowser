@@ -48,10 +48,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.whitewoodcity.Main.DEFAULT_MAX_WORKER_EXECUTE_TIME;
+import static com.whitewoodcity.Main.DEFAULT_TOLERATED_WORKER_EXECUTE_TIME;
 
 public class TabContent extends App implements Initializable {
 
@@ -592,10 +591,13 @@ public class TabContent extends App implements Initializable {
 
     private void processClass(Class clazz) throws Exception {
         Main.vertx.executeBlocking(future -> {
+            String accessCode = Main.getGlobalAccessCode();
             Thread thread = new CustomerThread(()->{
                 try {
+
                     URL url = new URL(clazz.getUrl());
                     URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
+                    Thread.currentThread().setName(accessCode);
                     java.lang.Class<?> targetClass = urlClassLoader.loadClass(clazz.getName());
                     Object object = targetClass.getDeclaredConstructor().newInstance();
 
@@ -612,14 +614,17 @@ public class TabContent extends App implements Initializable {
             });
             thread.setDaemon(true);
             thread.start();
-            try {
-                Thread.sleep(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME));
+
+            Main.vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME),id->{
                 if(thread.isAlive()){
                     thread.interrupt();
                 }
-            }catch (Throwable e){
-                future.fail(e);
-            }
+            });
+            Main.vertx.setTimer(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME),id->{
+                if(thread.isAlive()){
+                    thread.stop();
+                }
+            });
         }, res -> {
             if (res.succeeded()) {
                 handleMessage(res.result());
@@ -652,16 +657,18 @@ public class TabContent extends App implements Initializable {
                 }
             });
             thread.setDaemon(true);
-            thread.setName("Customer Thread");
             thread.start();
-            try {
-                Thread.sleep(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME));
+
+            Main.vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME),id->{
                 if(thread.isAlive()){
                     thread.interrupt();
                 }
-            }catch (Throwable e){
-                fut.fail(e);
-            }
+            });
+            Main.vertx.setTimer(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME),id->{
+                if(thread.isAlive()){
+                    thread.stop();
+                }
+            });
         }, res ->{
             if(res.succeeded()){
                 handleMessage(res.result());
@@ -685,14 +692,16 @@ public class TabContent extends App implements Initializable {
                             });
                             thread.setDaemon(true);
                             thread.start();
-                            try {
-                                Thread.sleep(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME));
+                            Main.vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME),id->{
                                 if(thread.isAlive()){
                                     thread.interrupt();
                                 }
-                            }catch (Throwable e){
-                                fut.fail(e);
-                            }
+                            });
+                            Main.vertx.setTimer(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME),id->{
+                                if(thread.isAlive()){
+                                    thread.stop();
+                                }
+                            });
                         }, res ->{
                             if(res.succeeded()){
                                 handleMessage(res.result());
