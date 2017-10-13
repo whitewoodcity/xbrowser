@@ -594,7 +594,6 @@ public class TabContent extends App implements Initializable {
             String accessCode = Main.getGlobalAccessCode();
             Thread thread = new CustomerThread(()->{
                 try {
-
                     URL url = new URL(clazz.getUrl());
                     URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
                     Thread.currentThread().setName(accessCode);
