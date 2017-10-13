@@ -16,15 +16,15 @@ public class Hyperlink extends ButtonBase {
         if(Platform.isFxApplicationThread()){
             body = new javafx.scene.control.Hyperlink();
             setAction(event -> {
-                if (value == null) app.loadWeb(((javafx.scene.control.Hyperlink) body).getText());
-                else app.loadWeb(value);
+                if (value == null) app.load(((javafx.scene.control.Hyperlink) body).getText());
+                else app.load(value);
             });
         }
         else Platform.runLater(()->{
             body = new javafx.scene.control.Hyperlink();
             setAction(event -> {
-                if (value == null) app.loadWeb(((javafx.scene.control.Hyperlink) body).getText());
-                else app.loadWeb(value);
+                if (value == null) app.load(((javafx.scene.control.Hyperlink) body).getText());
+                else app.load(value);
             });
         });
     }
@@ -33,15 +33,15 @@ public class Hyperlink extends ButtonBase {
         if(Platform.isFxApplicationThread()){
             body = new javafx.scene.control.Hyperlink(text);
             setAction(event -> {
-                if (value == null) app.loadWeb(((javafx.scene.control.Hyperlink) body).getText());
-                else app.loadWeb(value);
+                if (value == null) app.load(((javafx.scene.control.Hyperlink) body).getText());
+                else app.load(value);
             });
         }
         else Platform.runLater(()->{
             body = new javafx.scene.control.Hyperlink(text);
             setAction(event -> {
-                if (value == null) app.loadWeb(((javafx.scene.control.Hyperlink) body).getText());
-                else app.loadWeb(value);
+                if (value == null) app.load(((javafx.scene.control.Hyperlink) body).getText());
+                else app.load(value);
             });
         });
     }
@@ -50,15 +50,15 @@ public class Hyperlink extends ButtonBase {
         if(Platform.isFxApplicationThread()){
             body = new javafx.scene.control.Hyperlink(text,graphic);
             setAction(event -> {
-                if (value == null) app.loadWeb(((javafx.scene.control.Hyperlink) body).getText());
-                else app.loadWeb(value);
+                if (value == null) app.load(((javafx.scene.control.Hyperlink) body).getText());
+                else app.load(value);
             });
         }
         else Platform.runLater(()->{
             body = new javafx.scene.control.Hyperlink(text,graphic);
             setAction(event -> {
-                if (value == null) app.loadWeb(((javafx.scene.control.Hyperlink) body).getText());
-                else app.loadWeb(value);
+                if (value == null) app.load(((javafx.scene.control.Hyperlink) body).getText());
+                else app.load(value);
             });
         });
     }

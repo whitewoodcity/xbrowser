@@ -131,10 +131,12 @@ public class TabContent extends App implements Initializable {
     }
 
     public void load(String url) {
-        removeParent();
         if (url == null || url.equals("")) {
-            //do nothing
-        } else if (url.startsWith("file:")) {
+            handleMessage("Empty URL");
+            return;
+        }
+        removeParent();
+        if (url.startsWith("file:")) {
             try {
                 URI uri = new URI(url);
                 File file = new File(uri);
@@ -147,7 +149,7 @@ public class TabContent extends App implements Initializable {
         }
     }
 
-    public void loadWeb(String url) {
+    private void loadWeb(String url) {
         if (!url.startsWith("http")) {
             url = "http://" + url;
         }

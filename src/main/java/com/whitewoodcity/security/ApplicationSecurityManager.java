@@ -16,7 +16,7 @@ public class ApplicationSecurityManager extends SecurityManager {
     public void checkAccess(ThreadGroup g) {
         if(Thread.currentThread() instanceof CustomerThread){
             if(!Thread.currentThread().getName().equals(globalAcessCode)){
-                throw new SecurityException("Customer Code does NOT allow to touch the Thread.");
+                throw new SecurityException("Security error.");
             }
 
             else Thread.currentThread().setName(UUID.randomUUID().toString());
