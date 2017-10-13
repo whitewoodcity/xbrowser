@@ -626,16 +626,14 @@ public class TabContent extends App implements Initializable {
             scriptEngine.put(id, context.get(id));
         }
 
-        handleCustomerCode(Main.getGlobalAccessCode(),
-                accessCode -> scriptEngine.eval(script.getScript()));
+        handleCustomerCode(null, accessCode -> scriptEngine.eval(script.getScript()));
 
         try {
             if (script.getHref() != null && !script.getHref().trim().equals("")) {
                 webClient.getAbs(script.getHref()).send(ar -> {
                     if (ar.succeeded()) {
                         String result = ar.result().bodyAsString();
-                        handleCustomerCode(Main.getGlobalAccessCode(),
-                                accessCode -> scriptEngine.eval(result));
+                        handleCustomerCode(null, accessCode -> scriptEngine.eval(result));
                     } else {
                         handleThrowableMessage(ar.cause());
                     }
