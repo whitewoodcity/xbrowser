@@ -37,4 +37,25 @@ public class StringUtils {
 
         return sb.toString();
     }
+
+    private static final Pattern charsetPattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
+
+    /**
+     * Parse out a charset from a content type header.
+     *
+     * @param contentType
+     *            e.g. "text/html; charset=EUC-JP"
+     * @return "EUC-JP", or null if not found. Charset is trimmed and
+     *         uppercased.
+     */
+    public static String getCharsetFromContentType(String contentType) {
+        if (contentType == null)
+            return null;
+
+        Matcher m = charsetPattern.matcher(contentType);
+        if (m.find()) {
+            return m.group(1).trim().toUpperCase();
+        }
+        return null;
+    }
 }

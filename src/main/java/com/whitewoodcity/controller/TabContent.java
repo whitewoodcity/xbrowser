@@ -11,6 +11,7 @@ import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.thread.CustomerThread;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
+import com.whitewoodcity.util.StringUtils;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -169,14 +170,19 @@ public class TabContent extends App implements Initializable {
 
     private void handleHttpResponse(String url, HttpResponse response) {
         ParentType type;
+        String contentType = response.getHeader("Content-Type");
         if (url.endsWith("xmlv") ||
-                (response.getHeader("Content-Type") != null &&
-                        response.getHeader("Content-Type").endsWith("xmlv"))) {
+                (contentType != null && contentType.split(";")[0].trim().endsWith("xmlv"))) {
             type = ParentType.GROUP;
         } else {
             type = ParentType.WEB_VIEW;
         }
-        String result = response.bodyAsString();
+        String encoding = "UTF-8";
+        if(contentType != null){
+            String charset = StringUtils.getCharsetFromContentType(response.getHeader("Content-Type"));
+            if(charset!=null) encoding = charset;
+        }
+        String result = response.bodyAsString(encoding);
         Platform.runLater(() -> processParent(type, result, url));
     }
 
