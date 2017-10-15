@@ -28,7 +28,7 @@ public class Page extends Tab{
         setClosable(true);
         tooltip=new Tooltip();
         tooltip.setText(title);
-        setTooltip(tooltip);
+        tooltip.textProperty().bind(this.textProperty());
         try {
             StackPane headerArea = (StackPane) pagePane.lookup(".tab-header-area");
 

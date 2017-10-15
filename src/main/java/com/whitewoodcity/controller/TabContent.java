@@ -92,8 +92,7 @@ public class TabContent extends App implements Initializable {
         webClient = WebClient.create(Main.vertx);
         header.setSpacing(10);
         header.setPadding(new Insets(10));
-        urlInput.prefWidthProperty().bind(header.widthProperty().subtract(50)
-                .subtract(menu.widthProperty()).subtract(exceptionButton.widthProperty()));
+        urlInput.prefWidthProperty().bind(header.widthProperty().multiply(3).divide(4));
         urlInput.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) load();
         });
