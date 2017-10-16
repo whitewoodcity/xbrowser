@@ -10,7 +10,9 @@ Here is a quick start for building an online application in 5 minutes.
 
 <img width="960" alt="1" src="https://user-images.githubusercontent.com/5525436/31541744-542c9800-afd5-11e7-9949-288ee753a1fb.png">
 
-2) Type in www.google.com then enter, you will see the Google website.
+2) Type in www.wikipedia.org then enter, you will see the Wikipedia website.
+
+<img width="965" alt="1" src="https://user-images.githubusercontent.com/5525436/31616809-4cb2e91e-b253-11e7-88a7-41192f1f00a5.png">
 
 3) Create a test.xmlv and type in following text: 
 
