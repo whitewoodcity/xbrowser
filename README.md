@@ -58,5 +58,5 @@ save it, reopen the file:
 	</script>
 </xmlv>
 ```
-Save and reopen the file, vola the animation is out there.
+Save and reopen the file, the animation is out there.
 
