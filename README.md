@@ -38,3 +38,23 @@ save it(Ctrl+S/Cmd+S on mac). Then open the XBrowser and use the shortcut(Ctrl+L
 ```
 
 save it, reopen the file:
+<img width="960" alt="1" src="https://user-images.githubusercontent.com/5525436/31616450-5d92fce8-b252-11e7-8088-82a42b8fbf76.png">
+
+5) Expand both json and script tags:
+
+```xml
+<xmlv>
+	<json>
+		[{"type":"button","id":"button001","x":10,"y":10,"text":"A normal button"}]
+	</json>
+	<script>
+		timer = app.timer
+		timer.action = { now -> 
+			button001.x += 1
+		}
+		timer.start()
+	</script>
+</xmlv>
+```
+Save and reopen the file, vola the animation is out there.
+
