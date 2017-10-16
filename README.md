@@ -23,4 +23,18 @@ Here is a quick start for building an online application in 5 minutes.
 </xmlv>
 ```
 
-save it. Then open the XBrowser and use the shortcut(Ctrl+L/Cmd+L on mac) to initiate file chooser and then choose the test.xmlv file you just created.
+save it(Ctrl+S/Cmd+S on mac). Then open the XBrowser and use the shortcut(Ctrl+L/Cmd+L on mac) to initiate file chooser and then choose the test.xmlv file you just created.
+<img width="960" alt="1" src="https://user-images.githubusercontent.com/5525436/31615994-071f58d0-b251-11e7-912b-beb6ec3d5e0b.png">
+
+4) Expand json to:
+
+```xml
+<xmlv>
+	<json>
+		[{"type":"button","id":"button001","x":10,"y":10,"text":"A normal button"}]
+	</json>
+	<script/>
+</xmlv>
+```
+
+save it, reopen the file:
