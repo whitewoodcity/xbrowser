@@ -16,7 +16,7 @@ public class Form extends Control{
     StringProperty id = new SimpleStringProperty();
     TabContent app;
     JsonArray children = new JsonArray();
-    String method;
+    String method = "post";
     String action;
     FormHandler handler;
 
@@ -43,7 +43,8 @@ public class Form extends Control{
     }
 
     public void setMethod(String method) {
-        this.method = method;
+        if(method!=null)
+            this.method = method;
     }
 
     public String getAction() {
@@ -58,30 +59,26 @@ public class Form extends Control{
         this.handler = action;
     }
 
-//    public void submit() throws InterruptedException, ExecutionException{
-//        if(handler.handle()) return;
-//
-//        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-//
-//        for(int i = 0;i<children.size();i++){
-//            String id = children.getValue(i).toString();
-//
-//            Object object = app.getContext().get(id);
-//            if(object!=null && object instanceof Control){
-//                Control control = (Control)object;
-//                if(control.getName()==null || control.getName().isEmpty())
-//                    continue;
-//                form.set(control.getName(),control.getValue().toString());
-//            }
-//        }
-//        for(String key:jsonObject.fieldNames()){
-//            form.add(key,jsonObject.getValue(key).toString());
-//        }
-//
-//        app.submit(form,method,action);
-//    }
+    public void submit() throws InterruptedException, ExecutionException{
+        prepareData();
+
+        app.load(new JsonObject()
+                .put("method", method)
+                .put("abs", action)
+                .put("data", jsonObject)
+                .put("type","submit"));
+    }
 
     public void send() throws InterruptedException, ExecutionException{
+        prepareData();
+
+        app.load(new JsonObject()
+                .put("method", method)
+                .put("abs", action)
+                .put("data", jsonObject));
+    }
+
+    private void prepareData() throws InterruptedException, ExecutionException{
         if(handler.handle()) return;
 
         for(int i = 0;i<children.size();i++){
@@ -96,12 +93,8 @@ public class Form extends Control{
                 jsonObject.put(control.getName(),control.getValue());
             }
         }
-
-        app.load(new JsonObject()
-                .put("method", method)
-                .put("abs", action)
-                .put("data", jsonObject));
     }
+
 
     @Override
     public String getId() {
