@@ -2,21 +2,18 @@ package com.whitewoodcity.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
-import com.whitewoodcity.core.bean.*;
+import com.whitewoodcity.core.bean.CSS;
 import com.whitewoodcity.core.bean.Class;
+import com.whitewoodcity.core.bean.Script;
+import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.thread.CustomerThread;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
-import com.whitewoodcity.util.StringUtils;
 import com.whitewoodcity.verticle.WebClientVerticle;
-import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.client.HttpResponse;
-import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.concurrent.Task;
@@ -130,12 +127,12 @@ public class TabContent extends App implements Initializable {
 
     public void load() {
         JsonObject params = new JsonObject()
-                .put("abs",urlInput.getText());
+                .put("abs", urlInput.getText());
         load(params);
     }
 
-    public void load(String url){
-        load(new JsonObject().put("abs",url));
+    public void load(String url) {
+        load(new JsonObject().put("abs", url));
     }
 
     public void load(JsonObject params) {
@@ -411,11 +408,11 @@ public class TabContent extends App implements Initializable {
         return context;
     }
 
-    public void send(String method, String action, JsonObject data){
+    public void send(String method, String action, JsonObject data) {
         load(new JsonObject()
                 .put("method", method)
-                .put("abs",action)
-                .put("data",data));
+                .put("abs", action)
+                .put("data", data));
     }
 
     public void close(Event event) {
