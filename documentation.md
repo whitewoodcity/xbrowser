@@ -14,7 +14,11 @@ Noun elements are used to identify and describe page elements.
 
 ## <a name="preload"></a>Preload
 
-Preload element describes resources to be loaded before renderring the page. The element content is defined as several key=value pairs separated by semicolon; 
+Preload element describes resources to be loaded before renderring the page. Only three types of resources are supported:
+wav|mp3,mp4|png,jpg,gif etc.
+-|-|-
+[AudioClip](http://download.java.net/java/jdk9/jfxdocs/javafx/scene/media/AudioClip.html)| [Media](http://download.java.net/java/jdk9/jfxdocs/javafx/scene/media/Media.html)|[Image](http://download.java.net/java/jdk9/jfxdocs/javafx/scene/image/Image.html)
+The element content is defined as several key=value pairs separated by semicolon; 
 
 ```xml
 <preload>
