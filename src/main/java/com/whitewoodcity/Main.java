@@ -4,6 +4,7 @@ import com.whitewoodcity.security.ApplicationSecurityManager;
 import com.whitewoodcity.thread.CustomerThread;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
+import com.whitewoodcity.verticle.WebClientVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import javafx.application.Application;
@@ -100,6 +101,7 @@ public class Main extends Application {
         System.getProperties().setProperty(DEFAULT_MAX_WORKER_EXECUTE_TIME,
                 vertxOptions.getMaxWorkerExecuteTime()/1000000+vertxOptions.getMaxWorkerExecuteTime()/5000000+"");
         vertx = Vertx.vertx(vertxOptions);
+        vertx.deployVerticle(WebClientVerticle.class.getName());
         scriptEngineManager = new ScriptEngineManager();
         generateNames(Locale.getDefault());
 

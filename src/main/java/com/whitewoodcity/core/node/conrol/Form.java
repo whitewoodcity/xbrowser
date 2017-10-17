@@ -58,28 +58,28 @@ public class Form extends Control{
         this.handler = action;
     }
 
-    public void submit() throws InterruptedException, ExecutionException{
-        if(handler.handle()) return;
-
-        MultiMap form = MultiMap.caseInsensitiveMultiMap();
-
-        for(int i = 0;i<children.size();i++){
-            String id = children.getValue(i).toString();
-
-            Object object = app.getContext().get(id);
-            if(object!=null && object instanceof Control){
-                Control control = (Control)object;
-                if(control.getName()==null || control.getName().isEmpty())
-                    continue;
-                form.set(control.getName(),control.getValue().toString());
-            }
-        }
-        for(String key:jsonObject.fieldNames()){
-            form.add(key,jsonObject.getValue(key).toString());
-        }
-
-        app.submit(form,method,action);
-    }
+//    public void submit() throws InterruptedException, ExecutionException{
+//        if(handler.handle()) return;
+//
+//        MultiMap form = MultiMap.caseInsensitiveMultiMap();
+//
+//        for(int i = 0;i<children.size();i++){
+//            String id = children.getValue(i).toString();
+//
+//            Object object = app.getContext().get(id);
+//            if(object!=null && object instanceof Control){
+//                Control control = (Control)object;
+//                if(control.getName()==null || control.getName().isEmpty())
+//                    continue;
+//                form.set(control.getName(),control.getValue().toString());
+//            }
+//        }
+//        for(String key:jsonObject.fieldNames()){
+//            form.add(key,jsonObject.getValue(key).toString());
+//        }
+//
+//        app.submit(form,method,action);
+//    }
 
     public void send() throws InterruptedException, ExecutionException{
         if(handler.handle()) return;
@@ -97,7 +97,7 @@ public class Form extends Control{
             }
         }
 
-        app.send(jsonObject,method,action);
+        app.send(method,action,jsonObject);
     }
 
     @Override

@@ -136,9 +136,9 @@ public abstract class App {
 
     protected abstract void disposeKey();
 
-    public abstract void submit(MultiMap form, String method, String action);
+//    public abstract void submit(MultiMap form, String method, String action);
 
-    public abstract void send(JsonObject json, String method, String action);
+    public abstract void send(String method, String action,JsonObject data);
 
     public void send(int port, String address, String value) {
         if (datagramSocket == null) datagramSocket = Main.vertx.createDatagramSocket();

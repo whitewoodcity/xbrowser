@@ -2,17 +2,17 @@ package com.whitewoodcity.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.whitewoodcity.Main;
-import com.whitewoodcity.core.bean.CSS;
+import com.whitewoodcity.core.bean.*;
 import com.whitewoodcity.core.bean.Class;
-import com.whitewoodcity.core.bean.Script;
-import com.whitewoodcity.core.bean.XmlV;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
 import com.whitewoodcity.thread.CustomerThread;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
 import com.whitewoodcity.util.StringUtils;
+import com.whitewoodcity.verticle.WebClientVerticle;
 import io.vertx.core.MultiMap;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
@@ -82,7 +82,8 @@ public class TabContent extends App implements Initializable {
     private File directory;
     private Map<String, Object> preload = new HashMap<>();
     private Map<String, com.whitewoodcity.core.node.Node> context = new HashMap<>();
-    private WebClient webClient;
+    private Vertx vertx;
+    private Map<String, String> resultMap;
     private ScriptEngine scriptEngine;
     private Node parent;
     private WebView webView;
@@ -90,7 +91,8 @@ public class TabContent extends App implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        webClient = WebClient.create(Main.vertx);
+        vertx = Main.vertx;
+        resultMap = vertx.sharedData().getLocalMap("resultMap");
         header.setSpacing(10);
         header.setPadding(new Insets(10));
         urlInput.prefWidthProperty().bind(header.widthProperty().multiply(3).divide(4));
@@ -127,63 +129,53 @@ public class TabContent extends App implements Initializable {
     }
 
     public void load() {
-        load(urlInput.getText());
+        JsonObject params = new JsonObject()
+                .put("abs",urlInput.getText());
+        load(params);
     }
 
-    public void load(String url) {
-        if (url == null || url.equals("")) {
-            handleMessage("Empty URL");
-            return;
-        }
+    public void load(String url){
+        load(new JsonObject().put("abs",url));
+    }
+
+    public void load(JsonObject params) {
         removeParent();
-        if (url.startsWith("file:")) {
+        if (params.getString("abs").startsWith("file:")) {
             try {
-                URI uri = new URI(url);
+                URI uri = new URI(params.getString("abs"));
                 File file = new File(uri);
                 loadFile(file);
             } catch (Exception e) {
                 handleExceptionMessage(e);
             }
         } else {
-            loadWeb(url);
+            loadWeb(params);
         }
     }
 
-    private void loadWeb(String url) {
-        if (!url.startsWith("http")) {
-            url = "http://" + url;
-        }
-        String immutableUrl = url;
-        try {
-            webClient.getAbs(url).send(ar -> {
-                if (ar.succeeded()) {
-                    handleHttpResponse(immutableUrl, ar.result());
-                } else {
-                    Throwable throwable = ar.cause();
-                    handleExceptionMessage(throwable);
-                }
-            });
-        } catch (Exception e) {
-            handleExceptionMessage(e);
-        }
+    private void loadWeb(JsonObject params) {
+        vertx.eventBus().<JsonObject>send(WebClientVerticle.class.getName(), params, ar -> {
+            if (ar.succeeded()) {
+                handleHttpResult(ar.result().body());
+            } else {
+                handleThrowableMessage(ar.cause());
+            }
+        });
     }
 
-    private void handleHttpResponse(String url, HttpResponse response) {
+    private void handleHttpResult(JsonObject result) {
         ParentType type;
-        String contentType = response.getHeader("Content-Type");
-        if (url.endsWith("xmlv") ||
-                (contentType != null && contentType.split(";")[0].trim().endsWith("xmlv"))) {
+        if (!"succeed".equals(result.getString("result"))) {
+            type = ParentType.ERROR_MESSAGE;
+        } else if (result.getString("type").endsWith("xmlv")) {
             type = ParentType.GROUP;
         } else {
             type = ParentType.WEB_VIEW;
         }
-        String encoding = "UTF-8";
-        if(contentType != null){
-            String charset = StringUtils.getCharsetFromContentType(response.getHeader("Content-Type"));
-            if(charset!=null) encoding = charset;
-        }
-        String result = response.bodyAsString(encoding);
-        Platform.runLater(() -> processParent(type, result, url));
+
+        String content = resultMap.remove(result.getString("content"));
+
+        Platform.runLater(() -> processParent(type, content, result.getString("abs")));
     }
 
     private void handleExceptionMessage(Throwable e, String message) {
@@ -332,7 +324,8 @@ public class TabContent extends App implements Initializable {
         }
 
         urlInput.setText(urlOrMsg);
-        container.getChildren().add(0, parent);
+        if (!container.getChildren().contains(parent))
+            container.getChildren().add(0, parent);
         container.requestFocus();
     }
 
@@ -418,92 +411,15 @@ public class TabContent extends App implements Initializable {
         return context;
     }
 
-    public void send(JsonObject json, String method, String action) {
-
-        HttpMethod m = HttpMethod.POST;
-        if (method != null) {
-            switch (method.trim().toLowerCase()) {
-                case "get":
-                    m = HttpMethod.GET;
-                    break;
-                case "delete":
-                    m = HttpMethod.DELETE;
-                    break;
-                case "put":
-                    m = HttpMethod.PUT;
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (action == null || action.isEmpty()) return;
-
-        String url = action.trim();
-        if (!url.startsWith("http")) {
-            action = "http://" + action;
-        }
-
-        if (json.isEmpty()) {
-            webClient.requestAbs(m, action)
-                    .send(ar -> {
-                        if (ar.succeeded()) handleHttpResponse(url, ar.result());
-                        else handleExceptionMessage(ar.cause());
-                    });
-        } else {
-            webClient.requestAbs(m, action)
-                    .sendJsonObject(json, ar -> {
-                        if (ar.succeeded()) handleHttpResponse(url, ar.result());
-                        else handleExceptionMessage(ar.cause());
-                    });
-        }
-    }
-
-    public void submit(MultiMap form, String method, String action) {
-
-        HttpMethod m = HttpMethod.POST;
-        if (method != null) {
-            switch (method.trim().toLowerCase()) {
-                case "get":
-                    m = HttpMethod.GET;
-                    break;
-                case "delete":
-                    m = HttpMethod.DELETE;
-                    break;
-                case "put":
-                    m = HttpMethod.PUT;
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (action == null || action.isEmpty()) return;
-
-        String url = action.trim();
-        if (!url.startsWith("http")) {
-            action = "http://" + action;
-        }
-
-        if (form.isEmpty()) {
-            webClient.requestAbs(m, action)
-                    .send(ar -> {
-                        if (ar.succeeded()) handleHttpResponse(url, ar.result());
-                        else handleExceptionMessage(ar.cause());
-                    });
-        } else {
-            webClient.requestAbs(m, action)
-                    .sendForm(form, ar -> {
-                        if (ar.succeeded()) handleHttpResponse(url, ar.result());
-                        else handleExceptionMessage(ar.cause());
-                    });
-        }
+    public void send(String method, String action, JsonObject data){
+        load(new JsonObject()
+                .put("method", method)
+                .put("abs",action)
+                .put("data",data));
     }
 
     public void close(Event event) {
         removeParent();
-        if (webClient != null) {
-            webClient.close();
-            webClient = null;
-        }
 
         try {
             Res.removeTempDirectory(directory);
@@ -562,26 +478,28 @@ public class TabContent extends App implements Initializable {
     }
 
     private void processCss(CSS css) {
-        try {
-            if (css.getHref() != null && !css.getHref().trim().equals("")) {
-                webClient.getAbs(css.getHref()).send(ar -> {
+
+        vertx.eventBus().<JsonObject>send(WebClientVerticle.class.getName(),
+                new JsonObject().put("abs", css.getHref()),
+                ar -> {
                     if (ar.succeeded()) {
-                        String result = ar.result().bodyAsString();
-                        Platform.runLater(() -> {
-                            try {
-                                processCss(result);
-                            } catch (Throwable throwable) {
-                                handleThrowableMessage(throwable);
-                            }
-                        });
+                        JsonObject result = ar.result().body();
+                        String content = resultMap.remove(result.getString("content"));
+                        if ("succeed".equals(result.getString("result"))) {
+                            Platform.runLater(() -> {
+                                try {
+                                    processCss(content);
+                                } catch (Throwable throwable) {
+                                    handleThrowableMessage(throwable);
+                                }
+                            });
+                        } else {
+                            handleThrowableMessage(new Exception(content));
+                        }
                     } else {
                         handleThrowableMessage(ar.cause());
                     }
                 });
-            }
-        } catch (Throwable throwable) {
-            handleThrowableMessage(throwable);
-        }
 
         try {
             processCss(css.getCss());
@@ -617,6 +535,7 @@ public class TabContent extends App implements Initializable {
     }
 
     private void processScript(Script script) {
+
         String scriptType = script.getType();
         scriptEngine = Main.scriptEngineManager.getEngineByName(scriptType);
 
@@ -633,25 +552,26 @@ public class TabContent extends App implements Initializable {
 
         handleCustomerCode(null, accessCode -> scriptEngine.eval(script.getScript()));
 
-        try {
-            if (script.getHref() != null && !script.getHref().trim().equals("")) {
-                webClient.getAbs(script.getHref()).send(ar -> {
+        vertx.eventBus().<JsonObject>send(WebClientVerticle.class.getName(),
+                new JsonObject().put("abs", script.getHref()),
+                ar -> {
                     if (ar.succeeded()) {
-                        String result = ar.result().bodyAsString();
-                        handleCustomerCode(null, accessCode -> scriptEngine.eval(result));
+                        JsonObject result = ar.result().body();
+                        String content = resultMap.remove(result.getString("content"));
+                        if ("succeed".equals(result.getString("result"))) {
+                            handleCustomerCode(null, accessCode -> scriptEngine.eval(content));
+                        } else {
+                            handleThrowableMessage(new Exception(content));
+                        }
                     } else {
                         handleThrowableMessage(ar.cause());
                     }
                 });
-            }
-        } catch (Throwable throwable) {
-            handleThrowableMessage(throwable);
-        }
     }
 
     private void handleCustomerCode(String accessCode, Handler handler) {
 
-        Main.vertx.executeBlocking(fut -> {
+        vertx.executeBlocking(fut -> {
             Thread thread = new CustomerThread(() -> {
                 try {
                     fut.complete(handler.handle(accessCode));
@@ -661,12 +581,12 @@ public class TabContent extends App implements Initializable {
             });
             thread.setDaemon(true);
             thread.start();
-            Main.vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME), id -> {
+            vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME), id -> {
                 if (thread.isAlive()) {
                     thread.interrupt();
                 }
             });
-            Main.vertx.setTimer(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME), id -> {
+            vertx.setTimer(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME), id -> {
                 if (thread.isAlive()) {
                     thread.stop();
                 }
