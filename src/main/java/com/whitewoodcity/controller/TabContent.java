@@ -126,9 +126,7 @@ public class TabContent extends App implements Initializable {
     }
 
     public void load() {
-        JsonObject params = new JsonObject()
-                .put("abs", urlInput.getText());
-        load(params);
+        load(urlInput.getText());
     }
 
     public void load(String url) {
@@ -406,13 +404,6 @@ public class TabContent extends App implements Initializable {
 
     public Map<String, com.whitewoodcity.core.node.Node> getContext() {
         return context;
-    }
-
-    public void send(String method, String action, JsonObject data) {
-        load(new JsonObject()
-                .put("method", method)
-                .put("abs", action)
-                .put("data", data));
     }
 
     public void close(Event event) {

@@ -97,7 +97,10 @@ public class Form extends Control{
             }
         }
 
-        app.send(method,action,jsonObject);
+        app.load(new JsonObject()
+                .put("method", method)
+                .put("abs", action)
+                .put("data", jsonObject));
     }
 
     @Override

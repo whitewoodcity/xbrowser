@@ -8,7 +8,6 @@ import com.whitewoodcity.ui.ExceptionBox;
 import com.whitewoodcity.ui.Page;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
-import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.json.JsonObject;
@@ -136,10 +135,6 @@ public abstract class App {
 
     protected abstract void disposeKey();
 
-//    public abstract void submit(MultiMap form, String method, String action);
-
-    public abstract void send(String method, String action,JsonObject data);
-
     public void send(int port, String address, String value) {
         if (datagramSocket == null) datagramSocket = Main.vertx.createDatagramSocket();
         datagramSocket.send(value, port, address, ar -> {
@@ -223,7 +218,6 @@ public abstract class App {
         else m = null;
         Platform.runLater(() -> exceptionBox.setMessage(m));
     }
-
 
     protected void displayOrHideExceptionBox() {
         if (exceptionBox.isShowing()) exceptionBox.hide();
