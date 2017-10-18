@@ -63,9 +63,16 @@ Cavans|canvas|Node|-|width,height|-
 Component|method name|parameters|return value|comment
 :---:|:---:|:---|:---|:---
 Canvas|clear|-|void|Clear whole canvas.
+Canvas|text|String text|void|Draws a text at 0, 0 position.
+Canvas|text|String text, Number x, y|void|Draws a text at x, y position.
+Canvas|text|String text, Number x, y, maxwidth|void|Draws a text at x, y position with maxwidth.
 Canvas|image|Image image, Number x, y|void|Draws an image at the given x, y position for the upper left of the image.
 Canvas|image|Image image, Number x, y, width, height|void|Draws an image into the given destination rectangle of the canvas.
 Canvas|image|Image image, Number sx, sy, swidth, sheight, dx, dy, dwidth, dheight|void|Draws the specified **source** rectangle of the given image to the given **destination** rectangle of the Canvas.
+Canvas|line|Number sx,sy,ex,ey|void|Draws a line from sx,sy to ex,dy.
+Canvas|reset|-|void|Reset paint.
+Canvas|alpha|Number[0,1] alpha|void|Sets the alpha of paint.
+Canvas|color|String color|void|Sets paint color with [web color string](https://en.wikipedia.org/wiki/Web_colors).
 
 ## <a name="preload"></a>Preload
 
