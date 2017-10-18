@@ -84,7 +84,7 @@ Canvas|square|Number topleftx, toplefty, side|void|Strokes a square with current
 Canvas|square|Number topleftx, toplefty, side, Bool filled|void|Fills or strokes a square with current paint.
 Canvas|circle|Number centrex, centrey, radius|void|Strokes a circle with current paint.
 Canvas|circle|Number centrex, centrey, radius, Bool filled|void|Fills or strokes a circle with current paint.
-Canvas|rotateImage, rotate_image, rotateimage|Image image, Number tlx, tly, width, height, angle, px, py|void|Draws an image on a graphics context. The image is drawn at (tlpx, tlpy) rotated by angle pivoted around the point: <br/>(tlpx + image.getWidth() / 2, tlpy + image.getHeight() / 2).
+Canvas|rotateImage, rotate_image, rotateimage|Image image, Number tlx, tly, width, height, angle, px, py|void|Draws an image on a graphics context. The image is drawn at (tlx, tly) rotated by angle pivoted around the point (px, py).
 
 ## <a name="preload"></a>Preload
 
