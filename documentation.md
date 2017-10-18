@@ -22,7 +22,7 @@ JSON element describes components placed on the page.
 </json>
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31708141-c9d4901c-b3b3-11e7-8d78-c359da3ed3e9.png">
-For more about JSON file format please refer to JSON website: [json.org](http://json.org)
+For more about JSON file format please refer to JSON website: http://json.org
 
 There are only 3 type of JSON root element: JsonObject, JsonArray and null:
 
