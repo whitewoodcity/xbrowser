@@ -6,7 +6,9 @@ XBrowser uses **XMLV** a XML extension as its layout standard. All display eleme
 <xmlv title="Hello XMLV"/>
 ```
 
-There are two types of xmlv elements: [noun elements](#noun) and [verb elements](#verb).
+There are two types of xmlv elements:
+1) [noun elements](#noun) 
+2) [verb elements](#verb)
 
 ## <a name="noun"></a>Noun Elements
 
