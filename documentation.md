@@ -73,6 +73,18 @@ Canvas|line|Number sx,sy,ex,ey|void|Draws a line from sx,sy to ex,dy.
 Canvas|reset|-|void|Reset paint.
 Canvas|alpha|Number[0,1] alpha|void|Sets the alpha of paint.
 Canvas|color|String color|void|Sets paint color with [web color string](https://en.wikipedia.org/wiki/Web_colors).
+Canvas|rgb|Number[0,255] red, green, blue|void|Sets the color of paint with rgb value.
+Canvas|argb|Number[0,1] alpha, Number[0,255] red, green, blue|void|Sets the color of paint with argb value.
+Canvas|hsb|Number[0,360] hue, Number[0,1] saturation, brightness|void|Sets the color of paint with hsb value.
+Canvas|rect|Number x, y, width, height|void|Strokes a rectangle with current paint.
+Canvas|rect|Number x, y, width, height, Bool filled|void|Fills or strokes a rectangle with current paint.
+Canvas|oval|Number x, y, width, height|void|Strokes an oval with current paint.
+Canvas|oval|Number x, y, width, height, Bool filled|void|Fills or strokes an oval with current paint.
+Canvas|square|Number topleftx, toplefty, side|void|Strokes a square with current paint.
+Canvas|square|Number topleftx, toplefty, side, Bool filled|void|Fills or strokes a square with current paint.
+Canvas|circle|Number centrex, centrey, radius|void|Strokes a circle with current paint.
+Canvas|circle|Number centrex, centrey, radius, Bool filled|void|Fills or strokes a circle with current paint.
+Canvas|rotateImage, rotate_image, rotateimage|Image image, Number tlx, tly, width, height, angle, px, py|void|Draws an image on a graphics context. The image is drawn at (tlpx, tlpy) rotated by angle pivoted around the point: <br/>(tlpx + image.getWidth() / 2, tlpy + image.getHeight() / 2).
 
 ## <a name="preload"></a>Preload
 
