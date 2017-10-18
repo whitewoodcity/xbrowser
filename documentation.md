@@ -53,6 +53,20 @@ canvas.text("i am a canvas",100,100)
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31709529-e7d17c84-b3b7-11e7-87a6-cbedacb1858e.png">
 
+Component List
+
+Component|type|parent type|string properties|number properties|bool properties
+:---:|:---:|:---:|:---|:---|:---
+Node|-|-|id|rotate,opacity|disable,visible
+Cavans|canvas|Node|-|width,height|-
+
+Component|method name|parameters|return value|comment
+:---:|:---:|:---|:---|:---
+Canvas|clear|-|void|clear all canvas
+Canvas|image|Image image, Number x, Number y|void|draws an image at the given x, y position 
+Canvas|image|Image image, Number x, Number y, Number width, Number height|void|Draws an image into the given destination rectangle of the canvas.
+
+
 ## <a name="preload"></a>Preload
 
 Preload element describes resources to be loaded before renderring the page. Only three types of resources are supported:
