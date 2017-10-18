@@ -7,8 +7,8 @@ XBrowser uses **XMLV** a XML extension as its layout standard. All display eleme
 ```
 
 There are two types of xmlv elements:
-1) [noun elements](#noun) 
-2) [verb elements](#verb)
+1) [Noun elements](#noun) 
+2) [Verb elements](#verb)
 
 ## <a name="noun"></a>Noun Elements
 
