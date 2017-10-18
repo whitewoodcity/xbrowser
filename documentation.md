@@ -39,7 +39,7 @@ There are only 3 types of JSON root element: JsonObject, JsonArray and null:
 [{"type":"button","text":"i am a button"}]
 </json>
 ```
-<imgsrc="https://user-images.githubusercontent.com/5525436/31709530-e82dd20e-b3b7-11e7-8bc7-49a250c79b40.png">
+<img src="https://user-images.githubusercontent.com/5525436/31709530-e82dd20e-b3b7-11e7-8bc7-49a250c79b40.png">
 3) If the root element is empty, the page will by default place a canvas with id:canvas.
 ```xml
 <json/>
