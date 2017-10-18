@@ -12,6 +12,19 @@ There are two types of xmlv elements: nouns elements and verbs elements.
 
 Noun elements are used to identify and describe page elements.
 
+## <a name="json"></a>JSON
+
+JSON element describes components placed on the page. 
+
+```xml
+<json>
+{"type":"button","text":"i am a button"}
+</json>
+```
+<img src="https://user-images.githubusercontent.com/5525436/31708141-c9d4901c-b3b3-11e7-8d78-c359da3ed3e9.png">
+
+For more about JSON file format please see JSON website: [json.org](http://json.org/)
+
 ## <a name="preload"></a>Preload
 
 Preload element describes resources to be loaded before renderring the page. Only three types of resources are supported:
@@ -24,7 +37,8 @@ The element content is defined as several key=value pairs separated by semicolon
 
 ```xml
 <preload>
-image001=http://w2v4.com/static/image001.png;image002=http://w2v4.com/static/image002.png
+image001=http://w2v4.com/static/image001.png;
+image002=http://w2v4.com/static/image002.png;
 </preload>
 ```
 The browser will download and cache resources beforehand.
@@ -45,7 +59,6 @@ renew:image001=http://w2v4.com/static/image001.png;Renew:image002=http://w2v4.co
 </preload>
 ```
 
-## <a name="json"></a>JSON
 ## <a name="css"></a>CSS
 
 ## <a name="verb">Verb Elements
