@@ -24,11 +24,30 @@ JSON element describes components placed on the page.
 <img src="https://user-images.githubusercontent.com/5525436/31708141-c9d4901c-b3b3-11e7-8d78-c359da3ed3e9.png">
 For more about JSON file format please refer to JSON website: http://json.org
 
-There are only 3 type of JSON root element: JsonObject, JsonArray and null:
+There are only 3 types of JSON root element: JsonObject, JsonArray and null:
 
 1) If the root element is a JsonObject, the page will create components based on the information provided and place at the central middle of the page.
+```xml
+<json>
+{"type":"button","text":"i am a button"}
+</json>
+```
+<img src="https://user-images.githubusercontent.com/5525436/31709531-e88194c0-b3b7-11e7-8f52-51543c2b42c1.png">
 2) If the root element is a JsonArray, the page will create a two-dimensional space and render the components based on the JsonObject within the JsonArray, the component coordinates can be specified with x,y layout.
+```xml
+<json>
+[{"type":"button","text":"i am a button"}]
+</json>
+```
+<imgsrc="https://user-images.githubusercontent.com/5525436/31709530-e82dd20e-b3b7-11e7-8bc7-49a250c79b40.png">
 3) If the root element is empty, the page will by default place a canvas with id:canvas.
+```xml
+<json/>
+<script>
+canvas.text("i am a canvas",100,100)
+</script>
+```
+<img src="https://user-images.githubusercontent.com/5525436/31709529-e7d17c84-b3b7-11e7-87a6-cbedacb1858e.png">
 
 ## <a name="preload"></a>Preload
 
