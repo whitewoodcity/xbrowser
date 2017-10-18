@@ -6,9 +6,9 @@ XBrowser uses **XMLV** a XML extension as its layout standard. All display eleme
 <xmlv title="Hello XMLV"/>
 ```
 
-There are two types of xmlv elements: nouns elements and verbs elements.
+There are two types of xmlv elements: [noun elements](#noun) and [verb elements](#verb).
 
-## Noun Elements
+## <a name="noun"></a>Noun Elements
 
 Noun elements are used to identify and describe page elements.
 
