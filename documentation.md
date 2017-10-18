@@ -37,7 +37,7 @@ There are only 3 types of JSON root element: JsonObject, JsonArray and null:
 
 ```xml
 <json>
-[{"type":"button","text":"i am a button"}]
+[{"type":"button","text":"i am a button","x":100,"y":100}]
 </json>
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31709530-e82dd20e-b3b7-11e7-8bc7-49a250c79b40.png">
