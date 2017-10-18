@@ -63,9 +63,9 @@ Cavans|canvas|Node|-|width,height|-
 Component|method name|parameters|return value|comment
 :---:|:---:|:---|:---|:---
 Canvas|clear|-|void|Clear whole canvas.
-Canvas|image|Image image, Number x, Number y|void|Draws an image at the given x, y position for the upper left of the image.
-Canvas|image|Image image,<br/> Number x, Number y,<br/> Number width, Number height|void|Draws an image into the given destination rectangle of the canvas.
-Canvas|image|Image image,<br/> Number sourcex, Number sourcey,<br/> Number sourcewidth, Number sourceheight,<br/> Number destinationx, Number destinationy,<br/> Number destinationwidth, Number destinationheight|void|Draws the specified source rectangle of the given image to the given destination rectangle of the Canvas.
+Canvas|image|Image image, Number x, y|void|Draws an image at the given x, y position for the upper left of the image.
+Canvas|image|Image image,<br/> Number x, y,<br/> Number width, height|void|Draws an image into the given destination rectangle of the canvas.
+Canvas|image|Image image,<br/> Number sourcex, sourcey,<br/> Number sourcewidth, sourceheight,<br/> Number destinationx, destinationy,<br/> Number destinationwidth, destinationheight|void|Draws the specified source rectangle of the given image to the given destination rectangle of the Canvas.
 
 ## <a name="preload"></a>Preload
 
