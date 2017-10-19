@@ -2,6 +2,8 @@
 
 XBrowser(Codename BlueShark) is a hybrid client for internet surfing, data visualization, business intelligence and online gaming etc. internet applications.
 
+[Documentation](https://github.com/whitewoodcity/xbrowser/blob/master/documentation.md)
+
 ## Quick Start
 
 Here is a quick start for building an online application in 5 minutes.
