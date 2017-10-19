@@ -63,6 +63,13 @@ Control|-|Node|name|x,y,width,height|-
 Chart|-|Node|title|x,y,width,height|-
 View|-|Node|-|x,y,width,height|-
 ImageView|img,image,imageview|View|-|-|-
+Label|label|Control|text|-|-
+Button|button|Control|text|-|-
+Hyperlink|hyperlink|Control|text|-|-
+TextField|textfield|Control|text|-|-
+ChoiceBox|choicebox|Control|-|-|-
+TableView|table,tableview|Control|-|-|-
+Form|form|Control|text|-|-
 
 ## <a name="preload"></a>Preload
 
