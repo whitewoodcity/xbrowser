@@ -92,7 +92,7 @@ TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,val
 "values":[[1,2,3],{"USA":3,"China":2,"Japan":1}]
 }
 ```
-<img src="https://user-images.githubusercontent.com/5525436/31760236-a5c71a52-b479-11e7-93ec-960e743d00f7.png">
+<img src="https://user-images.githubusercontent.com/5525436/31762602-4cfd1b80-b481-11e7-9bc9-75fc3b740417.png">
 
 ```json
 {
@@ -108,8 +108,7 @@ TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,val
 	]
 }
 ```
-
-<img src="https://user-images.githubusercontent.com/5525436/31762457-dcf33838-b480-11e7-9cfe-24e505d2855e.png">
+<img src="https://user-images.githubusercontent.com/5525436/31762603-4e49215a-b481-11e7-87c6-797d48874084.png">
 
 ## <a name="preload"></a>Preload
 
