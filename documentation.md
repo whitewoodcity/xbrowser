@@ -59,13 +59,13 @@ Component|type|parent|string properties|number properties|bool properties
 :---:|:---:|:---:|:---|:---|:---
 Node|-|-|id|rotate,opacity|disable,visible
 Cavans|canvas|Node|-|width,height|-
-Control|-|Node|name|x,y,width,height|-
+Control|-|Node|name,value|x,y,width,height|-
 Chart|-|Node|title|x,y,width,height|-
 View|-|Node|-|x,y,width,height|-
 ImageView|img,image,imageview|View|url,image|-|-
 Label|label|Control|text|-|-
 Button|button|Control|text|-|-
-Hyperlink|hyperlink|Control|text,value|-|-
+Hyperlink|hyperlink|Control|text|-|-
 TextField|textfield|Control|text|-|-
 Form|form|Control|text,action,method|-|-
 
