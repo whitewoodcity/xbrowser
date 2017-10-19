@@ -133,6 +133,7 @@ button001.action = { event ->
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31774833-7b702658-b4ac-11e7-8fbc-c35c73c8e96f.png">
 The form will be sent with following http request body in JSON format:
+
 ```json
 {"textfield":"Textfield","table":[{"col":"001"}]}
 ```
