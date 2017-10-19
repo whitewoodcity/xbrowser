@@ -110,6 +110,7 @@ TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,val
 }
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31762603-4e49215a-b481-11e7-87c6-797d48874084.png">
+
 Component|type|parent|string properties|number properties|JsonArray[String] properties
 :---:|:---:|:---:|:---|:---|:---
 Form|form|Control|text,action,method|-|children
