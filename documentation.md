@@ -72,7 +72,15 @@ Form|form|Control|text,action,method|-|-
 Component|type|parent|string properties|JsonArray[String] properties
 :---:|:---:|:---:|:---|:---
 ChoiceBox|choicebox|Control|value|item,items|-
-
+```json
+{
+"type":"choicebox",
+"id":"choicebox001",
+"x":100,"y":250,
+"items":["USA","Japan","China"],
+"value":"China"
+}
+```
 Component|type|parent|string properties|JsonArray[String] properties|bool properties
 :---:|:---:|:---:|:---|:---|:---
 TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,values|editable
