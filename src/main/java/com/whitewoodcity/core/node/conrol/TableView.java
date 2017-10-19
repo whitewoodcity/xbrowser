@@ -231,6 +231,9 @@ class Item{
         if(properties.get(name)==null){
             properties.put(name, new SimpleBooleanProperty());
         }
+        if(!(properties.get(name) instanceof BooleanProperty)){
+            properties.put(name, new SimpleBooleanProperty());
+        }
         return (BooleanProperty)properties.get(name);
     }
 
