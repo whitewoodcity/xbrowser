@@ -1,16 +1,14 @@
 package com.whitewoodcity.core.node.view;
 
 import com.whitewoodcity.core.node.Node;
-import com.whitewoodcity.core.node.conrol.Control;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-public class ImageView implements Node {
+public class ImageView extends View {
 
     javafx.scene.image.ImageView body;
 
@@ -29,63 +27,6 @@ public class ImageView implements Node {
         }
     }
 
-    public void setX(double x) {
-        if (Platform.isFxApplicationThread()) {
-            body.setLayoutX(x);
-        } else Platform.runLater(() -> body.setLayoutX(x));
-    }
-
-    public void setY(double y) {
-        if (Platform.isFxApplicationThread()) {
-            body.setLayoutY(y);
-        } else Platform.runLater(() -> body.setLayoutY(y));
-    }
-
-    public double getX() throws InterruptedException, ExecutionException {
-
-        if (Platform.isFxApplicationThread()) {
-            return body.getLayoutX();
-        }
-        final FutureTask<Double> task = new FutureTask<>(() -> body.getLayoutX());
-        Platform.runLater(task);
-        return task.get();
-
-
-    }
-
-    public double getY() throws InterruptedException, ExecutionException {
-        if (Platform.isFxApplicationThread()) {
-            return body.getLayoutY();
-        }
-        final FutureTask<Double> task = new FutureTask<>(() -> body.getLayoutY());
-        Platform.runLater(task);
-        return task.get();
-
-    }
-
-    public DoubleProperty xProperty() throws InterruptedException, ExecutionException {
-
-        if (Platform.isFxApplicationThread()) {
-            return body.layoutXProperty();
-        }
-        final FutureTask<DoubleProperty> task = new FutureTask<>(() -> body.layoutXProperty());
-        Platform.runLater(task);
-        return task.get();
-
-
-    }
-
-    public DoubleProperty yProperty() throws InterruptedException, ExecutionException {
-
-        if (Platform.isFxApplicationThread()) {
-            return body.layoutYProperty();
-        }
-        final FutureTask<DoubleProperty> task = new FutureTask<>(() -> body.layoutYProperty());
-        Platform.runLater(task);
-        return task.get();
-
-
-    }
 
     public DoubleProperty widthProperty() throws InterruptedException, ExecutionException {
 
@@ -95,8 +36,6 @@ public class ImageView implements Node {
         final FutureTask<DoubleProperty> task = new FutureTask<>(() -> body.fitWidthProperty());
         Platform.runLater(task);
         return task.get();
-
-
     }
 
     public DoubleProperty heightProperty() throws InterruptedException, ExecutionException {
@@ -107,7 +46,6 @@ public class ImageView implements Node {
         final FutureTask<DoubleProperty> task = new FutureTask<>(() -> body.fitHeightProperty());
         Platform.runLater(task);
         return task.get();
-
     }
 
     public void setWidth(double width) {
@@ -117,16 +55,12 @@ public class ImageView implements Node {
     }
 
     public double getWidth() throws InterruptedException, ExecutionException {
-
-
         if (Platform.isFxApplicationThread()) {
             return body.getFitWidth();
         }
         final FutureTask<Double> task = new FutureTask<>(() -> body.getFitWidth());
         Platform.runLater(task);
         return task.get();
-
-
     }
 
     public void setHeight(double height) {
@@ -136,7 +70,6 @@ public class ImageView implements Node {
     }
 
     public double getHeight() throws InterruptedException, ExecutionException {
-
         if (Platform.isFxApplicationThread()) {
             return body.getFitHeight();
         }

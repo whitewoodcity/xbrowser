@@ -10,6 +10,7 @@ import com.whitewoodcity.core.node.Pane;
 import com.whitewoodcity.core.node.chart.*;
 import com.whitewoodcity.core.node.conrol.*;
 import com.whitewoodcity.core.node.view.ImageView;
+import com.whitewoodcity.core.node.view.View;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -151,7 +152,7 @@ public class XmlV {
             case "imageview":
                 ImageView imageView = new ImageView(jsonObject.getString("url"));
                 imageView.setImage(app.getPreload().get(jsonObject.getString("image")));
-                decorateControl(imageView,jsonObject);
+                decorateView(imageView,jsonObject);
                 node = imageView;
                 break;
             case "table":
@@ -277,6 +278,19 @@ public class XmlV {
 
         return node;
     }
+
+    public void decorateView(View node, JsonObject jsonObject){
+        Double x, y, width, height;
+        x = jsonObject.getDouble("x");
+        y = jsonObject.getDouble("y");
+        width = jsonObject.getDouble("width");
+        height = jsonObject.getDouble("height");
+        node.setX(x==null?0:x);
+        node.setY(y==null?0:y);
+        if(width!=null) node.setWidth(width);
+        if(height!=null) node.setHeight(height);
+    }
+
 
     public void decorateControl(Control node, JsonObject jsonObject){
         Double x, y, width, height;
