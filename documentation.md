@@ -80,9 +80,11 @@ ChoiceBox|choicebox|Control|value|item,items|-
 "value":"China"
 }
 ```
+
 Component|type|parent|string properties|JsonArray[String] properties|bool properties
 :---:|:---:|:---:|:---|:---|:---
 TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,values|editable
+
 ```json
 {
 "type":"table","id":"table001",
