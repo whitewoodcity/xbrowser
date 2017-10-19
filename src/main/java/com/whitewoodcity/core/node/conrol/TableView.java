@@ -235,10 +235,18 @@ class Item{
     }
 
     public void setProperty(String name, Object value){
+        if(value instanceof Boolean) {
+            setProperty(name, (Boolean) value);
+            return;
+        }
+
         if(properties.get(name)==null){
             properties.put(name, new SimpleStringProperty(value.toString()));
         }
-        if(value!=null) ((StringProperty)properties.get(name)).set(value.toString());
+
+        if(value!=null){
+            ((StringProperty) properties.get(name)).set(value.toString());
+        }
     }
 
     public void setProperty(String name, Boolean value){
