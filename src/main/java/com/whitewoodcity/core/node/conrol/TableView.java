@@ -173,7 +173,7 @@ public class TableView extends Control{
             Item item = new Item();
             Object object = vs.get(i);
             if(object instanceof List){
-                List<String> list = (List)object;
+                List list = (List)object;
                 for(int j=0;j<leafColumns.size();j++){
                     if(j>=list.size()) continue;
                     item.setProperty(leafColumns.get(j).getText(),list.get(j));
@@ -181,10 +181,11 @@ public class TableView extends Control{
             }else if(object instanceof Map){
                 Map<String, Object> map = (Map)object;
                 for(String key:map.keySet()){
-                    if(map.get(key) instanceof String)
-                        item.setProperty(key, map.get(key));
-                    else if(map.get(key) instanceof Boolean)
-                        item.setProperty(key, (Boolean)map.get(key));
+                    item.setProperty(key, map.get(key));
+//                    if(map.get(key) instanceof Boolean)
+//                        item.setProperty(key, (Boolean)map.get(key));
+//                    else
+//                        item.setProperty(key, map.get(key));
                 }
             }
 
