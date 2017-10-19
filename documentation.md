@@ -67,7 +67,6 @@ Label|label|Control|text|-|-
 Button|button|Control|text|-|-
 Hyperlink|hyperlink|Control|text|-|-
 TextField|textfield|Control|text|-|-
-Form|form|Control|text,action,method|-|-
 
 Component|type|parent|string properties|JsonArray[String] properties
 :---:|:---:|:---:|:---|:---
@@ -81,9 +80,11 @@ ChoiceBox|choicebox|Control|value|item,items|-
 "value":"China"
 }
 ```
+
 Component|type|parent|string properties|JsonArray[String] properties|bool properties
 :---:|:---:|:---:|:---|:---|:---
 TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,values|editable
+
 ```json
 {
 "type":"table","id":"table001",
@@ -101,14 +102,44 @@ TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,val
 	"headers": [
 		"USA",
 		{"Asia": [{"name": "Japan","type": "checkbox"}, 
-				  {"name": "China","type": "combobox","items": ["1", "2"]},
-				  {"name": "Korea","type": "choicebox","items": ["3", "4"]}]}],
+			  {"name": "China","type": "combobox","items": ["1", "2"]},
+			  {"name": "Korea","type": "choicebox","items": ["3", "4"]}]}],
 	"values": [[1, true, 1, 3], 
-			   {"USA": 3,"Japan": false,"Korea": 3,"China": 2}
+		   {"USA": 3,"Japan": false,"Korea": 3,"China": 2}
 	]
 }
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31762603-4e49215a-b481-11e7-87c6-797d48874084.png">
+
+Component|type|parent|string properties|number properties|JsonArray[String] properties
+:---:|:---:|:---:|:---|:---|:---
+Form|form|Control|text,action,method|-|children
+
+```xml
+<xmlv>
+<json>
+[
+{"type":"label","id":"label001","name":"label001","x":100,"y":50,"text":"Label"},
+{"type":"textfield","id":"textfield001","name":"textfield","x":200,"y":50,"text":"Textfield"},
+{"type":"hyperlink","id":"hyperlink001","x":400,"y":50,"text":"Hyperlink"},
+{"type":"button","id":"button001","x":500,"y":50,"text":"Button"},
+{"type":"table","id":"table001","name":"table","x":600,"y":50,"header":["col"],"value":[["001"]],"width":100},
+{"type":"form","id":"form001","children":["textfield001","table001"],"method":"post","action":"www.mycom.com/postform"}
+]
+</json>
+<script>
+button001.action = { event ->
+	form001.send()
+}
+</script>
+</xmlv>
+```
+<img src="https://user-images.githubusercontent.com/5525436/31774833-7b702658-b4ac-11e7-8fbc-c35c73c8e96f.png">
+The form will be sent with following http request body in JSON format:
+
+```json
+{"textfield":"Textfield","table":[{"col":"001"}]}
+```
 
 ## <a name="preload"></a>Preload
 
