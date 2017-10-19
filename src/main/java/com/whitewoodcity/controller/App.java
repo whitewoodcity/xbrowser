@@ -284,6 +284,7 @@ public abstract class App {
         menu.getItems().addAll(newItem, loadItem, saveItem, refreshItem, closeItem, languageMenu);
     }
 
+    public abstract void load(String url);
 
     public static void main(String[] args) throws Exception {
         App app = new TabContent();
