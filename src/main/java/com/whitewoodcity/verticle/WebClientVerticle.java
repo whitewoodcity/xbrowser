@@ -55,7 +55,6 @@ public class WebClientVerticle extends AbstractVerticle {
             JsonObject data = message.body().getJsonObject("data");
 
             String dataType = "send";
-            ;
             if (message.body().getString("type") != null) {
                 dataType = message.body().getString("type");
             }

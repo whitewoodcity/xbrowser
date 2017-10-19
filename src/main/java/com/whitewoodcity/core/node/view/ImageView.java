@@ -1,5 +1,7 @@
-package com.whitewoodcity.core.node.conrol;
+package com.whitewoodcity.core.node.view;
 
+import com.whitewoodcity.core.node.Node;
+import com.whitewoodcity.core.node.conrol.Control;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
@@ -8,7 +10,7 @@ import javafx.scene.image.Image;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-public class ImageView extends Control {
+public class ImageView implements Node {
 
     javafx.scene.image.ImageView body;
 

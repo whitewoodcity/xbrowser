@@ -9,6 +9,7 @@ import com.whitewoodcity.core.node.Node;
 import com.whitewoodcity.core.node.Pane;
 import com.whitewoodcity.core.node.chart.*;
 import com.whitewoodcity.core.node.conrol.*;
+import com.whitewoodcity.core.node.view.ImageView;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
