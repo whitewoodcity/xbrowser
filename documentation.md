@@ -59,6 +59,8 @@ Component|type|parent type|string properties|number properties|bool properties
 :---:|:---:|:---:|:---|:---|:---
 Node|-|-|id|rotate,opacity|disable,visible
 Cavans|canvas|Node|-|width,height|-
+Control|-|Node|name|x,y|-
+Chart|-|Node|name,title|x,y|-
 
 ## <a name="preload"></a>Preload
 
