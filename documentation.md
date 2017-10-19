@@ -67,9 +67,15 @@ Label|label|Control|text|-|-
 Button|button|Control|text|-|-
 Hyperlink|hyperlink|Control|text,value|-|-
 TextField|textfield|Control|text|-|-
-ChoiceBox|choicebox|Control|value|-|-
-TableView|table,tableview|Control|-|-|editable
 Form|form|Control|text,action,method|-|-
+
+Component|type|parent|string properties|JsonArray[String] properties
+:---:|:---:|:---:|:---|:---
+ChoiceBox|choicebox|Control|value|item,items|-
+
+Component|type|parent|string properties|JsonArray[String] properties|bool properties
+:---:|:---:|:---:|:---|:---|:---
+TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,values|editable
 
 ## <a name="preload"></a>Preload
 
