@@ -101,10 +101,10 @@ TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,val
 	"headers": [
 		"USA",
 		{"Asia": [{"name": "Japan","type": "checkbox"}, 
-				  {"name": "China","type": "combobox","items": ["1", "2"]},
-				  {"name": "Korea","type": "choicebox","items": ["3", "4"]}]}],
+			  {"name": "China","type": "combobox","items": ["1", "2"]},
+			  {"name": "Korea","type": "choicebox","items": ["3", "4"]}]}],
 	"values": [[1, true, 1, 3], 
-			   {"USA": 3,"Japan": false,"Korea": 3,"China": 2}
+		   {"USA": 3,"Japan": false,"Korea": 3,"China": 2}
 	]
 }
 ```
