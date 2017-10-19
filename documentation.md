@@ -84,7 +84,14 @@ ChoiceBox|choicebox|Control|value|item,items|-
 Component|type|parent|string properties|JsonArray[String] properties|bool properties
 :---:|:---:|:---:|:---|:---|:---
 TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,values|editable
-
+```json
+{
+"type":"table","id":"table001",
+"x":0,"y":0,
+"headers":["USA","Japan","China"],
+"values":[[25,26,27],[125,6,77]]
+}
+```
 ## <a name="preload"></a>Preload
 
 Preload element describes resources to be loaded before renderring the page. Only three types of resources are supported:
