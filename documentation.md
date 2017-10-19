@@ -55,21 +55,21 @@ canvas.text("i am a canvas",100,100)
 
 Component List
 
-Component|type|parent type|string properties|number properties|bool properties
+Component|type|parent|string properties|number properties|bool properties
 :---:|:---:|:---:|:---|:---|:---
 Node|-|-|id|rotate,opacity|disable,visible
 Cavans|canvas|Node|-|width,height|-
 Control|-|Node|name|x,y,width,height|-
 Chart|-|Node|title|x,y,width,height|-
 View|-|Node|-|x,y,width,height|-
-ImageView|img,image,imageview|View|-|-|-
+ImageView|img,image,imageview|View|url,image|-|-
 Label|label|Control|text|-|-
 Button|button|Control|text|-|-
-Hyperlink|hyperlink|Control|text|-|-
+Hyperlink|hyperlink|Control|text,value|-|-
 TextField|textfield|Control|text|-|-
-ChoiceBox|choicebox|Control|-|-|-
-TableView|table,tableview|Control|-|-|-
-Form|form|Control|text|-|-
+ChoiceBox|choicebox|Control|value|-|-
+TableView|table,tableview|Control|-|-|editable
+Form|form|Control|text,action,method|-|-
 
 ## <a name="preload"></a>Preload
 
