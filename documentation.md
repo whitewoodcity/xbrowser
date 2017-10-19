@@ -92,7 +92,23 @@ TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,val
 "values":[[1,2,3],{"USA":3,"China":2,"Japan":1}]
 }
 ```
-<img src="https://user-images.githubusercontent.com/5525436/31760236-a5c71a52-b479-11e7-93ec-960e743d00f7.png">
+<img src="https://user-images.githubusercontent.com/5525436/31762602-4cfd1b80-b481-11e7-9bc9-75fc3b740417.png">
+
+```json
+{
+	"type": "table", "id": "table001",
+	"x": 0,"y": 0,
+	"headers": [
+		"USA",
+		{"Asia": [{"name": "Japan","type": "checkbox"}, 
+				  {"name": "China","type": "combobox","items": ["1", "2"]},
+				  {"name": "Korea","type": "choicebox","items": ["3", "4"]}]}],
+	"values": [[1, true, 1, 3], 
+			   {"USA": 3,"Japan": false,"Korea": 3,"China": 2}
+	]
+}
+```
+<img src="https://user-images.githubusercontent.com/5525436/31762603-4e49215a-b481-11e7-87c6-797d48874084.png">
 
 ## <a name="preload"></a>Preload
 
