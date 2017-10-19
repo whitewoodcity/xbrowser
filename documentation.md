@@ -55,14 +55,35 @@ canvas.text("i am a canvas",100,100)
 
 Component List
 
-Component|type|parent type|string properties|number properties|bool properties
+Component|type|parent|string properties|number properties|bool properties
 :---:|:---:|:---:|:---|:---|:---
 Node|-|-|id|rotate,opacity|disable,visible
 Cavans|canvas|Node|-|width,height|-
 Control|-|Node|name|x,y,width,height|-
-Chart|-|Node|name,title|x,y,width,height|-
+Chart|-|Node|title|x,y,width,height|-
 View|-|Node|-|x,y,width,height|-
-ImageView|img,image,imageview|View|-|-|-
+ImageView|img,image,imageview|View|url,image|-|-
+Label|label|Control|text|-|-
+Button|button|Control|text|-|-
+Hyperlink|hyperlink|Control|text,value|-|-
+TextField|textfield|Control|text|-|-
+Form|form|Control|text,action,method|-|-
+
+Component|type|parent|string properties|JsonArray[String] properties
+:---:|:---:|:---:|:---|:---
+ChoiceBox|choicebox|Control|value|item,items|-
+```json
+{
+"type":"choicebox",
+"id":"choicebox001",
+"x":100,"y":250,
+"items":["USA","Japan","China"],
+"value":"China"
+}
+```
+Component|type|parent|string properties|JsonArray[String] properties|bool properties
+:---:|:---:|:---:|:---|:---|:---
+TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,values|editable
 
 ## <a name="preload"></a>Preload
 
