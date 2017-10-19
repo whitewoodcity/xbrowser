@@ -92,7 +92,7 @@ TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,val
 "values":[[1,2,3],[3,2,1]]
 }
 ```
-<img src="https://user-images.githubusercontent.com/5525436/31759127-fb08ce1a-b475-11e7-851c-f33c0ea49f02.png">
+<img src="https://user-images.githubusercontent.com/5525436/31759746-05d4e9e4-b478-11e7-8ffb-939ffb6df802.png">
 
 ## <a name="preload"></a>Preload
 
