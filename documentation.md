@@ -59,13 +59,13 @@ Component|type|parent|string properties|number properties|bool properties
 :---:|:---:|:---:|:---|:---|:---
 Node|-|-|id|rotate,opacity|disable,visible
 Cavans|canvas|Node|-|width,height|-
-Control|-|Node|name|x,y,width,height|-
+Control|-|Node|name,value|x,y,width,height|-
 Chart|-|Node|title|x,y,width,height|-
 View|-|Node|-|x,y,width,height|-
 ImageView|img,image,imageview|View|url,image|-|-
 Label|label|Control|text|-|-
 Button|button|Control|text|-|-
-Hyperlink|hyperlink|Control|text,value|-|-
+Hyperlink|hyperlink|Control|text|-|-
 TextField|textfield|Control|text|-|-
 Form|form|Control|text,action,method|-|-
 
@@ -84,6 +84,15 @@ ChoiceBox|choicebox|Control|value|item,items|-
 Component|type|parent|string properties|JsonArray[String] properties|bool properties
 :---:|:---:|:---:|:---|:---|:---
 TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,values|editable
+```json
+{
+"type":"table","id":"table001",
+"x":0,"y":0,
+"headers":["USA",{"Asia":["Japan","China"]}],
+"values":[[1,2,3],[3,2,1]]
+}
+```
+<img src="https://user-images.githubusercontent.com/5525436/31759127-fb08ce1a-b475-11e7-851c-f33c0ea49f02.png">
 
 ## <a name="preload"></a>Preload
 
