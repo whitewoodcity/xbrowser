@@ -88,10 +88,12 @@ TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,val
 {
 "type":"table","id":"table001",
 "x":0,"y":0,
-"headers":["USA","Japan","China"],
-"values":[[25,26,27],[125,6,77]]
+"headers":["USA",{"Asia":["Japan","China"]}],
+"values":[[1,2,3],[3,2,1]]
 }
 ```
+<img src="https://user-images.githubusercontent.com/5525436/31759127-fb08ce1a-b475-11e7-851c-f33c0ea49f02.png">
+
 ## <a name="preload"></a>Preload
 
 Preload element describes resources to be loaded before renderring the page. Only three types of resources are supported:
