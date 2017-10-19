@@ -174,7 +174,7 @@ public class TabContent extends App implements Initializable {
     }
 
     private void handleExceptionMessage(Throwable e, String message) {
-
+        removeParent();
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);

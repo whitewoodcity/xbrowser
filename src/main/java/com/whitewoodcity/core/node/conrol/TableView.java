@@ -168,21 +168,21 @@ public class TableView extends Control{
     private void setValueBase(JsonArray values){
         if(values==null) return;
         List vs = values.getList();
+        List<TableColumn> leafColumns = ((javafx.scene.control.TableView)body).getVisibleLeafColumns();
         for(int i=0;i<vs.size();i++){
-            List<TableColumn> column = ((javafx.scene.control.TableView)body).getColumns();
             Item item = new Item();
             Object object = vs.get(i);
             if(object instanceof List){
                 List<String> list = (List)object;
-                for(int j=0;j<column.size();j++){
+                for(int j=0;j<leafColumns.size();j++){
                     if(j>=list.size()) continue;
-                    item.setProperty(column.get(j).getText(),list.get(j));
+                    item.setProperty(leafColumns.get(j).getText(),list.get(j));
                 }
             }else if(object instanceof Map){
                 Map<String, Object> map = (Map)object;
                 for(String key:map.keySet()){
                     if(map.get(key) instanceof String)
-                        item.setProperty(key, (String)map.get(key));
+                        item.setProperty(key, map.get(key));
                     else if(map.get(key) instanceof Boolean)
                         item.setProperty(key, (Boolean)map.get(key));
                 }
@@ -196,9 +196,7 @@ public class TableView extends Control{
         if (Platform.isFxApplicationThread()) {
             return getValueBase();
         }else{
-            final FutureTask<JsonArray> task = new FutureTask<>(() -> {
-                return getValueBase();
-            });
+            final FutureTask<JsonArray> task = new FutureTask<>(this::getValueBase);
             Platform.runLater(task);
             return task.get();
         }
