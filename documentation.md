@@ -146,7 +146,11 @@ Component|type|parent|string properties|number properties|JsonArray[{String,Numb
 PieChart|piechart|Chart|-|-|data
 
 ```json
-{"type":"piechart","id":"piechart001","title":"Pie Chart","titleside":"Bottom","legendside":"top","data":{"USA":10,"Japan":10,"China":10}}
+{
+	"type":"piechart","id":"piechart001",
+	"title":"Pie Chart","titleside":"Bottom","legendside":"top",
+	"data":{"USA":10,"Japan":10,"China":10}
+}
 ```
 
 <img src="https://user-images.githubusercontent.com/5525436/31805775-19b844a4-b529-11e7-82c1-938c381042ba.png">
