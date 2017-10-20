@@ -571,16 +571,12 @@ public class TabContent extends App implements Initializable {
             thread.setDaemon(true);
             thread.start();
             vertx.setTimer(Long.getLong(DEFAULT_TOLERATED_WORKER_EXECUTE_TIME), id -> {
-                System.out.println(2);
                 if (thread.isAlive()) {
-                    System.out.println(1);
                     thread.interrupt();
                 }
             });
             vertx.setTimer(Long.getLong(DEFAULT_MAX_WORKER_EXECUTE_TIME), id -> {
-                System.out.println(2);
                 if (thread.isAlive()) {
-                    System.out.println(3);
                     thread.stop();
                 }
             });
