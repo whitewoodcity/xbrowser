@@ -317,9 +317,32 @@ By using scripts, developers could manipulate the components defined in the [JSO
 </xmlv>
 ```
 
-When user click on the button, the button moves right for 10 points.
-
+On clicking, the button moves right for 10 points.
 <img width="362" alt="screen shot 2017-10-20 at 6 50 48 pm" src="https://user-images.githubusercontent.com/5525436/31817663-a90779be-b55a-11e7-8414-20a79bd46420.png">
+
+### Binding Properties
+
+The component properties could be bound to other component properties.
+
+```xml
+<xmlv>
+    	<json>
+		[{"type":"button","id":"button001","x":10,"y":10,"text":"i am a button"},
+		{"type":"button","id":"button002","x":10,"y":50,"text":"i am a bound button"}]
+	</json>
+	<script type="javascript">
+		button002.xproperty().bind(button001.xproperty())
+
+		button001.action = function(event){
+			button001.x = button001.x + 10
+		}
+	</script>
+</xmlv>
+```
+
+The x property of 'i am a bound button' button is bound to the x property of 'i am a button' button, thus if the 'i am a button' button moves right, the bound button moves too.
+<img width="382" alt="screen shot 2017-10-20 at 6 54 12 pm" src="https://user-images.githubusercontent.com/5525436/31817885-7b071da2-b55b-11e7-98f8-59f8b1058401.png">
+
 
 Component|method name|parameters|return value|comment
 :---:|:---:|:---|:---|:---
