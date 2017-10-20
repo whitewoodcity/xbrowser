@@ -231,6 +231,49 @@ renew:image001=http://w2v4.com/static/image001.png;Renew:image002=http://w2v4.co
 
 ## <a name="css"></a>CSS
 
+CSS is a style sheet language used for describing the presentation of a page elements usually written in JSON, but also apply to pae elements placed by the browser.
+
+```xml
+    <css>
+.progress-bar > .bar {
+    -fx-background-color: linear-gradient(
+        from 0px .75em to .75em 0px,
+        repeat,
+        -fx-accent 0%,
+        -fx-accent 49%,
+        derive(-fx-accent, 30%) 50%,
+        derive(-fx-accent, 30%) 99%
+    );
+}
+    </css>
+```
+
+<img src="https://user-images.githubusercontent.com/5525436/31812615-2b06a12c-b549-11e7-8697-2dd6592b48b9.png">
+
+If a component is associated with an id then it could be easily styled in css with the same id name:
+
+```xml
+    <json>
+    [{
+        "id":"button001",
+        "type":"button",
+	"text":"button001",
+	"x":100,"y":100
+     },{
+        "id":"button002",
+        "type":"button",
+        "text":"button002",
+	"x":200,"y":100
+    }]
+    </json>
+    <css>
+        #button001 {-fx-background-color : red}
+        #button002 {-fx-background-color : green}
+    </css>
+```
+
+For more about CSS file format please refer to [JavaFX CSS Reference Guide](http://docs.oracle.com/javase/8/javafx/api/javafx/scene/doc-files/cssref.html).
+
 ## <a name="verb">Verb Elements
 
 ## <a name="script"></a>Script
