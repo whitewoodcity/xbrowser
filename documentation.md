@@ -132,7 +132,7 @@ Form|form|Control|text,action,method|-|children
 {"type":"form","id":"form001","children":["textfield001","table001"],"method":"post","action":"www.mycom.com/postform"}
 ]
 </json>
-<script>
+<script type="groovy">
 button001.action = { event ->
 	form001.send()
 }
@@ -276,8 +276,50 @@ For more about CSS file format please refer to [JavaFX CSS Reference Guide](http
 
 ## <a name="verb">Verb Elements
 
+Verb elements are used to describe page element actions.
+
+There are two types of noun elements:
+1) [Script](#script) 
+2) [Class](#class)
+
 ## <a name="script"></a>Script
 
+Text in script element is an interpreted(rather than compiled) piece of programming language that supports scripts: programs written for XBrowser run-time environment that automate the execution of tasks. It is used to make pages interactive and provide online programs, including animations and video games. XBrowser currently three scripting languages: [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Ruby](http://jruby.org/) and [Groovy](http://groovy-lang.org/). The script lanugae type could be specified in the type attribute.
+
+```xml
+<xmlv>
+    	<json/>
+	<script type="javascript">
+		x = 0
+		timer = app.timer
+		timer.action = function (now) {
+			canvas.clear()
+			x++
+			canvas.text('hello world',x,x)
+		}
+		timer.start()
+	</script>
+</xmlv>
+```
+
+By using scripts, developers could manipulate the components defined in the [JSON](#json) tag element.
+
+```xml
+<xmlv>
+    	<json>
+		[{"type":"button","id":"button001","x":10,"y":10,"text":"i am a button"}]
+	</json>
+	<script type="javascript">
+		button001.action = function(event){//button001 is the component id, which would be used as the object reference in scripts
+			button001.x = button001.x + 10
+		}
+	</script>
+</xmlv>
+```
+
+When user click on the button, the button moves right for 10 points.
+
+<img width="362" alt="screen shot 2017-10-20 at 6 50 48 pm" src="https://user-images.githubusercontent.com/5525436/31817663-a90779be-b55a-11e7-8414-20a79bd46420.png">
 
 Component|method name|parameters|return value|comment
 :---:|:---:|:---|:---|:---
