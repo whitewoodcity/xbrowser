@@ -141,7 +141,7 @@ The form will be sent with following http request body in JSON format:
 {"textfield":"Textfield","table":[{"col":"001"}]}
 ```
 
-Component|type|parent|string properties|number properties|JsonArray[{String,Number}] properties
+Component|type|parent|string properties|number properties|JsonArray[{String:Number}] properties
 :---:|:---:|:---:|:---|:---|:---
 PieChart|piechart|Chart|-|-|data
 
@@ -154,6 +154,27 @@ PieChart|piechart|Chart|-|-|data
 ```
 
 <img src="https://user-images.githubusercontent.com/5525436/31805775-19b844a4-b529-11e7-82c1-938c381042ba.png">
+
+Component|type|parent|string properties|JsonArray[String/Number] properties|JsonObject{String:[Number]} properties
+:---:|:---:|:---:|:---|:---|:---
+XYChart|-|Chart|xlabel,ylabel|xaxis|data
+LineChart|linechart|XYChart|-|-|-
+BarChart|barchart|XYChart|-|-|-
+ScatterChart|scatterchart|XYChart|-|-|-
+AreaChart|areachart|XYChart|-|-|-
+BubbleChart|bubblechart|XYChart|-|-|-
+
+```json
+{
+	"type":"linechart","id":"linechart001",
+	"title":"Line Chart","titleside":"left","legendside":"right",
+	"xaxis":["Jan","Feb","Mar","Apr","May"],
+	"data":{"USA":[10,20,30,40,50],"Japan":[50,40,30,20,10],"China":[30,20,10,20,30]}
+}
+```
+
+<img src="https://user-images.githubusercontent.com/5525436/31811261-8126b290-b544-11e7-91bf-e6542629ca93.png">
+
 
 ## <a name="preload"></a>Preload
 
