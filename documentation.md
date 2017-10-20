@@ -162,7 +162,6 @@ LineChart|linechart|XYChart|-|-|-
 BarChart|barchart|XYChart|-|-|-
 ScatterChart|scatterchart|XYChart|-|-|-
 AreaChart|areachart|XYChart|-|-|-
-BubbleChart|bubblechart|XYChart|-|-|-
 
 ```json
 {
@@ -175,6 +174,21 @@ BubbleChart|bubblechart|XYChart|-|-|-
 
 <img src="https://user-images.githubusercontent.com/5525436/31811261-8126b290-b544-11e7-91bf-e6542629ca93.png">
 
+Component|type|parent|JsonObject{String:[{"x":Number,"y":Number,"z":Number}]} properties
+:---:|:---:|:---:|:---
+BubbleChart|bubblechart|XYChart|data
+
+```json
+{
+	"type":"bubblechart","id":"bubblechart001",
+	"title":"Bubble Chart","titleside":"left","legendside":"right",
+	"data":{"USA":[{"x":10,"y":10,"z":3}],
+		"Japan":[{"x":20,"y":10,"z":1},{"x":15,"y":15,"z":2}],
+		"China":[{"x":10,"y":20,"z":2},{"x":20,"y":20,"z":1}]}
+}
+```
+
+<img src="https://user-images.githubusercontent.com/5525436/31811829-945f61de-b546-11e7-9b76-4b761c96eb8d.png">
 
 ## <a name="preload"></a>Preload
 
