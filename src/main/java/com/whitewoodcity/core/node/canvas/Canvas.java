@@ -11,13 +11,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 public class Canvas implements Node {
+    private int counter = 0;
+    private final int maxCounter = 10000;
+    private final String hint = "Canvas API could only be used in the UI context(Application Thread) for unlimited times.";
+
     private javafx.scene.canvas.Canvas body;
 
     public Canvas(){
-
         if (Platform.isFxApplicationThread()) body= new javafx.scene.canvas.Canvas();
-        else Platform.runLater(() -> body= new javafx.scene.canvas.Canvas());
-
+        else{
+            counter++;
+            Platform.runLater(() -> body= new javafx.scene.canvas.Canvas());
+        }
     }
 
     @Override
@@ -35,6 +40,12 @@ public class Canvas implements Node {
         if (Platform.isFxApplicationThread()) {
             return getWidthBase();
         }
+
+        counter++;
+        if(counter>maxCounter){
+            throw new ExecutionException(new Exception(hint));
+        }
+
         final FutureTask<Double> task = new FutureTask<>(() -> getWidthBase());
         Platform.runLater(task);
         return task.get();
@@ -45,15 +56,29 @@ public class Canvas implements Node {
         else return body.getWidth();
     }
 
-    public void setHeight(double height){
+    public void setHeight(double height) throws ExecutionException{
         if (Platform.isFxApplicationThread()) body.setHeight(height);
-        else Platform.runLater(() -> body.setHeight(height));
+        else{
+
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
+            Platform.runLater(() -> body.setHeight(height));
+        }
     }
 
     public double getHeight() throws InterruptedException,ExecutionException{
         if (Platform.isFxApplicationThread()) {
             return getHeightBase();
         }
+
+        counter++;
+        if(counter>maxCounter){
+            throw new ExecutionException(new Exception(hint));
+        }
+
         final FutureTask<Double> task = new FutureTask<>(() -> getHeightBase());
         Platform.runLater(task);
         return task.get();
@@ -68,6 +93,12 @@ public class Canvas implements Node {
         if (Platform.isFxApplicationThread()) {
             return body.widthProperty();
         }
+
+        counter++;
+        if(counter>maxCounter){
+            throw new ExecutionException(new Exception(hint));
+        }
+
         final FutureTask<DoubleProperty> task = new FutureTask<>(() -> body.widthProperty());
         Platform.runLater(task);
         return task.get();
@@ -78,6 +109,12 @@ public class Canvas implements Node {
         if (Platform.isFxApplicationThread()) {
             return body.heightProperty();
         }
+
+        counter++;
+        if(counter>maxCounter){
+            throw new ExecutionException(new Exception(hint));
+        }
+
         final FutureTask<DoubleProperty> task = new FutureTask<>(() -> body.heightProperty());
         Platform.runLater(task);
         return task.get();
@@ -103,6 +140,12 @@ public class Canvas implements Node {
         if (Platform.isFxApplicationThread()) {
             clearBase();
         }else{
+
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(this::clearBase);
         }
     }
@@ -114,6 +157,12 @@ public class Canvas implements Node {
         if (Platform.isFxApplicationThread()) {
             imageBase(img,x,y);
         }else{
+
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(()->imageBase(img,x,y));
         }
     }
@@ -125,6 +174,12 @@ public class Canvas implements Node {
         if (Platform.isFxApplicationThread()) {
             imageBase(img,x,y,w,h);
         }else{
+
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(()->imageBase(img,x,y,w,h));
         }
     }
@@ -138,6 +193,12 @@ public class Canvas implements Node {
         if (Platform.isFxApplicationThread()) {
             imageBase(img,sx,sy,sw,sh,dx,dy,dw,dh);
         }else {
+
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(() -> imageBase(img, sx, sy, sw, sh, dx, dy, dw, dh));
         }
     }
@@ -147,24 +208,36 @@ public class Canvas implements Node {
         body.getGraphicsContext2D().drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
-    public void text(String text){
+    public void text(String text) throws ExecutionException{
         this.text(text,0,0);
     }
 
-    public void text(String text, double x, double y){
+    public void text(String text, double x, double y) throws ExecutionException{
         if (Platform.isFxApplicationThread()) {
             body.getGraphicsContext2D().fillText(text, x, y);
         }else {
+
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(() -> {
                 body.getGraphicsContext2D().fillText(text, x, y);
             });
         }
     }
 
-    public void text(String text, double x, double y, double maxWidth){
+    public void text(String text, double x, double y, double maxWidth) throws ExecutionException{
         if (Platform.isFxApplicationThread()) {
             body.getGraphicsContext2D().fillText(text, x, y, maxWidth);
         }else {
+
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(() -> {
                 body.getGraphicsContext2D().fillText(text, x, y, maxWidth);
             });
@@ -172,37 +245,55 @@ public class Canvas implements Node {
 
     }
 
-    public void line(double x, double y, double dx, double dy){
+    public void line(double x, double y, double dx, double dy) throws ExecutionException{
         if (Platform.isFxApplicationThread()) {
             body.getGraphicsContext2D().strokeLine(x,y,dx,dy);
         }else {
+
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(() -> {
                 body.getGraphicsContext2D().strokeLine(x,y,dx,dy);
             });
         }
     }
 
-    public void reset(){
+    public void reset() throws ExecutionException{
         alpha(1);
         color("black");
         weight(1.0);
     }
 
-    public void alpha(double alpha){
+    public void alpha(double alpha) throws ExecutionException{
         if (Platform.isFxApplicationThread()) {
             body.getGraphicsContext2D().setGlobalAlpha(alpha);
         }else {
+
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(() -> {
                 body.getGraphicsContext2D().setGlobalAlpha(alpha);
             });
         }
     }
 
-    public void color(String color){
+    public void color(String color) throws ExecutionException{
         if (Platform.isFxApplicationThread()) {
             body.getGraphicsContext2D().setFill(Color.web(color));
             body.getGraphicsContext2D().setStroke(Color.web(color));
         }else {
+
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(() -> {
                 body.getGraphicsContext2D().setFill(Color.web(color));
                 body.getGraphicsContext2D().setStroke(Color.web(color));
@@ -210,41 +301,55 @@ public class Canvas implements Node {
         }
     }
 
-    public void rgb(int r, int g, int b){
+    public void rgb(int r, int g, int b) throws ExecutionException{
         color(Color.rgb(r,g,b).toString());
     }
 
-    public void argb(double a, int r, int g, int b){
+    public void argb(double a, int r, int g, int b)throws ExecutionException{
         color(Color.rgb(r,g,b,a).toString());
     }
 
-    public void hsb(double h, double s, double b){
+    public void hsb(double h, double s, double b) throws ExecutionException{
         color(Color.hsb(h,s,b).toString());
     }
 
-    public void weight(double lw){
+    public void weight(double lw) throws ExecutionException{
         if (Platform.isFxApplicationThread()) {
             body.getGraphicsContext2D().setLineWidth(lw);
         }else {
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(() -> body.getGraphicsContext2D().setLineWidth(lw));
         }
 
     }
 
-    public void rect(double x, double y, double w, double h){
+    public void rect(double x, double y, double w, double h) throws ExecutionException{
         if (Platform.isFxApplicationThread()) {
             body.getGraphicsContext2D().strokeRect(x,y,w,h);
         }else {
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
+
             Platform.runLater(() -> body.getGraphicsContext2D().strokeRect(x,y,w,h));
         }
 
     }
 
-    public void rect(double x, double y, double w, double h, boolean filled){
+    public void rect(double x, double y, double w, double h, boolean filled)throws ExecutionException{
         if(filled){
             if (Platform.isFxApplicationThread()) {
                 body.getGraphicsContext2D().fillRect(x,y,w,h);
             }else {
+                counter++;
+                if(counter>maxCounter){
+                    throw new ExecutionException(new Exception(hint));
+                }
                 Platform.runLater(() -> body.getGraphicsContext2D().fillRect(x,y,w,h));
             }
         }else{
@@ -252,19 +357,27 @@ public class Canvas implements Node {
         }
     }
 
-    public void oval(double x, double y, double w, double h){
+    public void oval(double x, double y, double w, double h) throws ExecutionException{
         if (Platform.isFxApplicationThread()) {
             body.getGraphicsContext2D().strokeOval(x,y,w,h);
         }else {
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
             Platform.runLater(() -> body.getGraphicsContext2D().strokeOval(x,y,w,h));
         }
     }
 
-    public void oval(double x, double y, double w, double h, boolean filled){
+    public void oval(double x, double y, double w, double h, boolean filled) throws ExecutionException{
         if(filled){
             if (Platform.isFxApplicationThread()) {
                 body.getGraphicsContext2D().fillOval(x,y,w,h);
             }else {
+                counter++;
+                if(counter>maxCounter){
+                    throw new ExecutionException(new Exception(hint));
+                }
                 Platform.runLater(() -> body.getGraphicsContext2D().fillOval(x,y,w,h));
             }
         }else{
@@ -272,19 +385,19 @@ public class Canvas implements Node {
         }
     }
 
-    public void circle(double x, double y, double radius){
+    public void circle(double x, double y, double radius)throws ExecutionException{
         oval(x-radius,y-radius,radius*2,radius*2);
     }
 
-    public void circle(double x, double y, double radius, boolean filled){
+    public void circle(double x, double y, double radius, boolean filled) throws ExecutionException{
         oval(x-radius,y-radius,radius*2,radius*2, filled);
     }
 
-    public void square(double x, double y, double side){
+    public void square(double x, double y, double side)throws ExecutionException{
         rect(x,y,side,side);
     }
 
-    public void square(double x, double y, double side, boolean filled){
+    public void square(double x, double y, double side, boolean filled)throws ExecutionException{
         rect(x,y,side,side, filled);
     }
 
@@ -302,10 +415,14 @@ public class Canvas implements Node {
      * @param py the y pivot co-ordinate for the rotation (in canvas co-ordinates).
      */
     Rotate rotate = new Rotate();
-    public void rotateImage(Image img, double tlx, double tly, double width, double height, double angle, double px, double py){
+    public void rotateImage(Image img, double tlx, double tly, double width, double height, double angle, double px, double py) throws ExecutionException{
         if (Platform.isFxApplicationThread()) {
             rotateImageBase(img,tlx,tly,width,height,angle,px,py);
         }else {
+            counter++;
+            if(counter>maxCounter){
+                throw new ExecutionException(new Exception(hint));
+            }
             Platform.runLater(() -> rotateImageBase(img, tlx, tly, width, height, angle, px, py));
         }
     }
@@ -319,10 +436,10 @@ public class Canvas implements Node {
         gc.drawImage(image, tlx, tly, width, height);
         gc.restore(); // back to original state (before rotation)
     }
-    public void rotate_image(Image image, double tlx, double tly, double width, double height, double angle, double px, double py) {
+    public void rotate_image(Image image, double tlx, double tly, double width, double height, double angle, double px, double py)throws ExecutionException {
         rotateImage(image,tlx,tly,width,height,angle,px,py);
     }
-    public void rotateimage(Image image, double tlx, double tly, double width, double height, double angle, double px, double py) {
+    public void rotateimage(Image image, double tlx, double tly, double width, double height, double angle, double px, double py)throws ExecutionException {
         rotateImage(image,tlx,tly,width,height,angle,px,py);
     }
 }
