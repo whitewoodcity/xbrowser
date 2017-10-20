@@ -60,7 +60,7 @@ Component|type|parent|string properties|number properties|bool properties
 Node|-|-|id|rotate,opacity|disable,visible
 Cavans|canvas|Node|-|width,height|-
 Control|-|Node|name,value|x,y,width,height|-
-Chart|-|Node|title|x,y,width,height|-
+Chart|-|Node|title,titleside,legendside|x,y,width,height|-
 View|-|Node|-|x,y,width,height|-
 ImageView|img,image,imageview|View|url,image|-|-
 Label|label|Control|text|-|-
@@ -140,6 +140,16 @@ The form will be sent with following http request body in JSON format:
 ```json
 {"textfield":"Textfield","table":[{"col":"001"}]}
 ```
+
+Component|type|parent|string properties|number properties|JsonArray[{String,Number}] properties
+:---:|:---:|:---:|:---|:---|:---
+PieChart|piechart|Chart|-|-|data
+
+```json
+{"type":"piechart","id":"piechart001","title":"Pie Chart","titleside":"Bottom","legendside":"top","data":{"USA":10,"Japan":10,"China":10}}
+```
+
+<img src="https://user-images.githubusercontent.com/5525436/31805775-19b844a4-b529-11e7-82c1-938c381042ba.png">
 
 ## <a name="preload"></a>Preload
 
