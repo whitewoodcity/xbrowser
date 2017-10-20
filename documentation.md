@@ -345,6 +345,25 @@ The x property of 'i am a bound button' button is bound to the x property of 'i 
 
 <img width="382" alt="screen shot 2017-10-20 at 6 54 12 pm" src="https://user-images.githubusercontent.com/5525436/31817885-7b071da2-b55b-11e7-98f8-59f8b1058401.png">
 
+### Execution
+
+By default, the script execution thread will be interrupted in 10 seconds, and will be brutally stopped in 12 seconds. The script is suggested to finish execution in 10 seconds. But some times, the user wants to enjoy the program animation for more than 10 seconds e.g. video games. In this case, the developers should use animation timer to run the grogram.
+
+```xml
+<xmlv>
+    	<json/>
+	<script type="javascript">
+		x = 0
+ 		timer = app.timer
+		timer.action = function (now) {
+			canvas.clear()
+			x++
+			canvas.text('hello world',x,10)
+		}
+		timer.start()
+	</script>
+</xmlv>
+```
 
 Component|method name|parameters|return value|comment
 :---:|:---:|:---|:---|:---
