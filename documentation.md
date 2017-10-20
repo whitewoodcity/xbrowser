@@ -14,6 +14,11 @@ There are two types of xmlv elements:
 
 Noun elements are used to identify and describe page elements.
 
+There are three types of noun elements:
+1) [JSON](#json) 
+2) [Preload](#preload)
+2) [CSS](#css)
+
 ## <a name="json"></a>JSON
 
 JSON element describes components placed on the page. 
@@ -60,7 +65,7 @@ Component|type|parent|string properties|number properties|bool properties
 Node|-|-|id|rotate,opacity|disable,visible
 Cavans|canvas|Node|-|width,height|-
 Control|-|Node|name,value|x,y,width,height|-
-Chart|-|Node|title|x,y,width,height|-
+Chart|-|Node|title,titleside,legendside|x,y,width,height|-
 View|-|Node|-|x,y,width,height|-
 ImageView|img,image,imageview|View|url,image|-|-
 Label|label|Control|text|-|-
@@ -127,7 +132,7 @@ Form|form|Control|text,action,method|-|children
 {"type":"form","id":"form001","children":["textfield001","table001"],"method":"post","action":"www.mycom.com/postform"}
 ]
 </json>
-<script>
+<script type="groovy">
 button001.action = { event ->
 	form001.send()
 }
@@ -140,6 +145,55 @@ The form will be sent with following http request body in JSON format:
 ```json
 {"textfield":"Textfield","table":[{"col":"001"}]}
 ```
+
+Component|type|parent|string properties|number properties|JsonArray[{String:Number}] properties
+:---:|:---:|:---:|:---|:---|:---
+PieChart|piechart|Chart|-|-|data
+
+```json
+{
+	"type":"piechart","id":"piechart001",
+	"title":"Pie Chart","titleside":"Bottom","legendside":"top",
+	"data":{"USA":10,"Japan":10,"China":10}
+}
+```
+
+<img src="https://user-images.githubusercontent.com/5525436/31805775-19b844a4-b529-11e7-82c1-938c381042ba.png">
+
+Component|type|parent|string properties|JsonArray[String/Number] properties|JsonObject{String:[Number]} properties
+:---:|:---:|:---:|:---|:---|:---
+XYChart|-|Chart|xlabel,ylabel|xaxis|data
+LineChart|linechart|XYChart|-|-|-
+BarChart|barchart|XYChart|-|-|-
+ScatterChart|scatterchart|XYChart|-|-|-
+AreaChart|areachart|XYChart|-|-|-
+
+```json
+{
+	"type":"linechart","id":"linechart001",
+	"title":"Line Chart","titleside":"left","legendside":"right",
+	"xaxis":["Jan","Feb","Mar","Apr","May"],
+	"data":{"USA":[10,20,30,40,50],"Japan":[50,40,30,20,10],"China":[30,20,10,20,30]}
+}
+```
+
+<img src="https://user-images.githubusercontent.com/5525436/31811261-8126b290-b544-11e7-91bf-e6542629ca93.png">
+
+Component|type|parent|JsonObject{String:[{"x":Number,"y":Number,"z":Number}]} properties
+:---:|:---:|:---:|:---
+BubbleChart|bubblechart|XYChart|data
+
+```json
+{
+	"type":"bubblechart","id":"bubblechart001",
+	"title":"Bubble Chart","titleside":"left","legendside":"right",
+	"data":{"USA":[{"x":10,"y":10,"z":3}],
+		"Japan":[{"x":20,"y":10,"z":1},{"x":15,"y":15,"z":2}],
+		"China":[{"x":10,"y":20,"z":2},{"x":20,"y":20,"z":1}]}
+}
+```
+
+<img src="https://user-images.githubusercontent.com/5525436/31811829-945f61de-b546-11e7-9b76-4b761c96eb8d.png">
 
 ## <a name="preload"></a>Preload
 
@@ -177,10 +231,139 @@ renew:image001=http://w2v4.com/static/image001.png;Renew:image002=http://w2v4.co
 
 ## <a name="css"></a>CSS
 
+CSS is a style sheet language used for describing the presentation of a page elements usually written in JSON, but also apply to pae elements placed by the browser.
+
+```xml
+    <css>
+.progress-bar > .bar {
+    -fx-background-color: linear-gradient(
+        from 0px .75em to .75em 0px,
+        repeat,
+        -fx-accent 0%,
+        -fx-accent 49%,
+        derive(-fx-accent, 30%) 50%,
+        derive(-fx-accent, 30%) 99%
+    );
+}
+    </css>
+```
+
+<img src="https://user-images.githubusercontent.com/5525436/31812615-2b06a12c-b549-11e7-8697-2dd6592b48b9.png">
+
+If a component is associated with an id then it could be easily styled in css with the same id name:
+
+```xml
+    <json>
+    [{
+        "id":"button001",
+        "type":"button",
+	"text":"button001",
+	"x":100,"y":100
+     },{
+        "id":"button002",
+        "type":"button",
+        "text":"button002",
+	"x":200,"y":100
+    }]
+    </json>
+    <css>
+        #button001 {-fx-background-color : red}
+        #button002 {-fx-background-color : green}
+    </css>
+```
+
+For more about CSS file format please refer to [JavaFX CSS Reference Guide](http://docs.oracle.com/javase/8/javafx/api/javafx/scene/doc-files/cssref.html).
+
 ## <a name="verb">Verb Elements
+
+Verb elements are used to describe page element actions.
+
+There are two types of noun elements:
+1) [Script](#script) 
+2) [Class](#class)
 
 ## <a name="script"></a>Script
 
+Text in script element is an interpreted(rather than compiled) piece of programming language that supports scripts: programs written for XBrowser run-time environment that automate the execution of tasks. It is used to make pages interactive and provide online programs, including animations and video games. XBrowser currently three scripting languages: [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Ruby](http://jruby.org/) and [Groovy](http://groovy-lang.org/). The script lanugae type could be specified in the type attribute.
+
+```xml
+<xmlv>
+    	<json/>
+	<script type="javascript">
+		x = 0
+		timer = app.timer
+		timer.action = function (now) {
+			canvas.clear()
+			x++
+			canvas.text('hello world',x,x)
+		}
+		timer.start()
+	</script>
+</xmlv>
+```
+
+By using scripts, developers could manipulate the components defined in the [JSON](#json) tag element.
+
+```xml
+<xmlv>
+    	<json>
+		[{"type":"button","id":"button001","x":10,"y":10,"text":"i am a button"}]
+	</json>
+	<script type="javascript">
+		button001.action = function(event){//button001 is the component id, which would be used as the object reference in scripts
+			button001.x = button001.x + 10
+		}
+	</script>
+</xmlv>
+```
+
+On clicking, the button moves right for 10 points.
+
+<img width="362" alt="screen shot 2017-10-20 at 6 50 48 pm" src="https://user-images.githubusercontent.com/5525436/31817663-a90779be-b55a-11e7-8414-20a79bd46420.png">
+
+### Binding Properties
+
+The component properties could be bound to other component properties.
+
+```xml
+<xmlv>
+    	<json>
+		[{"type":"button","id":"button001","x":10,"y":10,"text":"i am a button"},
+		{"type":"button","id":"button002","x":10,"y":50,"text":"i am a bound button"}]
+	</json>
+	<script type="javascript">
+		button002.xproperty().bind(button001.xproperty())
+
+		button001.action = function(event){
+			button001.x = button001.x + 10
+		}
+	</script>
+</xmlv>
+```
+
+The x property of 'i am a bound button' button is bound to the x property of 'i am a button' button, thus if the 'i am a button' button moves right, the bound button moves too.
+
+<img width="382" alt="screen shot 2017-10-20 at 6 54 12 pm" src="https://user-images.githubusercontent.com/5525436/31817885-7b071da2-b55b-11e7-98f8-59f8b1058401.png">
+
+### Execution
+
+By default, the script execution thread will be interrupted in 10 seconds, and will be brutally stopped in 12 seconds. The script is suggested to finish execution in 10 seconds. But some times, the user wants to enjoy the program animation for more than 10 seconds e.g. video games. In this case, the developers should use animation timer to run the grogram.
+
+```xml
+<xmlv>
+    	<json/>
+	<script type="javascript">
+		x = 0
+ 		timer = app.timer
+		timer.action = function (now) {
+			canvas.clear()
+			x++
+			canvas.text('hello world',x,10)
+		}
+		timer.start()
+	</script>
+</xmlv>
+```
 
 Component|method name|parameters|return value|comment
 :---:|:---:|:---|:---|:---
