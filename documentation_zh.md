@@ -6,22 +6,22 @@
 <xmlv title="Hello XMLV"/>
 ```
 
-There are two types of xmlv elements:
-1) [Noun elements](#noun) 
-2) [Verb elements](#verb)
+当前有两种类型的XMLV元素：
+1) [名词元素](#noun) 
+2) [动词元素](#verb)
 
-## <a name="noun"></a>Noun Elements
+## <a name="noun"></a>名词元素
 
-Noun elements are used to identify and describe page elements.
+名词元素用于定义以及描述页面成员。
 
-There are three types of noun elements:
+当前有三种类型的名词元素：
 1) [JSON](#json) 
 2) [Preload](#preload)
 2) [CSS](#css)
 
 ## <a name="json"></a>JSON
 
-JSON element describes components placed on the page. 
+JSON元素用于描述放置于页面之上的组件。
 
 ```xml
 <json>
