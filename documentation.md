@@ -416,5 +416,7 @@ Mouse|rightPress, right_press, rightpress|lambda(x,y->)|void|Defines an action w
 Mouse|rightRelease, right_release, rightrelease|lambda(x,y->)|void|Defines an action which is invoked when mouse right key is released.
 Button|action|lambda(event->)|void|Defines an action when button is clicked.
 Hyperlink|action|lambda(event->)|void|Defines an action when hyperlink is clicked.
+Form|send|-|void|Sends a HTTP request with JSON body to the action address. The JSON body includes all children page elements.
+Form|submit|-|void|Submits a HTTP request with Form body to the action address. The Form body includes all children page elements.
 
 ## <a name="class"></a>Class
