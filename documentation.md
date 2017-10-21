@@ -302,6 +302,19 @@ Text in script element is an interpreted(rather than compiled) piece of programm
 </xmlv>
 ```
 
+### URL Link Support
+
+Script element supports hyperlink attribute, specify the target in the <script href=" ">
+
+```xml
+<xmlv>
+	<json/>
+	<script href="www.abc.com/test.javascript" type="javascript"/>
+</xmlv>
+```
+
+### Using pre-defined elements
+
 By using scripts, developers could manipulate the components defined in the [JSON](#json) tag element.
 
 ```xml
@@ -367,6 +380,20 @@ By default, the script execution thread will be interrupted in 10 seconds, and w
 
 Component|method name|parameters|return value|comment
 :---:|:---:|:---|:---|:---
+App|load|String url|void|Redirect page to the address:url.
+App|send|Number port,String address, String message|void|Redirect page to the address:url.
+App|listen|Number port|void|Listen on a **UDP** port, the result will be store in the buffer(byte[]) object.
+App|listen|Number port, Number length|void|Listen on a **UDP** port with maximum buffer length.
+App|buffer, getBuffer, get_buffer, getbuffer|-|Buffer|Get buffer object.
+App|received|-|String|Get received buffer string.
+App|received|String encoding|String|Get received buffer string with specific encoding.
+App|flush|-|void|Create a new buffer.
+App|play|Media media|Mediaplayer|Play the media, which is loaded and defined in the preload.
+App|play|Media media, Number cycle|Mediaplayer|Play the media with cycle times.
+App|play|Media media, Number cycle, Number[0,1] volume|Mediaplayer|Play the media with cycle times and the specific volume.
+App|timer, getTimer, get_timer, gettimer|void|AnimationTimer|Get animation timer.
+App|key, getKey, get_key, getkey|void|KeyEventHandler|Get key event handler.
+App|mouse, getMouse, get_mouse, getmouse|void|MouseEventHandler|Get mouse event handler.
 Canvas|clear|-|void|Clear whole canvas.
 Canvas|text|String text|void|Draws a text at 0, 0 position.
 Canvas|text|String text, Number x, y|void|Draws a text at x, y position.
@@ -390,5 +417,36 @@ Canvas|square|Number topleftx, toplefty, side, Bool filled|void|Fills or strokes
 Canvas|circle|Number centrex, centrey, radius|void|Strokes a circle with current paint.
 Canvas|circle|Number centrex, centrey, radius, Bool filled|void|Fills or strokes a circle with current paint.
 Canvas|rotateImage, rotate_image, rotateimage|Image image, Number tlx, tly, width, height, angle, px, py|void|Draws an image on a graphics context. The image is drawn at (tlx, tly) rotated by angle pivoted around the point (px, py).
+Timer|action|lambda(now->)|void|Defines an action with current time parameter which is invoked in each frame.
+Timer|start|-|void|Starts the timer action.
+Timer|stop|-|void|Stops the timer action.
+Key|press|lambda(keycode->)|void|Defines an action which is invoked when key is pressed. 
+Key|release|lambda(keycode->)|void|Defines an action which is invoked when key is released.
+Mouse|press|lambda(x,y->)|void|Defines an action which is invoked when mouse left key is pressed. 
+Mouse|release|lambda(x,y->)|void|Defines an action which is invoked when mouse left key is released.
+Mouse|move|lambda(x,y->)|void|Defines an action which is invoked when mouse is moved.
+Mouse|rightPress, right_press, rightpress|lambda(x,y->)|void|Defines an action which is invoked when mouse right key is pressed.
+Mouse|rightRelease, right_release, rightrelease|lambda(x,y->)|void|Defines an action which is invoked when mouse right key is released.
+Button|action|lambda(event->)|void|Defines an action when button is clicked.
+Hyperlink|action|lambda(event->)|void|Defines an action when hyperlink is clicked.
+Form|send|-|void|Sends a HTTP request with JSON body to the action address. The JSON body includes all children page elements.
+Form|submit|-|void|Submits a HTTP request with Form body to the action address. The Form body includes all children page elements.
 
 ## <a name="class"></a>Class
+
+XBrowser also supports compiled code in bytecode format. Using class element and its url, name and method attributes to define a remove function.
+
+```xml
+<xmlv>
+	<class url="http://www.abc.com/" name="com.whitewoodcity.MyClass1" function="test"/>
+	<class url="http://www.abc.com/" name="com.whitewoodcity.MyClass2" function="test"/>
+</xmlv>
+```
+
+The remote class file address should be: www.abc.com/com/whitewoodcity/MyClass1.class and in this class should include a function similar to:
+
+```java
+	public Object/void test(){...}
+```
+
+Developers could use Java, Ceylon, Kotlin or Scala to compile and produce class files.
