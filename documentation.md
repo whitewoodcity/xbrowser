@@ -449,4 +449,4 @@ The remote class file address should be: www.abc.com/com/whitewoodcity/MyClass1.
 	public Object/void test(){...}
 ```
 
-Developers could use Java, Ceylon, Kotlin or Scala to compile and produce class files.
+Developers could use compiling languages e.g. Java, Ceylon, Kotlin or Scala to compile source code and generate class files.
