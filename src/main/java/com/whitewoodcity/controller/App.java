@@ -75,7 +75,15 @@ public abstract class App {
         return timer();
     }
 
-    public void dispose() {
+    public AnimationTimer get_timer() {
+        return timer();
+    }
+
+    public AnimationTimer gettimer() {
+        return timer();
+    }
+
+    protected void dispose() {
         if (timer != null) timer.stop();
         if (mediaPlayer != null) mediaPlayer.dispose();
         if (mouseEventHandler != null) disposeMouse();
@@ -101,7 +109,7 @@ public abstract class App {
 
     protected List<String> downloadList = new ArrayList<>();
 
-    public Map<String, String> parsePreloadString(List<String> strings) throws Exception {
+    protected Map<String, String> parsePreloadString(List<String> strings) throws Exception {
         Map<String, String> preload = new HashMap<>();
         downloadList.clear();
 
@@ -121,7 +129,7 @@ public abstract class App {
         return preload;
     }
 
-    public String parseKeyValuePair(String string, Map<String, String> map) {
+    private String parseKeyValuePair(String string, Map<String, String> map) {
         String[] kv = string.split("=");
         map.put(kv[0], kv[1]);
         return kv[1];
@@ -129,7 +137,31 @@ public abstract class App {
 
     public abstract MouseEventHandler getMouse();
 
+    public MouseEventHandler get_mouse(){
+        return getMouse();
+    }
+
+    public MouseEventHandler getmouse(){
+        return getMouse();
+    }
+
+    public MouseEventHandler mouse(){
+        return getMouse();
+    }
+
     public abstract KeyEventHandler getKey();
+
+    public KeyEventHandler get_key(){
+        return getKey();
+    }
+
+    public KeyEventHandler getkey(){
+        return getKey();
+    }
+
+    public KeyEventHandler key(){
+        return getKey();
+    }
 
     protected abstract void disposeMouse();
 
@@ -192,8 +224,25 @@ public abstract class App {
         });
     }
 
+    public Buffer buffer() {
+        return buffer;
+    }
+
     public Buffer getBuffer() {
         return buffer;
+    }
+
+    public Buffer get_buffer() {
+        return getBuffer();
+    }
+
+    public Buffer getbuffer() {
+        return getBuffer();
+    }
+
+    public String received(String encoding){
+        if (buffer == null) return "";
+        return buffer.toString(encoding);
     }
 
     public String received() {
@@ -214,7 +263,9 @@ public abstract class App {
 
     protected void handleMessage(Object message) {
         String m;
-        if (message != null) m = message.toString();
+        if (message != null){
+            m = message.toString();
+        }
         else m = null;
         Platform.runLater(() -> exceptionBox.setMessage(m));
     }
