@@ -434,7 +434,7 @@ Form|submit|-|void|Submits a HTTP request with Form body to the action address. 
 
 ## <a name="class"></a>Class
 
-XBrowser also supports compiled code in bytecode format. Using class element and its url, name and method attributes to define a remove function.
+XBrowser also supports compiled code in bytecode format. Using class element and its url, name and method attributes to define a remote function.
 
 ```xml
 <xmlv>
