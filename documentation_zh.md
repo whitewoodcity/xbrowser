@@ -29,18 +29,20 @@ JSON元素用于描述放置于页面之上的组件。
 </json>
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31708141-c9d4901c-b3b3-11e7-8d78-c359da3ed3e9.png">
-For more about JSON file format please refer to JSON website: http://json.org
+更多关于JSON文件格式的信息，请访问JSON网站：http://json.org
 
-There are only 3 types of JSON root element: JsonObject, JsonArray and null:
+当前仅有三种JSON根元素，分别是：JsonObject, JsonArray and null:
 
-1) If the root element is a JsonObject, the page will create components based on the information provided and place at the central middle of the page.
+1）若根元素为JSON对象，页面将会根据该对象提供的信息创建控件，并将其放置于页面正中。
+
 ```xml
 <json>
 {"type":"button","text":"i am a button"}
 </json>
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31709531-e88194c0-b3b7-11e7-8f52-51543c2b42c1.png">
-2) If the root element is a JsonArray, the page will create a two-dimensional space and render the components based on the JsonObject within the JsonArray, the component coordinates can be specified with x,y layout.
+
+2）若根元素为JSON数组，则页面将会创建一个二维空间，并根据数组中的元素渲染控件，控件坐标将设置在xy坐标体系中。
 
 ```xml
 <json>
@@ -48,7 +50,8 @@ There are only 3 types of JSON root element: JsonObject, JsonArray and null:
 </json>
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31709530-e82dd20e-b3b7-11e7-8bc7-49a250c79b40.png">
-3) If the root element is empty, the page will by default place a canvas with id:canvas.
+
+3）若根元素为空，页面将会缺省创建一个id为canvas的画布对象。
 
 ```xml
 <json/>
@@ -58,9 +61,9 @@ canvas.text("i am a canvas",100,100)
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31709529-e7d17c84-b3b7-11e7-87a6-cbedacb1858e.png">
 
-Component List
+控件列表
 
-Component|type|parent|string properties|number properties|bool properties
+控件|类型|父控件|字符串属性|数字属性|布尔属性
 :---:|:---:|:---:|:---|:---|:---
 Node|-|-|id|rotate,opacity|disable,visible
 Cavans|canvas|Node|-|width,height|-
@@ -73,7 +76,7 @@ Button|button|Control|text|-|-
 Hyperlink|hyperlink|Control|text|-|-
 TextField|textfield|Control|text|-|-
 
-Component|type|parent|string properties|JsonArray[String] properties
+控件|类型|父控件|字符串属性|JSON数组[String]属性
 :---:|:---:|:---:|:---|:---
 ChoiceBox|choicebox|Control|value|item,items|-
 ```json
@@ -86,7 +89,7 @@ ChoiceBox|choicebox|Control|value|item,items|-
 }
 ```
 
-Component|type|parent|string properties|JsonArray[String] properties|bool properties
+控件|类型|父控件|字符串属性|JSON数组[String]属性|布尔属性
 :---:|:---:|:---:|:---|:---|:---
 TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,values|editable
 
@@ -116,7 +119,7 @@ TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,val
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31762603-4e49215a-b481-11e7-87c6-797d48874084.png">
 
-Component|type|parent|string properties|number properties|JsonArray[String] properties
+控件|类型|父控件|字符串属性|数字属性|JSON数组[String]属性
 :---:|:---:|:---:|:---|:---|:---
 Form|form|Control|text,action,method|-|children
 
@@ -140,13 +143,14 @@ button001.action = { event ->
 </xmlv>
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31774833-7b702658-b4ac-11e7-8fbc-c35c73c8e96f.png">
-The form will be sent with following http request body in JSON format:
+
+FORM将会以如下HTTP请求体的方式提交，以JSON格式：
 
 ```json
 {"textfield":"Textfield","table":[{"col":"001"}]}
 ```
 
-Component|type|parent|string properties|number properties|JsonArray[{String:Number}] properties
+控件|类型|父控件|字符串属性|数字属性|JSON数组[{String:Number}]属性
 :---:|:---:|:---:|:---|:---|:---
 PieChart|piechart|Chart|-|-|data
 
@@ -160,7 +164,7 @@ PieChart|piechart|Chart|-|-|data
 
 <img src="https://user-images.githubusercontent.com/5525436/31805775-19b844a4-b529-11e7-82c1-938c381042ba.png">
 
-Component|type|parent|string properties|JsonArray[String/Number] properties|JsonObject{String:[Number]} properties
+控件|类型|父控件|字符串属性|JSON数组[String/Number]属性|JSON数组{String:[Number]}属性
 :---:|:---:|:---:|:---|:---|:---
 XYChart|-|Chart|xlabel,ylabel|xaxis|data
 LineChart|linechart|XYChart|-|-|-
@@ -179,7 +183,7 @@ AreaChart|areachart|XYChart|-|-|-
 
 <img src="https://user-images.githubusercontent.com/5525436/31811261-8126b290-b544-11e7-91bf-e6542629ca93.png">
 
-Component|type|parent|JsonObject{String:[{"x":Number,"y":Number,"z":Number}]} properties
+控件|类型|父控件|JSON对象{String:[{"x":Number,"y":Number,"z":Number}]}属性
 :---:|:---:|:---:|:---
 BubbleChart|bubblechart|XYChart|data
 
@@ -197,13 +201,13 @@ BubbleChart|bubblechart|XYChart|data
 
 ## <a name="preload"></a>Preload
 
-Preload element describes resources to be loaded before renderring the page. Only three types of resources are supported:
+Preload元素定义页面加载前需要下载的资源，当前仅支持以下三类资源：
 
 wav|mp3,mp4|png,jpg,gif,bmp etc
 :---:|:---:|:---:
 [AudioClip](http://download.java.net/java/jdk9/jfxdocs/javafx/scene/media/AudioClip.html)|[Media](http://download.java.net/java/jdk9/jfxdocs/javafx/scene/media/Media.html)|[Image](http://download.java.net/java/jdk9/jfxdocs/javafx/scene/image/Image.html)
 
-The element content is defined as several key=value pairs separated by semicolon; 
+元素内容以多个key=value组合并以;分割的形式组成
 
 ```xml
 <preload>
@@ -211,7 +215,9 @@ image001=http://w2v4.com/static/image001.png;
 image002=http://w2v4.com/static/image002.png;
 </preload>
 ```
-The browser will download and cache resources beforehand.
+
+浏览器将会下载并缓存这些资源。
+
 <img src="https://user-images.githubusercontent.com/5525436/31669158-ec54025c-b319-11e7-8c5d-b185c5e20bb8.png"/>
 
 The resources could be retrieved in the [verb elements](#verb) by its key. 
