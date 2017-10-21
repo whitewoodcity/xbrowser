@@ -302,6 +302,19 @@ Text in script element is an interpreted(rather than compiled) piece of programm
 </xmlv>
 ```
 
+### URL Link Support
+
+Script element supports hyperlink attribute, specify the target in the <script href=" ">
+
+```xml
+<xmlv>
+	<json/>
+	<script href="www.abc.com/test.javascript" type="javascript"/>
+</xmlv>
+```
+
+### Using pre-defined elements
+
 By using scripts, developers could manipulate the components defined in the [JSON](#json) tag element.
 
 ```xml
@@ -420,3 +433,20 @@ Form|send|-|void|Sends a HTTP request with JSON body to the action address. The 
 Form|submit|-|void|Submits a HTTP request with Form body to the action address. The Form body includes all children page elements.
 
 ## <a name="class"></a>Class
+
+XBrowser also supports compiled code in bytecode format. Using class element and its url, name and method attributes to define a remove function.
+
+```xml
+<xmlv>
+	<class url="http://www.abc.com/" name="com.whitewoodcity.MyClass1" function="test"/>
+	<class url="http://www.abc.com/" name="com.whitewoodcity.MyClass2" function="test"/>
+</xmlv>
+```
+
+The remote class file address should be: www.abc.com/com/whitewoodcity/MyClass1.class and in this class should include a function similar to:
+
+```java
+	public Object/void test(){...}
+```
+
+Developers could use Java, Ceylon, Kotlin or Scala to compile and produce class files.
