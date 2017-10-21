@@ -231,7 +231,7 @@ renew:image001=http://w2v4.com/static/image001.png;Renew:image002=http://w2v4.co
 
 ## <a name="css"></a>CSS
 
-CSS is a style sheet language used for describing the presentation of a page elements usually written in JSON, but also apply to pae elements placed by the browser.
+CSS is a style sheet language used for describing the presentation of a page elements usually written in JSON, but also apply to page elements placed by the browser.
 
 ```xml
     <css>
@@ -278,7 +278,7 @@ For more about CSS file format please refer to [JavaFX CSS Reference Guide](http
 
 Verb elements are used to describe page element actions.
 
-There are two types of noun elements:
+There are two types of verb elements:
 1) [Script](#script) 
 2) [Class](#class)
 
