@@ -322,9 +322,9 @@ CSS是一种样式单语言，用于描述页面元素的展现形式，通常�
 </xmlv>
 ```
 
-### Using pre-defined elements
+### 使用预定义元素
 
-By using scripts, developers could manipulate the components defined in the [JSON](#json) tag element.
+用户在使用脚本时，可操作之前在[JSON](#json)标签中定义的控件。
 
 ```xml
 <xmlv>
@@ -339,13 +339,13 @@ By using scripts, developers could manipulate the components defined in the [JSO
 </xmlv>
 ```
 
-On clicking, the button moves right for 10 points.
+按钮每点击一次，向右移动10点位置。
 
 <img width="362" alt="screen shot 2017-10-20 at 6 50 48 pm" src="https://user-images.githubusercontent.com/5525436/31817663-a90779be-b55a-11e7-8414-20a79bd46420.png">
 
-### Binding Properties
+### 属性绑定
 
-The component properties could be bound to other component properties.
+控件属性可被绑定至另外的控件属性。
 
 ```xml
 <xmlv>
@@ -363,13 +363,13 @@ The component properties could be bound to other component properties.
 </xmlv>
 ```
 
-The x property of 'i am a bound button' button is bound to the x property of 'i am a button' button, thus if the 'i am a button' button moves right, the bound button moves too.
+'i am a bound button'按钮的x坐标属性被绑定至'i am a button'按钮x坐标属性，每当'i am a button'按钮向右移动，被绑定的按钮亦会向右移动。
 
 <img width="382" alt="screen shot 2017-10-20 at 6 54 12 pm" src="https://user-images.githubusercontent.com/5525436/31817885-7b071da2-b55b-11e7-98f8-59f8b1058401.png">
 
-### Execution
+### 执行
 
-By default, the script execution thread will be interrupted in 10 seconds, and will be brutally stopped in 12 seconds. The script is suggested to finish execution in 10 seconds. But some times, the user wants to enjoy the program animation for more than 10 seconds e.g. video games. In this case, the developers should use animation timer to run the grogram.
+缺省状况下，脚本执行时长控制为10秒，10秒后系统将会尝试介入线程执行，12秒后系统将会强行打断线程执行。脚本执行时长建议控制在10秒以内，但有时浏览器需要超过10秒以上的执行时长，例如视频游戏。此时开发者应使用animation timer定时器以执行程序。
 
 ```xml
 <xmlv>
@@ -387,7 +387,7 @@ By default, the script execution thread will be interrupted in 10 seconds, and w
 </xmlv>
 ```
 
-Component|method name|parameters|return value|comment
+控件|方法名|参数|返回类型|解释
 :---:|:---:|:---|:---|:---
 App|load|String url|void|Redirect page to the address:url.
 App|send|Number port,String address, String message|void|Redirect page to the address:url.
@@ -443,7 +443,7 @@ Form|submit|-|void|Submits a HTTP request with Form body to the action address. 
 
 ## <a name="class"></a>Class
 
-XBrowser also supports compiled code in bytecode format. Using class element and its url, name and method attributes to define a remote function.
+超级浏览器亦支持编译型字节码格式。使用class元素及其url，name还有method属性，便可定义远程方法调用。
 
 ```xml
 <xmlv>
@@ -452,10 +452,10 @@ XBrowser also supports compiled code in bytecode format. Using class element and
 </xmlv>
 ```
 
-The remote class file address should be: www.abc.com/com/whitewoodcity/MyClass1.class and in this class should include a function similar to:
+远程class文件的绝对地址为： www.abc.com/com/whitewoodcity/MyClass1.class 在该文件中需包含有以下方法：
 
 ```java
 	public Object/void test(){...}
 ```
 
-Developers could use compiling languages e.g. Java, Ceylon, Kotlin or Scala to compile source code and generate class files.
+开发者可使用编译型语言例如：Java，Ceylon，Kotlin，Scala等将源码编译并生成字节码文件。
