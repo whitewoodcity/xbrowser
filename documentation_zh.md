@@ -220,7 +220,8 @@ image002=http://w2v4.com/static/image002.png;
 
 <img src="https://user-images.githubusercontent.com/5525436/31669158-ec54025c-b319-11e7-8c5d-b185c5e20bb8.png"/>
 
-The resources could be retrieved in the [verb elements](#verb) by its key. 
+资源可在[动词元素](#verb)中以key获取。
+
 ```xml
 <script type="groovy">
 Image image = image001
@@ -228,7 +229,9 @@ Image image = image001
 Image image = preload.get('image001')
 </script>
 ```
-By default the resources is cached, users could set new:/renew:/New:/Renew: prefix to force the browser download the resources no mather the resources is cached or not.
+
+缺省情况下资源会被缓存起来，用户可设置new:/renew:/New:/Renew: 前缀强迫浏览器重新下载资源，无论资源是否已经被缓存。
+
 ```xml
 <preload>
 renew:image001=http://w2v4.com/static/image001.png;Renew:image002=http://w2v4.com/static/image002.png
@@ -237,7 +240,7 @@ renew:image001=http://w2v4.com/static/image001.png;Renew:image002=http://w2v4.co
 
 ## <a name="css"></a>CSS
 
-CSS is a style sheet language used for describing the presentation of a page elements usually written in JSON, but also apply to pae elements placed by the browser.
+CSS是一种样式单语言，用于描述页面元素的展现形式，通常页面元素会在JSON中被定义，但CSS亦可用于定义浏览器设置的元素。
 
 ```xml
     <css>
@@ -256,7 +259,7 @@ CSS is a style sheet language used for describing the presentation of a page ele
 
 <img src="https://user-images.githubusercontent.com/5525436/31812615-2b06a12c-b549-11e7-8697-2dd6592b48b9.png">
 
-If a component is associated with an id then it could be easily styled in css with the same id name:
+若一个控件拥有id，则可利用id制作特定的样式：
 
 ```xml
     <json>
@@ -278,19 +281,19 @@ If a component is associated with an id then it could be easily styled in css wi
     </css>
 ```
 
-For more about CSS file format please refer to [JavaFX CSS Reference Guide](http://docs.oracle.com/javase/8/javafx/api/javafx/scene/doc-files/cssref.html).
+更多关于CSS文件格式信息，请参阅 [JavaFX CSS Reference Guide](http://docs.oracle.com/javase/8/javafx/api/javafx/scene/doc-files/cssref.html).
 
-## <a name="verb">Verb Elements
+## <a name="verb">动词元素
 
-Verb elements are used to describe page element actions.
+动词元素用于描述页面元素动作。
 
-There are two types of noun elements:
+当前有两类动词元素：
 1) [Script](#script) 
 2) [Class](#class)
 
 ## <a name="script"></a>Script
 
-Text in script element is an interpreted(rather than compiled) piece of programming language that supports scripts: programs written for XBrowser run-time environment that automate the execution of tasks. It is used to make pages interactive and provide online programs, including animations and video games. XBrowser currently three scripting languages: [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Ruby](http://jruby.org/) and [Groovy](http://groovy-lang.org/). The script lanugae type could be specified in the type attribute.
+放置在script元素中的是一段解释型（而非编译型）脚本语言。针对超级浏览器运行环境打造。其主要用途是制作在线程序，包括动画以及在线视频游戏等。当前超级浏览器支持3种脚本语言： [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Ruby](http://jruby.org/) and [Groovy](http://groovy-lang.org/)。脚本语言类型可在type属性中设置。
 
 ```xml
 <xmlv>
@@ -308,9 +311,9 @@ Text in script element is an interpreted(rather than compiled) piece of programm
 </xmlv>
 ```
 
-### URL Link Support
+### URL链接支持
 
-Script element supports hyperlink attribute, specify the target in the <script href=" ">
+脚本元素支持超链接属性，可在<script href=" ">中定义
 
 ```xml
 <xmlv>
