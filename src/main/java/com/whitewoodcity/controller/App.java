@@ -165,7 +165,7 @@ public abstract class App {
 
     protected abstract void disposeKey();
 
-    public void send(int port, String address, Object value) {
+    protected void send(int port, String address, Object value) {
 
         JsonObject jsonObject = new JsonObject().put("id", id)
                 .put("method", "send")
@@ -180,11 +180,11 @@ public abstract class App {
         forceSleep();
     }
 
-    public void listen(int port) {
+    protected void listen(int port) {
         listen(port, 0);
     }
 
-    public void listen(int port, int length) {
+    protected void listen(int port, int length) {
         JsonObject jsonObject = new JsonObject().put("method", "listen")
                 .put("id", id)
                 .put("port", port)
