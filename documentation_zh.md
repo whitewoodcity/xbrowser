@@ -1,27 +1,27 @@
 # File
 
-XBrowser uses **XMLV** a XML extension as its layout standard. All display elements should be included in the XMLV file. Once the resource has been retrieved the web browser will display it. A XMLV file is pretty much similar to HTML file used by normal browsers. It included a root element xmlv and title attribute, following is an example of XMLV file:
+超级浏览器使用**XMLV**一种XML扩展作为其排版标准。所有展示的元素都应该被放入XMLV文件内。浏览器一旦完成资源读取便会展示其内容。XMLV文件跟普通浏览器所使用的HTML文件极为相似，包含有一个根节点以及title属性，以下便是一个XMLV的例子：
 
 ```xml
 <xmlv title="Hello XMLV"/>
 ```
 
-There are two types of xmlv elements:
-1) [Noun elements](#noun) 
-2) [Verb elements](#verb)
+当前有两种类型的XMLV元素：
+1) [名词元素](#noun) 
+2) [动词元素](#verb)
 
-## <a name="noun"></a>Noun Elements
+## <a name="noun"></a>名词元素
 
-Noun elements are used to identify and describe page elements.
+名词元素用于定义以及描述页面成员。
 
-There are three types of noun elements:
+当前有三种类型的名词元素：
 1) [JSON](#json) 
 2) [Preload](#preload)
 2) [CSS](#css)
 
 ## <a name="json"></a>JSON
 
-JSON element describes components placed on the page. 
+JSON元素用于描述放置于页面之上的组件。
 
 ```xml
 <json>
@@ -29,18 +29,20 @@ JSON element describes components placed on the page.
 </json>
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31708141-c9d4901c-b3b3-11e7-8d78-c359da3ed3e9.png">
-For more about JSON file format please refer to JSON website: http://json.org
+更多关于JSON文件格式的信息，请访问JSON网站：http://json.org
 
-There are only 3 types of JSON root element: JsonObject, JsonArray and null:
+当前仅有三种JSON根元素，分别是：JsonObject, JsonArray and null:
 
-1) If the root element is a JsonObject, the page will create components based on the information provided and place at the central middle of the page.
+1）若根元素为JSON对象，页面将会根据该对象提供的信息创建控件，并将其放置于页面正中。
+
 ```xml
 <json>
 {"type":"button","text":"i am a button"}
 </json>
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31709531-e88194c0-b3b7-11e7-8f52-51543c2b42c1.png">
-2) If the root element is a JsonArray, the page will create a two-dimensional space and render the components based on the JsonObject within the JsonArray, the component coordinates can be specified with x,y layout.
+
+2）若根元素为JSON数组，则页面将会创建一个二维空间，并根据数组中的元素渲染控件，控件坐标将设置在xy坐标体系中。
 
 ```xml
 <json>
@@ -48,7 +50,8 @@ There are only 3 types of JSON root element: JsonObject, JsonArray and null:
 </json>
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31709530-e82dd20e-b3b7-11e7-8bc7-49a250c79b40.png">
-3) If the root element is empty, the page will by default place a canvas with id:canvas.
+
+3）若根元素为空，页面将会缺省创建一个id为canvas的画布对象。
 
 ```xml
 <json/>
@@ -58,9 +61,9 @@ canvas.text("i am a canvas",100,100)
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31709529-e7d17c84-b3b7-11e7-87a6-cbedacb1858e.png">
 
-Component List
+控件列表
 
-Component|type|parent|string properties|number properties|bool properties
+控件|类型|父控件|字符串属性|数字属性|布尔属性
 :---:|:---:|:---:|:---|:---|:---
 Node|-|-|id|rotate,opacity|disable,visible
 Cavans|canvas|Node|-|width,height|-
@@ -73,7 +76,7 @@ Button|button|Control|text|-|-
 Hyperlink|hyperlink|Control|text|-|-
 TextField|textfield|Control|text|-|-
 
-Component|type|parent|string properties|JsonArray[String] properties
+控件|类型|父控件|字符串属性|JSON数组[String]属性
 :---:|:---:|:---:|:---|:---
 ChoiceBox|choicebox|Control|value|item,items|-
 ```json
@@ -86,7 +89,7 @@ ChoiceBox|choicebox|Control|value|item,items|-
 }
 ```
 
-Component|type|parent|string properties|JsonArray[String] properties|bool properties
+控件|类型|父控件|字符串属性|JSON数组[String]属性|布尔属性
 :---:|:---:|:---:|:---|:---|:---
 TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,values|editable
 
@@ -116,7 +119,7 @@ TableView|table,tableview|Control|-|header,headers,column,<br/>columns,value,val
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31762603-4e49215a-b481-11e7-87c6-797d48874084.png">
 
-Component|type|parent|string properties|number properties|JsonArray[String] properties
+控件|类型|父控件|字符串属性|数字属性|JSON数组[String]属性
 :---:|:---:|:---:|:---|:---|:---
 Form|form|Control|text,action,method|-|children
 
@@ -140,13 +143,14 @@ button001.action = { event ->
 </xmlv>
 ```
 <img src="https://user-images.githubusercontent.com/5525436/31774833-7b702658-b4ac-11e7-8fbc-c35c73c8e96f.png">
-The form will be sent with following http request body in JSON format:
+
+FORM将会以如下HTTP请求体的方式提交，以JSON格式：
 
 ```json
 {"textfield":"Textfield","table":[{"col":"001"}]}
 ```
 
-Component|type|parent|string properties|number properties|JsonArray[{String:Number}] properties
+控件|类型|父控件|字符串属性|数字属性|JSON数组[{String:Number}]属性
 :---:|:---:|:---:|:---|:---|:---
 PieChart|piechart|Chart|-|-|data
 
@@ -160,7 +164,7 @@ PieChart|piechart|Chart|-|-|data
 
 <img src="https://user-images.githubusercontent.com/5525436/31805775-19b844a4-b529-11e7-82c1-938c381042ba.png">
 
-Component|type|parent|string properties|JsonArray[String/Number] properties|JsonObject{String:[Number]} properties
+控件|类型|父控件|字符串属性|JSON数组[String/Number]属性|JSON数组{String:[Number]}属性
 :---:|:---:|:---:|:---|:---|:---
 XYChart|-|Chart|xlabel,ylabel|xaxis|data
 LineChart|linechart|XYChart|-|-|-
@@ -179,7 +183,7 @@ AreaChart|areachart|XYChart|-|-|-
 
 <img src="https://user-images.githubusercontent.com/5525436/31811261-8126b290-b544-11e7-91bf-e6542629ca93.png">
 
-Component|type|parent|JsonObject{String:[{"x":Number,"y":Number,"z":Number}]} properties
+控件|类型|父控件|JSON对象{String:[{"x":Number,"y":Number,"z":Number}]}属性
 :---:|:---:|:---:|:---
 BubbleChart|bubblechart|XYChart|data
 
@@ -197,13 +201,13 @@ BubbleChart|bubblechart|XYChart|data
 
 ## <a name="preload"></a>Preload
 
-Preload element describes resources to be loaded before renderring the page. Only three types of resources are supported:
+Preload元素定义页面加载前需要下载的资源，当前仅支持以下三类资源：
 
 wav|mp3,mp4|png,jpg,gif,bmp etc
 :---:|:---:|:---:
 [AudioClip](http://download.java.net/java/jdk9/jfxdocs/javafx/scene/media/AudioClip.html)|[Media](http://download.java.net/java/jdk9/jfxdocs/javafx/scene/media/Media.html)|[Image](http://download.java.net/java/jdk9/jfxdocs/javafx/scene/image/Image.html)
 
-The element content is defined as several key=value pairs separated by semicolon; 
+元素内容以多个key=value组合并以;分割的形式组成
 
 ```xml
 <preload>
@@ -211,10 +215,13 @@ image001=http://w2v4.com/static/image001.png;
 image002=http://w2v4.com/static/image002.png;
 </preload>
 ```
-The browser will download and cache resources beforehand.
+
+浏览器将会下载并缓存这些资源。
+
 <img src="https://user-images.githubusercontent.com/5525436/31669158-ec54025c-b319-11e7-8c5d-b185c5e20bb8.png"/>
 
-The resources could be retrieved in the [verb elements](#verb) by its key. 
+资源可在[动词元素](#verb)中以key获取。
+
 ```xml
 <script type="groovy">
 Image image = image001
@@ -222,7 +229,9 @@ Image image = image001
 Image image = preload.get('image001')
 </script>
 ```
-By default the resources is cached, users could set new:/renew:/New:/Renew: prefix to force the browser download the resources no mather the resources is cached or not.
+
+缺省情况下资源会被缓存起来，用户可设置new:/renew:/New:/Renew: 前缀强迫浏览器重新下载资源，无论资源是否已经被缓存。
+
 ```xml
 <preload>
 renew:image001=http://w2v4.com/static/image001.png;Renew:image002=http://w2v4.com/static/image002.png
@@ -231,7 +240,7 @@ renew:image001=http://w2v4.com/static/image001.png;Renew:image002=http://w2v4.co
 
 ## <a name="css"></a>CSS
 
-CSS is a style sheet language used for describing the presentation of a page elements usually written in JSON, but also apply to page elements placed by the browser.
+CSS是一种样式单语言，用于描述页面元素的展现形式，通常页面元素会在JSON中被定义，但CSS亦可用于定义浏览器设置的元素。
 
 ```xml
     <css>
@@ -250,7 +259,7 @@ CSS is a style sheet language used for describing the presentation of a page ele
 
 <img src="https://user-images.githubusercontent.com/5525436/31812615-2b06a12c-b549-11e7-8697-2dd6592b48b9.png">
 
-If a component is associated with an id then it could be easily styled in css with the same id name:
+若一个控件拥有id，则可利用id制作特定的样式：
 
 ```xml
     <json>
@@ -272,19 +281,19 @@ If a component is associated with an id then it could be easily styled in css wi
     </css>
 ```
 
-For more about CSS file format please refer to [JavaFX CSS Reference Guide](http://docs.oracle.com/javase/8/javafx/api/javafx/scene/doc-files/cssref.html).
+更多关于CSS文件格式信息，请参阅 [JavaFX CSS Reference Guide](http://docs.oracle.com/javase/8/javafx/api/javafx/scene/doc-files/cssref.html).
 
-## <a name="verb">Verb Elements
+## <a name="verb">动词元素
 
-Verb elements are used to describe page element actions.
+动词元素用于描述页面元素动作。
 
-There are two types of verb elements:
+当前有两类动词元素：
 1) [Script](#script) 
 2) [Class](#class)
 
 ## <a name="script"></a>Script
 
-Text in script element is an interpreted(rather than compiled) piece of programming language that supports scripts: programs written for XBrowser run-time environment that automate the execution of tasks. It is used to make pages interactive and provide online programs, including animations and video games. XBrowser currently three scripting languages: [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Ruby](http://jruby.org/) and [Groovy](http://groovy-lang.org/). The script lanugae type could be specified in the type attribute.
+放置在script元素中的是一段解释型（而非编译型）脚本语言。针对超级浏览器运行环境打造。其主要用途是制作在线程序，包括动画以及在线视频游戏等。当前超级浏览器支持3种脚本语言： [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Ruby](http://jruby.org/) and [Groovy](http://groovy-lang.org/)。脚本语言类型可在type属性中设置。
 
 ```xml
 <xmlv>
@@ -302,9 +311,9 @@ Text in script element is an interpreted(rather than compiled) piece of programm
 </xmlv>
 ```
 
-### URL Link Support
+### URL链接支持
 
-Script element supports hyperlink attribute, specify the target in the <script href=" ">
+脚本元素支持超链接属性，可在<script href=" ">中定义
 
 ```xml
 <xmlv>
@@ -313,9 +322,9 @@ Script element supports hyperlink attribute, specify the target in the <script h
 </xmlv>
 ```
 
-### Using pre-defined elements
+### 使用预定义元素
 
-By using scripts, developers could manipulate the components defined in the [JSON](#json) tag element.
+用户在使用脚本时，可操作之前在[JSON](#json)标签中定义的控件。
 
 ```xml
 <xmlv>
@@ -330,13 +339,13 @@ By using scripts, developers could manipulate the components defined in the [JSO
 </xmlv>
 ```
 
-On clicking, the button moves right for 10 points.
+按钮每点击一次，向右移动10点位置。
 
 <img width="362" alt="screen shot 2017-10-20 at 6 50 48 pm" src="https://user-images.githubusercontent.com/5525436/31817663-a90779be-b55a-11e7-8414-20a79bd46420.png">
 
-### Binding Properties
+### 属性绑定
 
-The component properties could be bound to other component properties.
+控件属性可被绑定至另外的控件属性。
 
 ```xml
 <xmlv>
@@ -354,13 +363,13 @@ The component properties could be bound to other component properties.
 </xmlv>
 ```
 
-The x property of 'i am a bound button' button is bound to the x property of 'i am a button' button, thus if the 'i am a button' button moves right, the bound button moves too.
+'i am a bound button'按钮的x坐标属性被绑定至'i am a button'按钮x坐标属性，每当'i am a button'按钮向右移动，被绑定的按钮亦会向右移动。
 
 <img width="382" alt="screen shot 2017-10-20 at 6 54 12 pm" src="https://user-images.githubusercontent.com/5525436/31817885-7b071da2-b55b-11e7-98f8-59f8b1058401.png">
 
-### Execution
+### 执行
 
-By default, the script execution thread will be interrupted in 10 seconds, and will be brutally stopped in 12 seconds. The script is suggested to finish execution in 10 seconds. But some times, the user wants to enjoy the program animation for more than 10 seconds e.g. video games. In this case, the developers should use animation timer to run the grogram.
+缺省状况下，脚本执行时长控制为10秒，10秒后系统将会尝试介入线程执行，12秒后系统将会强行打断线程执行。脚本执行时长建议控制在10秒以内，但有时浏览器需要超过10秒以上的执行时长，例如视频游戏。此时开发者应使用animation timer定时器以执行程序。
 
 ```xml
 <xmlv>
@@ -378,7 +387,7 @@ By default, the script execution thread will be interrupted in 10 seconds, and w
 </xmlv>
 ```
 
-Component|method name|parameters|return value|comment
+控件|方法名|参数|返回类型|解释
 :---:|:---:|:---|:---|:---
 App|load|String url|void|Redirect page to the address:url.
 App|send|Number port,String address, String message|void|Redirect page to the address:url.
@@ -434,7 +443,7 @@ Form|submit|-|void|Submits a HTTP request with Form body to the action address. 
 
 ## <a name="class"></a>Class
 
-XBrowser also supports compiled code in bytecode format. Using class element and its url, name and method attributes to define a remote function.
+超级浏览器亦支持编译型字节码格式。使用class元素及其url，name还有method属性，便可定义远程方法调用。
 
 ```xml
 <xmlv>
@@ -443,10 +452,10 @@ XBrowser also supports compiled code in bytecode format. Using class element and
 </xmlv>
 ```
 
-The remote class file address should be: www.abc.com/com/whitewoodcity/MyClass1.class and in this class should include a function similar to:
+远程class文件的绝对地址为： www.abc.com/com/whitewoodcity/MyClass1.class 在该文件中需包含有以下方法：
 
 ```java
 	public Object/void test(){...}
 ```
 
-Developers could use compiling languages e.g. Java, Ceylon, Kotlin or Scala to compile source code and generate class files.
+开发者可使用编译型语言例如：Java，Ceylon，Kotlin，Scala等将源码编译并生成字节码文件。
