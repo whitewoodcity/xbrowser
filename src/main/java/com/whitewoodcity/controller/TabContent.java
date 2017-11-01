@@ -12,7 +12,6 @@ import com.whitewoodcity.thread.CustomerThread;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
 import com.whitewoodcity.verticle.WebClientVerticle;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -48,7 +47,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.UUID;
 
 import static com.whitewoodcity.Main.DEFAULT_MAX_WORKER_EXECUTE_TIME;
 import static com.whitewoodcity.Main.DEFAULT_TOLERATED_WORKER_EXECUTE_TIME;
@@ -79,7 +77,6 @@ public class TabContent extends App implements Initializable {
     private File directory;
     private Map<String, Object> preload = new HashMap<>();
     private Map<String, com.whitewoodcity.core.node.Node> context = new HashMap<>();
-    private Vertx vertx;
     private Map<String, String> resultMap;
     private ScriptEngine scriptEngine;
     private Node parent;
@@ -88,7 +85,7 @@ public class TabContent extends App implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        vertx = Main.vertx;
+        super.init();
         resultMap = vertx.sharedData().getLocalMap("resultMap");
         header.setSpacing(10);
         header.setPadding(new Insets(10));
@@ -107,7 +104,7 @@ public class TabContent extends App implements Initializable {
         container.setOnDragOver(event -> event.acceptTransferModes(TransferMode.ANY));
 
         try {
-            directory = Res.getTempDirectory(UUID.randomUUID() + "");
+            directory = Res.getTempDirectory(id);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -148,17 +145,7 @@ public class TabContent extends App implements Initializable {
         }
     }
 
-    private void loadWeb(JsonObject params) {
-        vertx.eventBus().<JsonObject>send(WebClientVerticle.class.getName(), params, ar -> {
-            if (ar.succeeded()) {
-                handleHttpResult(ar.result().body());
-            } else {
-                handleThrowableMessage(ar.cause());
-            }
-        });
-    }
-
-    private void handleHttpResult(JsonObject result) {
+    public void handleHttpResult(JsonObject result) {
         ParentType type;
         if (!"succeed".equals(result.getString("result"))) {
             type = ParentType.ERROR_MESSAGE;

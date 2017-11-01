@@ -4,9 +4,11 @@ import com.whitewoodcity.security.ApplicationSecurityManager;
 import com.whitewoodcity.thread.CustomerThread;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
+import com.whitewoodcity.verticle.DatagramVerticle;
 import com.whitewoodcity.verticle.WebClientVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.buffer.Buffer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -35,6 +37,7 @@ public class Main extends Application {
     public static Vertx vertx;
     public static ScriptEngineManager scriptEngineManager;
     public static Map<String, StringProperty> namesMap = new HashMap<>();
+    public static Map<String, Buffer> bufferMap = new HashMap<>();
 
     private PagePane tabPane;
 
@@ -102,6 +105,7 @@ public class Main extends Application {
                 vertxOptions.getMaxWorkerExecuteTime()/1000000+vertxOptions.getMaxWorkerExecuteTime()/5000000+"");
         vertx = Vertx.vertx(vertxOptions);
         vertx.deployVerticle(WebClientVerticle.class.getName());
+        vertx.deployVerticle(DatagramVerticle.class.getName());
         scriptEngineManager = new ScriptEngineManager();
         generateNames(Locale.getDefault());
 

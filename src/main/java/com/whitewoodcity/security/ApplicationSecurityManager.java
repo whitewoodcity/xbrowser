@@ -15,6 +15,7 @@ public class ApplicationSecurityManager extends SecurityManager {
     @Override
     public void checkAccess(ThreadGroup g) {
         if(Thread.currentThread() instanceof CustomerThread){
+
             if(!Thread.currentThread().getName().equals(globalAcessCode)){
                 throw new SecurityException("Security error.");
             }

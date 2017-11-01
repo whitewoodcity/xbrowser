@@ -16,6 +16,7 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class Res {
@@ -163,6 +164,15 @@ public class Res {
             conn.setConnectTimeout(10 * 1000);
             //防止屏蔽程序抓取而返回403错误
             conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+
+//            Map<String, List<String>> map = conn.getHeaderFields();
+//
+//            System.out.println("Printing Response Header...\n");
+//
+//            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+//                System.out.println("Key : " + entry.getKey()
+//                        + " ,Value : " + entry.getValue());
+//            }
 
             try(InputStream inputStream = conn.getInputStream();
                 FileOutputStream fileOutputStream = new FileOutputStream(file)){

@@ -75,6 +75,12 @@
             <version>2.3.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.latte-lang</groupId>
+            <artifactId>latte-build</artifactId>
+            <version>0.0.9-ALPHA</version>
+        </dependency>
+
 
     </dependencies>
 

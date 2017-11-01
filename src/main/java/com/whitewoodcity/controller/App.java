@@ -8,8 +8,10 @@ import com.whitewoodcity.ui.ExceptionBox;
 import com.whitewoodcity.ui.Page;
 import com.whitewoodcity.ui.PagePane;
 import com.whitewoodcity.util.Res;
+import com.whitewoodcity.verticle.DatagramVerticle;
+import com.whitewoodcity.verticle.WebClientVerticle;
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;
 import javafx.scene.control.*;
@@ -32,10 +34,17 @@ public abstract class App {
     protected MouseEventHandler mouseEventHandler;
     protected KeyEventHandler keyEventHandler;
 
-    private Buffer buffer;
-    private DatagramSocket datagramSocket;
-
     private ExceptionBox exceptionBox;
+
+    protected Vertx vertx;
+    protected String id;
+
+    private final int FPS = 120;
+
+    protected void init() {
+        vertx = Main.vertx;
+        id = UUID.randomUUID().toString();
+    }
 
     public void initialize(Button exceptionButton) {
         exceptionBox = new ExceptionBox(exceptionButton);
@@ -89,18 +98,7 @@ public abstract class App {
         if (mouseEventHandler != null) disposeMouse();
         if (keyEventHandler != null) disposeKey();
         exceptionBox.clearExceptionMessage();
-        if (datagramSocket != null) {
-            datagramSocket.close(ar -> {
-                if (ar.succeeded())
-                    datagramSocket = null;
-                else {
-                    handleThrowableMessage(ar.cause());
-                }
-            });
-        }
-        if (buffer != null) {
-            buffer = null;
-        }
+        vertx.eventBus().send(DatagramVerticle.class.getName(), new JsonObject().put("id", id).put("method", "stop"));
     }
 
     public void focus(com.whitewoodcity.core.node.Node node) {
@@ -137,29 +135,29 @@ public abstract class App {
 
     public abstract MouseEventHandler getMouse();
 
-    public MouseEventHandler get_mouse(){
+    public MouseEventHandler get_mouse() {
         return getMouse();
     }
 
-    public MouseEventHandler getmouse(){
+    public MouseEventHandler getmouse() {
         return getMouse();
     }
 
-    public MouseEventHandler mouse(){
+    public MouseEventHandler mouse() {
         return getMouse();
     }
 
     public abstract KeyEventHandler getKey();
 
-    public KeyEventHandler get_key(){
+    public KeyEventHandler get_key() {
         return getKey();
     }
 
-    public KeyEventHandler getkey(){
+    public KeyEventHandler getkey() {
         return getKey();
     }
 
-    public KeyEventHandler key(){
+    public KeyEventHandler key() {
         return getKey();
     }
 
@@ -168,68 +166,76 @@ public abstract class App {
     protected abstract void disposeKey();
 
     public void send(int port, String address, String value) {
-        if (datagramSocket == null) datagramSocket = Main.vertx.createDatagramSocket();
-        datagramSocket.send(value, port, address, ar -> {
-            if (ar.failed()) {
-                handleThrowableMessage(ar.cause());
-            }
+
+        JsonObject jsonObject = new JsonObject().put("id", id)
+                .put("method", "send")
+                .put("port", port)
+                .put("address", address)
+                .put("value", value);
+
+        Platform.runLater(() -> {
+            vertx.eventBus().send(DatagramVerticle.class.getName(), jsonObject);
         });
+
+        forceSleep();
     }
 
     public void listen(int port) {
-        listen(port, false);
+        listen(port, 0);
     }
 
     public void listen(int port, int length) {
-        if (datagramSocket == null) datagramSocket = Main.vertx.createDatagramSocket();
-        final int maxLen;
-        if (length > 1000) maxLen = 1000;
-        else maxLen = length;
-        datagramSocket.listen(port, "0.0.0.0", asyncResult -> {
-            if (asyncResult.succeeded()) {
-                datagramSocket.handler(packet -> {
-                    // Do something with the packet
-                    Platform.runLater(() -> {
-                        if (buffer != null) {
-                            buffer.appendBuffer(packet.data());
-                            if (buffer.length() > maxLen * 4) {
-                                buffer = buffer.getBuffer(buffer.length() - maxLen * 4, buffer.length());
-                            }
-                        } else {
-                            buffer = packet.data();
+        JsonObject jsonObject = new JsonObject().put("method", "listen")
+                .put("id", id)
+                .put("port", port)
+                .put("length", length);
+        Platform.runLater(() -> {
+            vertx.eventBus().<JsonObject>send(DatagramVerticle.class.getName(),
+                    jsonObject, asyncResult -> {
+                        if (!asyncResult.succeeded()) {
+                            handleThrowableMessage(asyncResult.cause());
+                        } else if (!asyncResult.result().body().getString("result").equals("OK")) {
+                            handleThrowableMessage(new Exception(asyncResult.result().body().getString("result")));
                         }
                     });
-                });
-            } else {
-                handleThrowableMessage(asyncResult.cause());
-            }
         });
+
+        forceSleep();
+
     }
 
-    private void listen(int port, boolean accumulated) {
-        if (datagramSocket == null) datagramSocket = Main.vertx.createDatagramSocket();
-        datagramSocket.listen(port, "0.0.0.0", asyncResult -> {
-            if (asyncResult.succeeded()) {
-                datagramSocket.handler(packet -> {
-                    // Do something with the packet
-                    Platform.runLater(() -> {
-                        if (accumulated && buffer != null) {
-                            buffer.appendBuffer(packet.data());
-                        } else buffer = packet.data();
-                    });
-                });
-            } else {
-                handleThrowableMessage(asyncResult.cause());
-            }
+    protected void loadWeb(JsonObject params) {
+        Platform.runLater(()->{
+            vertx.eventBus().<JsonObject>send(WebClientVerticle.class.getName(), params, ar -> {
+                if (ar.succeeded()) {
+                    handleHttpResult(ar.result().body());
+                } else {
+                    handleThrowableMessage(ar.cause());
+                }
+            });
         });
+
+        forceSleep();
     }
+
+    private void forceSleep(){
+        if(!Platform.isFxApplicationThread()) {
+            try {
+                Thread.sleep(1000 / FPS);
+            } catch (Exception e) {
+                handleThrowableMessage(e);
+            }
+        }
+    }
+
+    public abstract void handleHttpResult(JsonObject result);
 
     public Buffer buffer() {
-        return buffer;
+        return Main.bufferMap.get(id);
     }
 
     public Buffer getBuffer() {
-        return buffer;
+        return buffer();
     }
 
     public Buffer get_buffer() {
@@ -240,18 +246,14 @@ public abstract class App {
         return getBuffer();
     }
 
-    public String received(String encoding){
-        if (buffer == null) return "";
-        return buffer.toString(encoding);
+    public String received(String encoding) {
+        if (buffer() == null) return "";
+        return buffer().toString(encoding);
     }
 
     public String received() {
-        if (buffer == null) return "";
-        return buffer.toString();
-    }
-
-    public void flush() {
-        buffer = Buffer.buffer();
+        if (buffer() == null) return "";
+        return buffer().toString();
     }
 
     protected void handleThrowableMessage(Throwable e) {
@@ -263,10 +265,9 @@ public abstract class App {
 
     protected void handleMessage(Object message) {
         String m;
-        if (message != null){
+        if (message != null) {
             m = message.toString();
-        }
-        else m = null;
+        } else m = null;
         Platform.runLater(() -> exceptionBox.setMessage(m));
     }
 

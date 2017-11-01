@@ -1,11 +1,7 @@
 package com.whitewoodcity.core.api;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.input.MouseEvent;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -17,7 +13,6 @@ public class Api {
     public Api(Parent parent) {
         this.parent = parent;
     }
-
 
     private boolean isEmpty(String str){
         return str==null||str.length()==0;
