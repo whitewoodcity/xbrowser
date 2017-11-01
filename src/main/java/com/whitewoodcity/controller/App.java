@@ -2,8 +2,10 @@ package com.whitewoodcity.controller;
 
 import com.whitewoodcity.Main;
 import com.whitewoodcity.core.node.AnimationTimer;
+import com.whitewoodcity.core.node.Node;
 import com.whitewoodcity.core.node.input.KeyEventHandler;
 import com.whitewoodcity.core.node.input.MouseEventHandler;
+import com.whitewoodcity.core.node.view.MediaView;
 import com.whitewoodcity.ui.ExceptionBox;
 import com.whitewoodcity.ui.Page;
 import com.whitewoodcity.ui.PagePane;
@@ -99,7 +101,14 @@ public abstract class App {
         if (keyEventHandler != null) disposeKey();
         exceptionBox.clearExceptionMessage();
         vertx.eventBus().send(DatagramVerticle.class.getName(), new JsonObject().put("id", id).put("method", "stop"));
+        for(Node node:getContext().values()){
+            if(node instanceof MediaView){
+                ((MediaView)node).dispose();
+            }
+        }
     }
+
+    public abstract Map<String, com.whitewoodcity.core.node.Node> getContext();
 
     public void focus(com.whitewoodcity.core.node.Node node) {
         node.getNode().requestFocus();
