@@ -165,7 +165,7 @@ public abstract class App {
 
     protected abstract void disposeKey();
 
-    public void send(int port, String address, String value) {
+    public void send(int port, String address, Object value) {
 
         JsonObject jsonObject = new JsonObject().put("id", id)
                 .put("method", "send")

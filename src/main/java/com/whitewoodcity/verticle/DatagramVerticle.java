@@ -36,10 +36,10 @@ public class DatagramVerticle extends AbstractVerticle {
                     id = message.body().getString("id");
                     if (socketMap.get(id) != null) {
                         datagramSocket = socketMap.get(id);
-                        String value = message.body().getString("value");
+                        Object value = message.body().getValue("value");
                         int port = message.body().getInteger("port");
                         String address = message.body().getString("address");
-                        datagramSocket.send(value, port, address, ar -> {
+                        datagramSocket.send(value.toString(), port, address, ar -> {
                         });
                     }
                     break;
