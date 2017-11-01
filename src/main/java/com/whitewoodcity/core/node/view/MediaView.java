@@ -2,30 +2,32 @@ package com.whitewoodcity.core.node.view;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.scene.image.Image;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-public class ImageView extends View {
+public class MediaView extends View {
+    javafx.scene.media.MediaView body;
 
-    javafx.scene.image.ImageView body;
-
-    public ImageView() {
-        if (Platform.isFxApplicationThread()) body = new javafx.scene.image.ImageView();
-        else Platform.runLater(() -> body = new javafx.scene.image.ImageView());
+    public MediaView() {
+        if (Platform.isFxApplicationThread()) body = new javafx.scene.media.MediaView();
+        else Platform.runLater(() -> body = new javafx.scene.media.MediaView());
     }
 
-    public ImageView(String url) {
+    public MediaView(String url) {
         if (url == null) {
-            if (Platform.isFxApplicationThread()) body = new javafx.scene.image.ImageView();
-            else Platform.runLater(() -> body = new javafx.scene.image.ImageView());
+            if (Platform.isFxApplicationThread()) body = new javafx.scene.media.MediaView();
+            else Platform.runLater(() -> body = new javafx.scene.media.MediaView());
         } else {
-            if (Platform.isFxApplicationThread()) body = new javafx.scene.image.ImageView(url);
-            else Platform.runLater(() -> body = new javafx.scene.image.ImageView(url));
+            MediaPlayer mediaPlayer = new MediaPlayer(new Media(url));
+            mediaPlayer.setAutoPlay(true);
+            if (Platform.isFxApplicationThread())
+                body = new javafx.scene.media.MediaView(mediaPlayer);
+            else Platform.runLater(()-> body = new javafx.scene.media.MediaView(mediaPlayer));
         }
     }
-
 
     public DoubleProperty widthProperty() throws InterruptedException, ExecutionException {
 
@@ -82,12 +84,11 @@ public class ImageView extends View {
         return body;
     }
 
-    public void setImage(Object image) {
-        if (image != null && image instanceof Image) {
+    public void setMedia(Object media) {
+        if (media != null && media instanceof Media) {
             if (Platform.isFxApplicationThread()) {
-                body.setImage((Image) image);
-            } else Platform.runLater(() -> body.setImage((Image) image));
+                body.setMediaPlayer(new MediaPlayer((Media) media));
+            } else Platform.runLater(() -> body.setMediaPlayer(new MediaPlayer((Media) media)));
         }
-
     }
 }

@@ -10,6 +10,7 @@ import com.whitewoodcity.core.node.Pane;
 import com.whitewoodcity.core.node.chart.*;
 import com.whitewoodcity.core.node.conrol.*;
 import com.whitewoodcity.core.node.view.ImageView;
+import com.whitewoodcity.core.node.view.MediaView;
 import com.whitewoodcity.core.node.view.View;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -161,6 +162,14 @@ public class XmlV {
                 imageView.setImage(app.getPreload().get(jsonObject.getString("image")));
                 decorateView(imageView, jsonObject);
                 node = imageView;
+                break;
+            case "media":
+            case "md":
+            case "mediaview":
+                MediaView mediaView = new MediaView(jsonObject.getString("url"));
+                mediaView.setMedia(app.getPreload().get(jsonObject.getString("media")));
+                decorateView(mediaView, jsonObject);
+                node = mediaView;
                 break;
             case "table":
             case "tableview":
