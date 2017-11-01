@@ -23,49 +23,49 @@ public class DatagramVerticle extends AbstractVerticle {
 
             String id;
 
-            switch (message.body().getString("method")){
+            switch (message.body().getString("method")) {
                 case "stop":
                 case "close":
                     id = message.body().getString("id");
-                    if(socketMap.get(id)!=null) {
+                    if (socketMap.get(id) != null) {
                         socketMap.remove(id).close();
                     }
                     Main.bufferMap.remove(id);
                     break;
                 case "send":
                     id = message.body().getString("id");
-                    if(socketMap.get(id)!=null){
+                    if (socketMap.get(id) != null) {
                         datagramSocket = socketMap.get(id);
                         String value = message.body().getString("value");
                         int port = message.body().getInteger("port");
                         String address = message.body().getString("address");
-                        datagramSocket.send(value, port, address, ar ->{});
+                        datagramSocket.send(value, port, address, ar -> {
+                        });
                     }
                     break;
                 case "listen":
-
                     id = message.body().getString("id");
-                    if(socketMap.get(id)!=null){
+                    if (socketMap.get(id) != null) {
                         socketMap.get(id).close();
                     }
                     datagramSocket = vertx.createDatagramSocket();
-                    socketMap.put(id,datagramSocket);
+                    socketMap.put(id, datagramSocket);
 
-                    datagramSocket.listen(message.body().getInteger("port"),"0.0.0.0", ar->{
+                    datagramSocket.listen(message.body().getInteger("port"), "0.0.0.0", ar -> {
                         if (ar.succeeded()) {
 
-                            if(Main.bufferMap.get(id)==null){
+                            if (Main.bufferMap.get(id) == null) {
                                 Main.bufferMap.put(id, Buffer.buffer());
                             }
                             datagramSocket.handler(packet -> {
-                                Platform.runLater(()->{
+                                Platform.runLater(() -> {
                                     int maxLen = 0;
-                                    if(message.body().getValue("length")!=null){
+                                    if (message.body().getValue("length") != null) {
                                         maxLen = message.body().getInteger("length") * 4;
                                     }
-                                    if(maxLen <= 0){
+                                    if (maxLen <= 0) {
                                         Main.bufferMap.put(id, packet.data());
-                                    }else {
+                                    } else {
                                         Buffer buffer = Main.bufferMap.get(id);
                                         buffer.appendBuffer(packet.data());
                                         if (buffer.length() > maxLen * 4)
@@ -73,9 +73,9 @@ public class DatagramVerticle extends AbstractVerticle {
                                     }
                                 });
                             });
-                            message.reply(new JsonObject().put("result","OK"));
-                        }else{
-                            message.reply(new JsonObject().put("result",ar.cause().getMessage()));
+                            message.reply(new JsonObject().put("result", "OK"));
+                        } else {
+                            message.reply(new JsonObject().put("result", ar.cause().getMessage()));
                         }
                     });
 
@@ -83,12 +83,6 @@ public class DatagramVerticle extends AbstractVerticle {
                 default:
                     break;
             }
-
-
-
-
-
         });
-
     }
 }
