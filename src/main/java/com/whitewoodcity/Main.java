@@ -63,6 +63,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
 //        scene.getStylesheets().add(ClassLoader.getSystemResource("css/main.css").toExternalForm());
         primaryStage.show();
+        primaryStage.setResizable(true);
 
         tabPane.prefWidthProperty().bind(scene.widthProperty());
         tabPane.prefHeightProperty().bind(scene.heightProperty());
