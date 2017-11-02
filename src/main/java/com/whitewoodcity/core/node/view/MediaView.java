@@ -121,6 +121,9 @@ public class MediaView extends View {
         }
     }
 
+    public void setPaused(Runnable value){
+        paused(value);
+    }
     public void paused(Runnable value) {
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setOnPaused(value);
@@ -128,6 +131,9 @@ public class MediaView extends View {
         }
     }
 
+    public void setStopped(Runnable value){
+        stopped(value);
+    }
     public void stopped(Runnable value) {
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setOnStopped(value);
@@ -135,6 +141,9 @@ public class MediaView extends View {
         }
     }
 
+    public void setPlaying(Runnable value){
+        playing(value);
+    }
     public void playing(Runnable value) {
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setOnPlaying(value);
@@ -142,6 +151,9 @@ public class MediaView extends View {
         }
     }
 
+    public void setEnd(Runnable value){
+        end(value);
+    }
     public void end(Runnable value) {
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setOnEndOfMedia(value);
@@ -149,6 +161,9 @@ public class MediaView extends View {
         }
     }
 
+    public void setError(Runnable value){
+        error(value);
+    }
     public void error(Runnable value) {
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setOnError(value);
@@ -156,6 +171,9 @@ public class MediaView extends View {
         }
     }
 
+    public void setHalted(Runnable value){
+        halted(value);
+    }
     public void halted(Runnable value) {
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setOnHalted(value);
@@ -163,6 +181,9 @@ public class MediaView extends View {
         }
     }
 
+    public void setReady(Runnable value){
+        ready(value);
+    }
     public void ready(Runnable value) {
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setOnReady(value);
@@ -170,6 +191,9 @@ public class MediaView extends View {
         }
     }
 
+    public void setRepeat(Runnable value){
+        repeat(value);
+    }
     public void repeat(Runnable value) {
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setOnRepeat(value);
@@ -177,6 +201,9 @@ public class MediaView extends View {
         }
     }
 
+    public void setStalled(Runnable value){
+        stalled(value);
+    }
     public void stalled(Runnable value) {
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setOnStalled(value);
@@ -184,6 +211,9 @@ public class MediaView extends View {
         }
     }
 
+    public void setSeek(double percentage){
+        seek(percentage);
+    }
     public void seek(double percentage) {
         if(body!=null&&body.getMediaPlayer()!=null){
             Duration duration = body.getMediaPlayer().getMedia().getDuration().multiply(percentage);
@@ -192,6 +222,12 @@ public class MediaView extends View {
         }
     }
 
+    public void setVolume(double percentage){
+        volume(percentage);
+    }
+    public double getVolume(){
+        return body.getMediaPlayer().getVolume();
+    }
     public void volume(double volume){
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setVolume(volume);
@@ -207,6 +243,12 @@ public class MediaView extends View {
         }
     }
 
+    public void setMute(boolean mute){
+        mute(mute);
+    }
+    public boolean isMute(){
+        return body.getMediaPlayer().isMute();
+    }
     public void mute(boolean mute){
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setMute(mute);
@@ -214,6 +256,12 @@ public class MediaView extends View {
         }
     }
 
+    public void setCycle(int cycle){
+        cycle(cycle);
+    }
+    public int getCycle(){
+        return body.getMediaPlayer().getCycleCount();
+    }
     public void cycle(int cycle){
         if(body!=null&&body.getMediaPlayer()!=null){
             if(Platform.isFxApplicationThread()) body.getMediaPlayer().setCycleCount(cycle);
