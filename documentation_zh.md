@@ -455,7 +455,7 @@ Form|submit|-|void|Submits a HTTP request with Form body to the action address. 
 远程class文件的绝对地址为： www.abc.com/com/whitewoodcity/MyClass1.class 在该文件中需包含有以下方法：
 
 ```java
-	public Object/void test(){...}
+	public Object void test(){...}
 ```
 
 开发者可使用编译型语言例如：Java，Ceylon，Kotlin，Scala等将源码编译并生成字节码文件。
