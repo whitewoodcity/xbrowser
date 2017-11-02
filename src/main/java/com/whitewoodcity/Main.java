@@ -107,6 +107,7 @@ public class Main extends Application {
         vertx.deployVerticle(WebClientVerticle.class.getName());
         vertx.deployVerticle(DatagramVerticle.class.getName());
         scriptEngineManager = new ScriptEngineManager();
+
         generateNames(Locale.getDefault());
 
         System.setProperty("java.security.policy",Res.createSecurityPolicyFile().toURI().toURL().toExternalForm());
