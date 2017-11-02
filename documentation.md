@@ -446,7 +446,7 @@ XBrowser also supports compiled code in bytecode format. Using class element and
 The remote class file address should be: www.abc.com/com/whitewoodcity/MyClass1.class and in this class should include a function similar to:
 
 ```java
-	public Object/void test(){...}
+	public Object void test(){...}
 ```
 
 Developers could use compiling languages e.g. Java, Ceylon, Kotlin or Scala to compile source code and generate class files.
