@@ -284,7 +284,7 @@ There are two types of verb elements:
 
 ## <a name="script"></a>Script
 
-Text in script element is an interpreted(rather than compiled) piece of programming language that supports scripts: programs written for XBrowser run-time environment that automate the execution of tasks. It is used to make pages interactive and provide online programs, including animations and video games. XBrowser currently three scripting languages: [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Ruby](http://jruby.org/) and [Groovy](http://groovy-lang.org/). The script lanugae type could be specified in the type attribute.
+Text in script element is an interpreted(rather than compiled) piece of programming language that supports scripts: programs written for XBrowser run-time environment that automate the execution of tasks. It is used to make pages interactive and provide online programs, including animations and video games. XBrowser currently four scripting languages: [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Ruby](http://jruby.org/), [Groovy](http://groovy-lang.org/) and [Latte](http://latte-lang.org/). The script lanugae type could be specified in the type attribute.
 
 ```xml
 <xmlv>
