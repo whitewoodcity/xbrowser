@@ -284,7 +284,7 @@ There are two types of verb elements:
 
 ## <a name="script"></a>Script
 
-Text in script element is an interpreted(rather than compiled) piece of programming language that supports scripts: programs written for XBrowser run-time environment that automate the execution of tasks. It is used to make pages interactive and provide online programs, including animations and video games. XBrowser currently three scripting languages: [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Ruby](http://jruby.org/) and [Groovy](http://groovy-lang.org/). The script lanugae type could be specified in the type attribute.
+Text in script element is an interpreted(rather than compiled) piece of programming language that supports scripts: programs written for XBrowser run-time environment that automate the execution of tasks. It is used to make pages interactive and provide online programs, including animations and video games. XBrowser currently four scripting languages: [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Ruby](http://jruby.org/), [Groovy](http://groovy-lang.org/) and [Latte](http://latte-lang.org/). The script lanugae type could be specified in the type attribute.
 
 ```xml
 <xmlv>
@@ -446,7 +446,7 @@ XBrowser also supports compiled code in bytecode format. Using class element and
 The remote class file address should be: www.abc.com/com/whitewoodcity/MyClass1.class and in this class should include a function similar to:
 
 ```java
-	public Object/void test(){...}
+	public Object void test(){...}
 ```
 
 Developers could use compiling languages e.g. Java, Ceylon, Kotlin or Scala to compile source code and generate class files.
