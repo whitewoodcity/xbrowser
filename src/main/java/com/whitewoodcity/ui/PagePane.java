@@ -20,5 +20,6 @@ public class PagePane extends TabPane{
                 page.getOnClosed().handle(null);
             }
         }
+        getTabs().clear();
     }
 }

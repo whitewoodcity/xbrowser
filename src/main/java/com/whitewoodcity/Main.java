@@ -13,7 +13,11 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import javax.script.ScriptEngineManager;
@@ -39,6 +43,23 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         displayBrowser();
+
+//        HBox root = new HBox();
+//        Scene scene = new Scene(root);
+//        Button button0 = new Button();
+//        Button button1 = new Button();
+//
+//        button0.setOnAction(event -> displayBrowser());
+//        button1.setOnAction(event -> closeBrowser());
+//
+//        button0.setText("strt");
+//        button1.setText("clse");
+//
+//        root.getChildren().addAll(button0,button1);
+//
+//        primaryStage.setScene(scene);
+//        primaryStage.setAlwaysOnTop(true);
+//
 //        primaryStage.show();
 //        primaryStage.setOnCloseRequest(e ->stop());
     }

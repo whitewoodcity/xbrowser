@@ -53,7 +53,7 @@ public class BrowserStage extends Stage{
     }
 
     public void close(){
-        super.close();
         tabPane.close();
+        super.close();
     }
 }
