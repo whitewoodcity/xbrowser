@@ -55,7 +55,9 @@ public class DatagramVerticle extends AbstractVerticle {
                         if (ar.succeeded()) {
 
                             if (Main.bufferMap.get(id) == null) {
-                                Main.bufferMap.put(id, Buffer.buffer());
+                                Platform.runLater(() -> {
+                                    Main.bufferMap.put(id, Buffer.buffer());
+                                });
                             }
                             datagramSocket.handler(packet -> {
                                 Platform.runLater(() -> {
