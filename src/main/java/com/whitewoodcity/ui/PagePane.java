@@ -11,6 +11,7 @@ public class PagePane extends TabPane{
         Page page = new Page(Main.namesMap.get("tab").get(), this);
         getTabs().add(page);
         getSelectionModel().select(page);
+        page.getController().focusURLInput();
     }
 
     public void close(){

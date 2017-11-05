@@ -611,4 +611,8 @@ public class TabContent extends App implements Initializable {
     public ReadOnlyDoubleProperty heightproperty() {
         return heightProperty();
     }
+
+    public void focusURLInput(){
+        urlInput.requestFocus();
+    }
 }
