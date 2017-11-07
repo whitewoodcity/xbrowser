@@ -1,0 +1,42 @@
+.root{
+    -fx-faint-focus-color: #039ED322;
+}
+
+.button{
+        -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, linear-gradient(snow 0%, ghostwhite 50%, gainsboro 51%, white 100%);
+        -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+        -fx-background-radius: 3px, 3px, 2px, 1px;
+        -fx-padding: 0.333333em 0.666667em 0.333333em 0.666667em; /* 4 8 4 8 */
+        -fx-text-fill: -fx-text-base-color;
+        -fx-alignment: CENTER;
+        -fx-content-display: LEFT;
+}
+
+.button:hover,.button:focused{
+    -fx-background-color: -fx-focus-color, -fx-inner-border, -fx-body-color, -fx-faint-focus-color, linear-gradient(snow 0%, ghostwhite 50%, gainsboro 51%, white 100%);
+    -fx-background-insets: -0.2, 1, 2, -1.4, 2.6;
+    -fx-background-radius: 3, 2, 1, 4, 1;
+}
+
+.button:pressed{
+    -fx-background-color: -fx-focus-color, -fx-inner-border, -fx-body-color, -fx-faint-focus-color, -fx-body-color;
+    -fx-background-insets: -0.2, 1, 2, -1.4, 2.6;
+    -fx-background-radius: 3, 2, 1, 4, 1;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: -fx-outer-border, -fx-inner-border, linear-gradient(snow 0%, ghostwhite 50%, gainsboro 51%, white 100%);
+    -fx-background-insets: 0 1 1 0, 1 2 0 1, 2 3 0 2;
+}
+
+.menu-button{
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, linear-gradient(snow 0%, ghostwhite 50%, gainsboro 51%, white 100%);
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 3px, 3px, 2px, 1px;
+}
+
+.menu-button:hover,.menu-button:focused{
+    -fx-background-color: -fx-focus-color, -fx-inner-border, -fx-body-color, -fx-faint-focus-color, linear-gradient(snow 0%, ghostwhite 50%, gainsboro 51%, white 100%);
+    -fx-background-insets: -0.2, 1, 2, -1.4, 2.6;
+    -fx-background-radius: 3, 2, 1, 4, 1;
+}

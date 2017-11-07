@@ -116,6 +116,7 @@ public class Main extends Application {
         ApplicationSecurityManager applicationSecurityManager = new ApplicationSecurityManager();
         applicationSecurityManager.setGlobalAcessCode(GLOBAL_ACCESS_CODE);
         System.setSecurityManager(applicationSecurityManager);
+
         launch(args);
 
     }

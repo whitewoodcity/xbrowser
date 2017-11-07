@@ -1,5 +1,6 @@
 package com.whitewoodcity.core.node;
 
+import com.whitewoodcity.Main;
 import com.whitewoodcity.ui.PagePane;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -16,7 +17,12 @@ public class BrowserStage extends Stage{
     Scene scene;
 
     public BrowserStage() {
+
         scene = new Scene(root, 960, 540);
+        String css = getClass().getResource("/css/browser.css").toExternalForm();
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(css);
+
         root.getChildren().addAll(tabPane,button);
 
         tabPane.prefWidthProperty().bind(scene.widthProperty());
