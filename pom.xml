@@ -22,20 +22,6 @@
             <version>${vertx.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/io.vertx/vertx-lang-groovy -->
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-lang-groovy</artifactId>
-            <version>${vertx.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/io.vertx/vertx-lang-js -->
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-lang-ruby</artifactId>
-            <version>${vertx.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web-client</artifactId>
@@ -77,35 +63,35 @@
             <version>2.3.0</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.jetbrains.kotlin</groupId>-->
-            <!--<artifactId>kotlin-stdlib</artifactId>-->
-            <!--<version>${kotlin.version}</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.jetbrains.kotlin</groupId>-->
-            <!--<artifactId>kotlin-compiler</artifactId>-->
-            <!--<version>${kotlin.version}</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.jetbrains.kotlin</groupId>-->
-            <!--<artifactId>kotlin-runtime</artifactId>-->
-            <!--<version>${kotlin.version}</version>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>org.jetbrains.kotlin</groupId>-->
-            <!--<artifactId>kotlin-script-util</artifactId>-->
-            <!--<version>${kotlin.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-lang-groovy</artifactId>
+        <version>${vertx.version}</version>
+        </dependency>
 
         <dependency>
-            <groupId>org.latte-lang</groupId>
-            <artifactId>latte-build</artifactId>
-            <version>${latte.version}</version>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-lang-ruby</artifactId>
+        <version>${vertx.version}</version>
         </dependency>
+
+        <dependency>
+        <groupId>org.latte-lang</groupId>
+        <artifactId>latte-build</artifactId>
+        <version>${latte.version}</version>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--<groupId>io.vertx</groupId>-->
+        <!--<artifactId>vertx-lang-kotlin</artifactId>-->
+        <!--<version>${vertx.version}</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+        <!--<groupId>io.vertx</groupId>-->
+        <!--<artifactId>vertx-lang-scala_2.12</artifactId>-->
+        <!--<version>${vertx.version}</version>-->
+        <!--</dependency>-->
 
     </dependencies>
 
